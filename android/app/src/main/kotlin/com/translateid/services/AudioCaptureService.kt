@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class AudioCaptureService(
     private val context: Context,
+    private val mediaProjection: MediaProjection,
     private val onAudioData: (ByteArray) -> Unit
 ) {
     private var audioRecord: AudioRecord? = null
@@ -29,9 +30,8 @@ class AudioCaptureService(
         val audioFormat = AudioFormat.ENCODING_PCM_16BIT
         val bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat) * 4
 
-        val playbackCaptureConfig = AudioPlaybackCaptureConfiguration.Builder(
-            MediaProjection.createFromUid(context.applicationContext.packageManager.getPackageUid(context.packageName, 0))
-        ).addMatchingUsage(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+        val playbackCaptureConfig = AudioPlaybackCaptureConfiguration.Builder(mediaProjection)
+            .addMatchingUsage(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
             .addMatchingUsage(MediaRecorder.AudioSource.MIC)
             .build()
 

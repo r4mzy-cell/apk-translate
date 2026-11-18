@@ -6,6 +6,7 @@ import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import java.io.File
+import java.nio.FloatBuffer
 import java.nio.LongBuffer
 
 /**
@@ -121,26 +122,24 @@ class OnnxTranslateWrapper(private val context: Context) {
                 "attention_mask" to encMask
             )
 
-            val hidden: FloatArray
-            val hiddenDims: LongArray
+            var hidden: FloatArray = FloatArray(0)
+            var hiddenDims: LongArray = longArrayOf(1, 0, 0)
+            var hiddenOk = false
             val encResult = s.encoder.run(encInputs)
             try {
-                val any = encResult.get(0)
-                val tensor = any as OnnxTensor
-                @Suppress("UNCHECKED_CAST")
-                val arr = tensor.value as Array<Array<FloatArray>>
-                val seq = arr[0].size
-                val dim = arr[0][0].size
-                hiddenDims = longArrayOf(1, seq.toLong(), dim.toLong())
-                hidden = FloatArray(seq * dim)
-                var p = 0
-                for (row in arr[0]) {
-                    System.arraycopy(row, 0, hidden, p, dim)
-                    p += dim
-                }
+                val tensor = encResult.get(0) as OnnxTensor
+                val info = tensor.info as ai.onnxruntime.TensorInfo
+                val shape = info.shape // e.g. [1, seq, dim]
+                val total = shape.fold(1L) { acc, v -> acc * v }.toInt()
+                val buf: FloatBuffer = tensor.floatBuffer
+                hidden = FloatArray(total)
+                buf.get(hidden)
+                hiddenDims = shape
+                hiddenOk = true
             } finally {
                 encResult.close()
             }
+            if (!hiddenOk) return null
             encInput.close()
             encMask.close()
 
@@ -175,13 +174,17 @@ class OnnxTranslateWrapper(private val context: Context) {
                 var nextToken = -1
                 val decResult = s.decoder.run(decInputs)
                 try {
-                    @Suppress("UNCHECKED_CAST")
-                    val logits = (decResult.get(0) as OnnxTensor).value as Array<Array<FloatArray>>
-                    val last = logits[0][logits[0].size - 1]
+                    val logitsTensor = decResult.get(0) as OnnxTensor
+                    val logitsShape = (logitsTensor.info as ai.onnxruntime.TensorInfo).shape // [1, seq, vocab]
+                    val vocabSize = logitsShape[logitsShape.size - 1].toInt()
+                    val seqLen = logitsShape[1].toInt()
+                    val buf: FloatBuffer = logitsTensor.floatBuffer
+                    val lastStart = (seqLen - 1) * vocabSize
                     var maxIdx = 0
                     var maxVal = Float.NEGATIVE_INFINITY
-                    for (i in last.indices) {
-                        if (last[i] > maxVal) { maxVal = last[i]; maxIdx = i }
+                    for (i in 0 until vocabSize) {
+                        val v = buf.get(lastStart + i)
+                        if (v > maxVal) { maxVal = v; maxIdx = i }
                     }
                     nextToken = maxIdx
                 } finally {

@@ -13,7 +13,7 @@ import android.util.Log
  * Models: https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models
  *         https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models
  */
-class SherpaOnnxWrapper private constructor() {
+class SherpaOnnxWrapper {
     companion object {
         private const val TAG = "SherpaOnnxWrapper"
         private var _isLoaded = false

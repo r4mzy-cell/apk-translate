@@ -59,6 +59,8 @@ dependencies {
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.22.0")
     // Coroutines for suspend native calls
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    // Provides Task<T>.await() for ML Kit
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 }
 
 flutter {

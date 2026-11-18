@@ -285,8 +285,13 @@ class MainActivity : FlutterActivity() {
 
     private fun startAudioCapture(result: MethodChannel.Result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            audioCaptureService = AudioCaptureService(this) { audioData ->
-                audioEventChannel.invokeMethod("audioData", audioData)
+            val projection = mediaProjection
+            if (projection == null) {
+                result.error("NO_PROJECTION", "MediaProjection not granted", null)
+                return
+            }
+            audioCaptureService = AudioCaptureService(this, projection) { audioData ->
+                methodChannel.invokeMethod("audioData", audioData)
             }
             audioCaptureService?.start()
             result.success(true)
