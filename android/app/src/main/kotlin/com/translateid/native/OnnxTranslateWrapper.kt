@@ -162,7 +162,7 @@ class OnnxTranslateWrapper(private val context: Context) {
                 )
                 val encHidden = OnnxTensor.createTensor(
                     getEnvironment(),
-                    hidden,
+                    FloatBuffer.wrap(hidden),
                     hiddenDims
                 )
                 val decInputs = hashMapOf<String, OnnxTensor>(
