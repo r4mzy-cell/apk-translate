@@ -88,13 +88,18 @@ class MlKitOcrWrapper(private val context: Context) {
             val cornerPoints = block.cornerPoints?.map { p ->
                 Point(p.x.toFloat(), p.y.toFloat())
             } ?: emptyList()
-            
-            val boundingBox = Rect(
-                block.boundingBox.left.toFloat() / inputImage.width,
-                block.boundingBox.top.toFloat() / inputImage.height,
-                block.boundingBox.right.toFloat() / inputImage.width,
-                block.boundingBox.bottom.toFloat() / inputImage.height
-            )
+
+            val box = block.boundingBox
+            val boundingBox = if (box != null) {
+                Rect(
+                    box.left.toFloat() / inputImage.width,
+                    box.top.toFloat() / inputImage.height,
+                    box.right.toFloat() / inputImage.width,
+                    box.bottom.toFloat() / inputImage.height
+                )
+            } else {
+                Rect(0f, 0f, 0f, 0f)
+            }
             
             blocks.add(TextBlock(
                 text = block.text,
