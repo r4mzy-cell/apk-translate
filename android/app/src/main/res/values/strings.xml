@@ -7,4 +7,6 @@
     <string name="menu_audio_translate">Terjemahan Suara</string>
     <string name="menu_settings">Pengaturan</string>
     <string name="menu_close">Tutup</string>
+    <string name="accessibility_service_name">TranslateID Overlay</string>
+    <string name="accessibility_service_desc">Provides screen translation overlay and live text translation</string>
 </resources>
