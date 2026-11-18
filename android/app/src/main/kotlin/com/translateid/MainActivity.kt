@@ -23,6 +23,9 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 import com.translateid.native.MlKitOcrWrapper
 import com.translateid.native.OnnxTranslateWrapper
 import com.translateid.native.SherpaOnnxWrapper
+import com.translateid.services.AudioCaptureService
+import com.translateid.services.OverlayService
+import com.translateid.services.ScreenCaptureService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
