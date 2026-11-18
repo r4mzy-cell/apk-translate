@@ -83,7 +83,7 @@ class OverlayService(
     }
 
     private fun onBubbleTouch(event: MotionEvent): Boolean {
-        when (event.action) {
+        return when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 initialX = bubbleParams?.x?.toFloat() ?: 0f
                 initialY = bubbleParams?.y?.toFloat() ?: 0f
