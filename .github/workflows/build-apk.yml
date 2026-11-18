@@ -58,9 +58,14 @@ jobs:
           code=$?
           if [ $code -ne 0 ]; then
             echo "::error::BUILD FAILED exit=$code"
-            grep -nE "e: |error:|FAILURE:|What went wrong|Caused by:|Execution failed|Unresolved reference|Type mismatch|None of the following|\.kt:[0-9]+" build.log | tail -60 | while IFS= read -r line; do echo "::error::$line"; done
-            echo "----- LAST 120 LINES -----"
-            tail -120 build.log
+            # Print the "* What went wrong:" section verbatim (up to * Try:)
+            awk '/\* What went wrong:/{f=1} f{print} /\* Try:/{if(f)exit}' build.log | head -60 | while IFS= read -r line; do echo "::error::WW $line"; done
+            # Print exception / plugin / dependency error lines
+            grep -nE "A problem occurred|Plugin \[id|was not found|Could not (find|resolve|apply)|No matching|Unsupported|requires|Caused by:|^> " build.log | head -50 | while IFS= read -r line; do echo "::error::CTX $line"; done
+            # Print kotlin compiler errors
+            grep -nE "^e: |Unresolved reference|Type mismatch|None of the following|Overload resolution ambiguity|Cannot access" build.log | head -50 | while IFS= read -r line; do echo "::error::KT $line"; done
+            echo "----- LAST 150 LINES -----"
+            tail -150 build.log
             exit $code
           fi
 
