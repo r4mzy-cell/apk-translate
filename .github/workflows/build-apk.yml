@@ -64,8 +64,10 @@ jobs:
             grep -nE "A problem occurred|Plugin \[id|was not found|Could not (find|resolve|apply)|No matching|Unsupported|requires|Caused by:|^> " build.log | head -50 | while IFS= read -r line; do echo "::error::CTX $line"; done
             # Print kotlin compiler errors
             grep -nE "e: file:|Unresolved reference|Type mismatch|None of the following|Overload resolution ambiguity|Cannot access|is not abstract|overrides nothing" build.log | head -80 | while IFS= read -r line; do echo "::error::KT $line"; done
-            echo "----- LAST 150 LINES -----"
-            tail -150 build.log
+            # Print Dart/Flutter errors
+            grep -nE "Error:|error:|Compilation failed|Failed assertion|Unhandled exception|^.*\.dart:[0-9]+:.*Error" build.log | head -80 | while IFS= read -r line; do echo "::error::DART $line"; done
+            echo "----- LAST 200 LINES -----"
+            tail -200 build.log
             exit $code
           fi
 
@@ -78,6 +80,14 @@ jobs:
           name: apk-release
           path: |
             build/app/outputs/flutter-apk/*.apk
+          retention-days: 30
+
+      - name: Upload build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
           retention-days: 30
 
       - name: Upload App Bundle
