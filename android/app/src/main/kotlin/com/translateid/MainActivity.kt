@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import com.translateid.native.MlKitOcrWrapper
@@ -257,7 +258,7 @@ class MainActivity : FlutterActivity() {
 
     // ============ Screen / Overlay ============
 
-    private fun startScreenCapture(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun startScreenCapture(call: MethodCall, result: MethodChannel.Result) {
         val mode = call.argument<String>("mode") ?: "screenshot"
         if (mediaProjection == null) {
             result.error("NO_PROJECTION", "MediaProjection not granted", null)
@@ -274,7 +275,7 @@ class MainActivity : FlutterActivity() {
         result.success(true)
     }
 
-    private fun startLiveTranslate(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun startLiveTranslate(call: MethodCall, result: MethodChannel.Result) {
         result.success(true)
     }
 
@@ -300,7 +301,7 @@ class MainActivity : FlutterActivity() {
         result.success(true)
     }
 
-    private fun showFloatingBubble(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun showFloatingBubble(call: MethodCall, result: MethodChannel.Result) {
         if (!Settings.canDrawOverlays(this)) {
             result.error("NO_PERMISSION", "Overlay permission not granted", null)
             return
@@ -317,14 +318,14 @@ class MainActivity : FlutterActivity() {
         result.success(true)
     }
 
-    private fun updateBubblePosition(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun updateBubblePosition(call: MethodCall, result: MethodChannel.Result) {
         val x = call.argument<Double>("x")?.toFloat() ?: 0f
         val y = call.argument<Double>("y")?.toFloat() ?: 0f
         overlayService?.updateBubblePosition(x, y)
         result.success(true)
     }
 
-    private fun showTranslationOverlay(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun showTranslationOverlay(call: MethodCall, result: MethodChannel.Result) {
         val overlays = call.argument<List<Map<String, Any>>>("overlays") ?: emptyList()
         overlayService?.showTranslationOverlays(overlays)
         result.success(true)
@@ -335,7 +336,7 @@ class MainActivity : FlutterActivity() {
         result.success(true)
     }
 
-    private fun showAudioSubtitle(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun showAudioSubtitle(call: MethodCall, result: MethodChannel.Result) {
         val text = call.argument<String>("text") ?: ""
         val config = call.argument<Map<String, Any>>("config") ?: emptyMap()
         overlayService?.showAudioSubtitle(text, config)
@@ -349,7 +350,7 @@ class MainActivity : FlutterActivity() {
 
     // ============ Sherpa-ONNX ============
 
-    private fun initStt(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun initStt(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         val config = SherpaOnnxWrapper.SttConfig(
             modelPath = call.argument<String>("modelPath") ?: "",
@@ -363,7 +364,7 @@ class MainActivity : FlutterActivity() {
         result.success(ok)
     }
 
-    private fun initTts(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun initTts(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         val config = SherpaOnnxWrapper.TtsConfig(
             modelPath = call.argument<String>("modelPath") ?: "",
@@ -375,7 +376,7 @@ class MainActivity : FlutterActivity() {
         result.success(sherpa.createTts(id, config))
     }
 
-    private fun initVad(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun initVad(call: MethodCall, result: MethodChannel.Result) {
         val config = SherpaOnnxWrapper.VadConfig(
             modelPath = call.argument<String>("modelPath") ?: "",
             threshold = call.argument<Double>("threshold")?.toFloat() ?: 0.5f,
@@ -385,7 +386,7 @@ class MainActivity : FlutterActivity() {
         result.success(sherpa.createVad(config))
     }
 
-    private fun initLangId(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun initLangId(call: MethodCall, result: MethodChannel.Result) {
         val config = SherpaOnnxWrapper.LangIdConfig(
             encoderPath = call.argument<String>("encoderPath") ?: "",
             decoderPath = call.argument<String>("decoderPath") ?: "",
@@ -396,7 +397,7 @@ class MainActivity : FlutterActivity() {
         result.success(sherpa.createLangId(config))
     }
 
-    private fun sttAccept(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun sttAccept(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         val samples = call.argument<DoubleArray>("samples")
             ?.map { it.toFloat() }?.toFloatArray() ?: FloatArray(0)
@@ -411,23 +412,23 @@ class MainActivity : FlutterActivity() {
         ))
     }
 
-    private fun sttGetResult(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun sttGetResult(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         result.success(sherpa.sttGetResult(id) ?: "")
     }
 
-    private fun sttReset(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun sttReset(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         sherpa.sttReset(id)
         result.success(true)
     }
 
-    private fun sttIsEndpoint(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun sttIsEndpoint(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         result.success(sherpa.sttIsEndpoint(id))
     }
 
-    private fun ttsGenerate(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun ttsGenerate(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         val text = call.argument<String>("text") ?: ""
         val sid = call.argument<Int>("speakerId") ?: 0
@@ -440,19 +441,19 @@ class MainActivity : FlutterActivity() {
         ))
     }
 
-    private fun vadProcess(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun vadProcess(call: MethodCall, result: MethodChannel.Result) {
         val samples = call.argument<DoubleArray>("samples")
             ?.map { it.toFloat() }?.toFloatArray() ?: FloatArray(0)
         result.success(sherpa.vadProcess(samples))
     }
 
-    private fun langIdCompute(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun langIdCompute(call: MethodCall, result: MethodChannel.Result) {
         val samples = call.argument<DoubleArray>("samples")
             ?.map { it.toFloat() }?.toFloatArray() ?: FloatArray(0)
         result.success(sherpa.langIdCompute(samples) ?: "en")
     }
 
-    private fun destroySherpa(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun destroySherpa(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         val type = call.argument<String>("type") ?: "stt"
         when (type) {
@@ -472,25 +473,25 @@ class MainActivity : FlutterActivity() {
 
     // ============ ONNX Runtime Translation ============
 
-    private fun initTranslator(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun initTranslator(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         val modelPath = call.argument<String>("modelPath") ?: ""
         result.success(translate.initTranslator(id, modelPath))
     }
 
-    private fun translateText(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun translateText(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         val text = call.argument<String>("text") ?: ""
         result.success(translate.translate(id, text))
     }
 
-    private fun translateBatch(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun translateBatch(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         val texts = call.argument<List<String>>("texts")?.toTypedArray() ?: emptyArray()
         result.success(translate.translateBatch(id, texts)?.toList())
     }
 
-    private fun destroyTranslator(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun destroyTranslator(call: MethodCall, result: MethodChannel.Result) {
         val id = call.argument<String>("id") ?: "default"
         translate.destroy(id)
         result.success(true)
@@ -502,7 +503,7 @@ class MainActivity : FlutterActivity() {
 
     // ============ ML Kit OCR ============
 
-    private fun ocrFromBytes(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun ocrFromBytes(call: MethodCall, result: MethodChannel.Result) {
         val bytes = call.argument<ByteArray>("bytes") ?: byteArrayOf()
         val width = call.argument<Int>("width") ?: 0
         val height = call.argument<Int>("height") ?: 0
@@ -523,7 +524,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun ocrFromBitmap(call: MethodChannel.MethodCall, result: MethodChannel.Result) {
+    private fun ocrFromBitmap(call: MethodCall, result: MethodChannel.Result) {
         val path = call.argument<String>("path") ?: ""
         val lang = call.argument<String>("language") ?: "auto"
 
