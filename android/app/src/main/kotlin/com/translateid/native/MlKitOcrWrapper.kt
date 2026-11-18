@@ -44,7 +44,7 @@ class MlKitOcrWrapper(private val context: Context) {
     
     /** Recognize text from file path */
     suspend fun recognizeFromFile(imagePath: String, language: String = "auto"): OcrResult {
-        return CoroutineScope(Dispatchers.IO).coroutineContext.runBlocking {
+        return withContext(Dispatchers.IO) {
             val inputImage = InputImage.fromFilePath(context, android.net.Uri.parse(imagePath))
             val recognizer = getRecognizer(language)
             val mlKitText = recognizer.process(inputImage).await()
@@ -60,7 +60,7 @@ class MlKitOcrWrapper(private val context: Context) {
         rotationDegrees: Int = 0,
         language: String = "auto"
     ): OcrResult {
-        return CoroutineScope(Dispatchers.IO).coroutineContext.runBlocking {
+        return withContext(Dispatchers.IO) {
             val inputImage = InputImage.fromByteArray(
                 imageData, width, height, rotationDegrees, InputImage.IMAGE_FORMAT_NV21
             )
@@ -72,7 +72,7 @@ class MlKitOcrWrapper(private val context: Context) {
     
     /** Recognize text from Bitmap */
     suspend fun recognizeFromBitmap(bitmap: Bitmap, language: String = "auto"): OcrResult {
-        return CoroutineScope(Dispatchers.IO).coroutineContext.runBlocking {
+        return withContext(Dispatchers.IO) {
             val inputImage = InputImage.fromBitmap(bitmap, 0)
             val recognizer = getRecognizer(language)
             val mlKitText = recognizer.process(inputImage).await()
