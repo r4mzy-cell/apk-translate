@@ -61,6 +61,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     // Provides Task<T>.await() for ML Kit
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    // SplashScreen API (Theme.SplashScreen, windowSplashScreenBackground, etc.)
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }
 
 flutter {
