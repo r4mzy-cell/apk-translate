@@ -689,13 +689,6 @@ class ModelManager extends _$ModelManager {
   }
 }
 
-/// Provider for ModelManager
-@Riverpod(keepAlive: true)
-ModelManager modelManager(ModelManagerRef ref) {
-  final database = ref.watch(appDatabaseProvider);
-  return ModelManager(database);
-}
-
 /// AppDatabase provider
 @riverpod
 AppDatabase appDatabase(AppDatabaseRef ref) {
