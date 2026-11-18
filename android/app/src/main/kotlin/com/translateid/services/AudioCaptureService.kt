@@ -9,8 +9,8 @@ import android.media.projection.MediaProjection
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import java.util.concurrent.LinkedBlockingQueue
 
 class AudioCaptureService(
     private val context: Context,
@@ -18,9 +18,9 @@ class AudioCaptureService(
     private val onAudioData: (ByteArray) -> Unit
 ) {
     private var audioRecord: AudioRecord? = null
-    private var isRecording = false
+    @Volatile private var isRecording = false
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val audioChannel = Channel<ByteArray>(100)
+    private val audioQueue = LinkedBlockingQueue<ByteArray>(100)
 
     fun start() {
         if (isRecording) return
@@ -65,7 +65,7 @@ class AudioCaptureService(
             val read = audioRecord?.read(buffer, 0, buffer.size) ?: 0
             if (read > 0) {
                 val data = buffer.copyOfRange(0, read)
-                audioChannel.send(data)
+                try { audioQueue.put(data) } catch (e: InterruptedException) { break }
             } else if (read < 0) {
                 Log.e("AudioCapture", "Read error: $read")
             }
@@ -73,9 +73,13 @@ class AudioCaptureService(
     }
 
     private fun processAudioChannel() {
-        for (data in audioChannel) {
-            if (!isRecording) break
-            onAudioData(data)
+        while (isRecording) {
+            val data = audioQueue.poll()
+            if (data != null) {
+                onAudioData(data)
+            } else {
+                Thread.sleep(5) // small yield
+            }
         }
     }
 
@@ -84,6 +88,6 @@ class AudioCaptureService(
         audioRecord?.stop()
         audioRecord?.release()
         audioRecord = null
-        audioChannel.close()
+        audioQueue.clear()
     }
 }
