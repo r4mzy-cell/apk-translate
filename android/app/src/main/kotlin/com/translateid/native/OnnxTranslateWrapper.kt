@@ -58,9 +58,7 @@ class OnnxTranslateWrapper(private val context: Context) {
 
             val opts = OrtSession.SessionOptions().apply {
                 setIntraOpNumThreads(2)
-                setGraphOptimizationLevel(
-                    OrtSession.SessionOptions.GraphOptimizationLevel.ORT_ENABLE_ALL
-                )
+                setOptimizationLevel(OrtSession.SessionOptions.OptLevel.ALL_OPT)
             }
 
             val encoderSession = getEnvironment().createSession(encoderFile.absolutePath, opts)
