@@ -31,7 +31,6 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
           cache: true
-          cache-key: flutter-:os:-:flutter-version:
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -52,28 +51,21 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build APK (${{ github.event.inputs.build_type || 'release' }})
-        run: |
-          if [ "${{ github.event.inputs.build_type || 'release' }}" = "release" ]; then
-            flutter build apk --release --split-per-abi
-          else
-            flutter build apk --debug --split-per-abi
-          fi
+      - name: Build APK (release)
+        run: flutter build apk --release --split-per-abi
 
       - name: Build App Bundle
-        if: github.event.inputs.build_type != 'debug'
         run: flutter build appbundle --release
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: apk-${{ github.event.inputs.build_type || 'release' }}
+          name: apk-release
           path: |
             build/app/outputs/flutter-apk/*.apk
           retention-days: 30
 
       - name: Upload App Bundle
-        if: github.event.inputs.build_type != 'debug'
         uses: actions/upload-artifact@v4
         with:
           name: appbundle-release
@@ -93,7 +85,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # Build with different flavors/ABIs in parallel
   build-matrix:
     name: Build Matrix (arm64, arm32, x64)
     runs-on: ubuntu-latest
@@ -134,9 +125,7 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build APK for ${{ matrix.label }}
-        run: flutter build apk --release --target-platform android-arm64 --split-per-abi
-        env:
-          TARGET_ABI: ${{ matrix.abi }}
+        run: flutter build apk --release --target-platform android-${{ matrix.abi }} --split-per-abi
 
       - name: Upload ${{ matrix.label }} APK
         uses: actions/upload-artifact@v4
