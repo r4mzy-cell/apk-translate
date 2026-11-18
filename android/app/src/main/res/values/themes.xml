@@ -35,8 +35,8 @@
         <item name="android:windowLightStatusBar">?attr/isLightStatusBar</item>
         <item name="android:windowLightNavigationBar">?attr/isLightNavigationBar</item>
     </style>
-</resources>
 
-<!-- Colors used in themes but not defined elsewhere -->
-<color name="splash_background">#1A1A2E</color>
-<color name="divider_color">#2A3550</color>
+    <!-- Colors used in themes but not defined elsewhere -->
+    <color name="splash_background">#1A1A2E</color>
+    <color name="divider_color">#2A3550</color>
+</resources>
