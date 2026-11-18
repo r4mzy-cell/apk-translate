@@ -1,7 +1,7 @@
 package com.translateid.services
 
 import android.graphics.Bitmap
-import android.graphics.ImageFormat
+import android.graphics.PixelFormat
 import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
@@ -39,7 +39,7 @@ class ScreenCaptureService(
         val height = 1920
         val dpi = 320
 
-        imageReader = ImageReader.newInstance(width, height, ImageFormat.RGB_888, 2)
+        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
         imageReader?.setOnImageAvailableListener({ reader ->
             val image = reader.acquireLatestImage() ?: return@setOnImageAvailableListener
             val bitmap = imageToBitmap(image)
