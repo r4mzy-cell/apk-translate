@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
-
-part 'overlay_service.g.dart';
 
 /// Overlay types
 enum OverlayType {

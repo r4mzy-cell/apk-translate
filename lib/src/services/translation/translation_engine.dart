@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
-
-part 'translation_engine.g.dart';
 
 /// Translation result
 class TranslationResult {

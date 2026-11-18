@@ -1,9 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
-
-part 'ocr_engine.g.dart';
 
 /// OCR Result with bounding boxes
 class OcrResult {
