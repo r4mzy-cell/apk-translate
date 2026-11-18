@@ -121,7 +121,7 @@ class MlKitOcrWrapper(private val context: Context) {
     private fun detectLanguage(text: String): String {
         // Simple heuristic for EN/ID
         val indonesianWords = setOf("dan", "yang", "untuk", "dengan", "dari", "ke", "di", "pada", "adalah", "ini", "itu", "saya", "kamu", "dia", "kami", "kita", "mereka")
-        val words = text.toLowerCase().split("\\W+".toRegex())
+        val words = text.lowercase().split("\\W+".toRegex())
         var indonesianCount = 0
         for (w in words) {
             if (indonesianWords.contains(w)) indonesianCount++
