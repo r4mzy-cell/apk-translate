@@ -63,6 +63,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
     // SplashScreen API (Theme.SplashScreen, windowSplashScreenBackground, etc.)
     implementation("androidx.core:core-splashscreen:1.0.1")
+    // Material Components themes (Theme.MaterialComponents.*)
+    implementation("com.google.android.material:material:1.12.0")
 }
 
 flutter {
