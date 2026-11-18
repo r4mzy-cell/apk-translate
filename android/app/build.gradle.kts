@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.translateid"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -51,10 +51,10 @@ kotlin {
 
 dependencies {
     // ML Kit Text Recognition v2 (Latin: EN/ID)
-    implementation("com.google.mlkit:text-recognition-v2:16.0.0")
-    implementation("com.google.mlkit:text-recognition-chinese:16.0.0")
-    implementation("com.google.mlkit:text-recognition-japanese:16.0.0")
-    implementation("com.google.mlkit:text-recognition-korean:16.0.0")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.google.mlkit:text-recognition-chinese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.1")
     // ONNX Runtime Android for translation (AAR with native libs)
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.22.0")
     // Coroutines for suspend native calls
