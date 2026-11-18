@@ -50,7 +50,7 @@ class PhrasebookEntries extends Table {
 }
 
 /// Model metadata
-@DataClassName('ModelInfo')
+@DataClassName('ModelInfoData')
 class Models extends Table {
   TextColumn get id => text().withLength(min: 1, max: 100)(); // unique identifier
   TextColumn get name => text().withLength(min: 1, max: 200)();

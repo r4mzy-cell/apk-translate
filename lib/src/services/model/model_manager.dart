@@ -216,7 +216,7 @@ class ModelManager extends _$ModelManager {
     }
   }
 
-  ModelInfo _rowToModelInfo(ModelsData row) {
+  ModelInfo _rowToModelInfo(ModelInfoData row) {
     return ModelInfo(
       id: row.id,
       name: row.name,
