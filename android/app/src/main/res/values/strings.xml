@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TranslateID</string>
+    <string name="bubble_desc">Terjemahan floating</string>
+    <string name="menu_live_translate">Terjemahan Live</string>
+    <string name="menu_screenshot">Terjemahan Screenshot</string>
+    <string name="menu_audio_translate">Terjemahan Suara</string>
+    <string name="menu_settings">Pengaturan</string>
+    <string name="menu_close">Tutup</string>
+</resources>

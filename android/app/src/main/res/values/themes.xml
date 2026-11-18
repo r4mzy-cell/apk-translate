@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LaunchTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primary_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.TranslateId</item>
+    </style>
+
+    <style name="Theme.TranslateId" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:colorPrimary">@color/primary_teal</item>
+        <item name="android:colorPrimaryVariant">@color/primary_dark</item>
+        <item name="android:colorSecondary">@color/primary_teal</item>
+        <item name="android:colorSecondaryVariant">@color/primary_teal</item>
+        <item name="android:colorOnPrimary">@color/primary_dark</item>
+        <item name="android:colorOnSecondary">@color/primary_dark</item>
+        <item name="android:colorOnSurface">@android:color/white</item>
+        <item name="android:colorSurface">@color/surface_dark</item>
+        <item name="android:colorSurfaceVariant">@color/surface_container</item>
+        <item name="android:colorOnSurfaceVariant">@android:color/white</item>
+        <item name="android:colorOutline">@color/divider_color</item>
+        <item name="android:colorOutlineVariant">@color/divider_color</item>
+        <item name="android:colorError">@color/status_error</item>
+        <item name="android:colorPrimaryInverse">@color/primary_teal</item>
+        <item name="android:colorPrimaryInverseSurface">@color/primary_teal</item>
+        <item name="android:colorOnPrimaryInverse">@color/primary_dark</item>
+        <item name="android:colorSecondaryContainer">@color/primary_teal</item>
+        <item name="android:colorOnSecondaryContainer">@color/primary_dark</item>
+    </style>
+
+    <style name="NormalTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">?attr/isLightStatusBar</item>
+        <item name="android:windowLightNavigationBar">?attr/isLightNavigationBar</item>
+    </style>
+</resources>
+
+<!-- Colors used in themes but not defined elsewhere -->
+<color name="splash_background">#1A1A2E</color>
+<color name="divider_color">#2A3550</color>

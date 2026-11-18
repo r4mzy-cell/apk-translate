@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary colors -->
+    <color name="primary_teal">#00D4AA</color>
+    <color name="primary_dark">#1A1A2E</color>
+    <color name="surface_dark">#16213E</color>
+    <color name="surface_container">#1F2A44</color>
+    <color name="overlay_live_bg">#1A1A2E</color>
+    <color name="overlay_screenshot_bg">#00D4AA</color>
+    <color name="overlay_screenshot_text">#1A1A2E</color>
+
+    <!-- Status colors -->
+    <color name="status_error">#FF6B6B</color>
+    <color name="status_success">#4ECDC4</color>
+    <color name="status_warning">#FFB74D</color>
+
+    <!-- Overlay colors -->
+    <color name="overlay_background">#80000000</color>
+</resources>
