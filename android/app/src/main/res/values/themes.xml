@@ -8,30 +8,27 @@
 
     <style name="Theme.TranslateId" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/splash_background</item>
-        <item name="android:colorPrimary">@color/primary_teal</item>
-        <item name="android:colorPrimaryContainer">@color/primary_dark</item>
-        <item name="android:colorSecondary">@color/primary_teal</item>
-        <item name="android:colorSecondaryContainer">@color/primary_dark</item>
-        <item name="android:colorOnPrimary">@color/primary_dark</item>
-        <item name="android:colorOnSecondary">@color/primary_dark</item>
-        <item name="android:colorOnSurface">@android:color/white</item>
-        <item name="android:colorSurface">@color/surface_dark</item>
-        <item name="android:colorSurfaceVariant">@color/surface_container</item>
-        <item name="android:colorOnSurfaceVariant">@android:color/white</item>
-        <item name="android:colorOutline">@color/divider_color</item>
-        <item name="android:colorOutlineVariant">@color/divider_color</item>
-        <item name="android:colorError">@color/status_error</item>
-        <item name="android:colorPrimaryInverse">@color/primary_teal</item>
-        <item name="android:colorPrimaryInverseSurface">@color/primary_teal</item>
-        <item name="android:colorOnPrimaryInverse">@color/primary_dark</item>
+        <item name="colorPrimary">@color/primary_teal</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorSecondary">@color/primary_teal</item>
+        <item name="colorSecondaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/primary_dark</item>
+        <item name="colorOnSecondary">@color/primary_dark</item>
+        <item name="colorOnSurface">@android:color/white</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorSurfaceVariant">@color/surface_container</item>
+        <item name="colorOnSurfaceVariant">@android:color/white</item>
+        <item name="colorOutline">@color/divider_color</item>
+        <item name="colorOutlineVariant">@color/divider_color</item>
+        <item name="colorError">@color/status_error</item>
     </style>
 
     <style name="NormalTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/splash_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">?android:attr/windowLightStatusBar</item>
-        <item name="android:windowLightNavigationBar">?android:attr/windowLightNavigationBar</item>
+        <item name="android:windowLightStatusBar">?attr/windowLightStatusBar</item>
+        <item name="android:windowLightNavigationBar">?attr/windowLightNavigationBar</item>
     </style>
 
     <!-- Colors used in themes but not defined elsewhere -->

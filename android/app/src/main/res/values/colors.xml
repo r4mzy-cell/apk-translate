@@ -16,4 +16,19 @@
 
     <!-- Overlay colors -->
     <color name="overlay_background">#80000000</color>
+
+    <!-- Material3/MDC theme colors referenced in themes.xml -->
+    <color name="colorPrimary">#00D4AA</color>
+    <color name="colorPrimaryVariant">#1A1A2E</color>
+    <color name="colorSecondary">#00D4AA</color>
+    <color name="colorSecondaryVariant">#1A1A2E</color>
+    <color name="colorOnPrimary">#1A1A2E</color>
+    <color name="colorOnSecondary">#1A1A2E</color>
+    <color name="colorOnSurface">#FFFFFFFF</color>
+    <color name="colorSurface">#16213E</color>
+    <color name="colorSurfaceVariant">#1F2A44</color>
+    <color name="colorOnSurfaceVariant">#FFFFFFFF</color>
+    <color name="colorOutline">#2A3550</color>
+    <color name="colorOutlineVariant">#2A3550</color>
+    <color name="colorError">#FF6B6B</color>
 </resources>
