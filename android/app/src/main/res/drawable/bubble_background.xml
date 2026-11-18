@@ -4,7 +4,7 @@
     <stroke android:width="2dp" android:color="#FFFFFF" />
     <shadow
         android:color="#80000000"
-        android:dx="0"
-        android:dy="4"
-        android:radius="8" />
+        android:dx="0dp"
+        android:dy="4dp"
+        android:radius="8dp" />
 </shape>
