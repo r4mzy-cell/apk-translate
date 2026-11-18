@@ -27,8 +27,8 @@
         <item name="android:windowBackground">@color/splash_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">?attr/windowLightStatusBar</item>
-        <item name="android:windowLightNavigationBar">?attr/windowLightNavigationBar</item>
+        <item name="android:windowLightStatusBar">?android:attr/windowLightStatusBar</item>
+        <item name="android:windowLightNavigationBar">?android:attr/windowLightNavigationBar</item>
     </style>
 
     <!-- Colors used in themes but not defined elsewhere -->
