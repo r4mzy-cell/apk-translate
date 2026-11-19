@@ -419,7 +419,9 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
       for (int i = 0; i < config.urls.length; i++) {
         final url = config.urls[i];
-        final fileName = config.files[i];
+        // Save with filename from URL (archive name for archives, direct file for direct)
+        final uri = Uri.parse(url);
+        final fileName = p.basename(uri.path);
         final filePath = p.join(targetDir.path, fileName);
 
         _updateProgress(modelId, DownloadProgress(
@@ -574,17 +576,20 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
   Future<void> _extractArchives(Directory targetDir, ModelDownloadInfo config) async {
     for (int i = 0; i < config.urls.length; i++) {
-      final fileName = config.files[i];
-      final filePath = p.join(targetDir.path, fileName);
+      final url = config.urls[i];
+      // Determine downloaded filename from URL (not config.files which lists extracted contents)
+      final uri = Uri.parse(url);
+      final downloadedFileName = p.basename(uri.path);
+      final filePath = p.join(targetDir.path, downloadedFileName);
       final file = File(filePath);
       
       if (!await file.exists()) continue;
 
-      if (fileName.endsWith('.tar.bz2') || fileName.endsWith('.tbz2')) {
+      if (downloadedFileName.endsWith('.tar.bz2') || downloadedFileName.endsWith('.tbz2')) {
         await _extractTarBz2(file, targetDir);
-      } else if (fileName.endsWith('.tar.gz') || fileName.endsWith('.tgz')) {
+      } else if (downloadedFileName.endsWith('.tar.gz') || downloadedFileName.endsWith('.tgz')) {
         await _extractTarGz(file, targetDir);
-      } else if (fileName.endsWith('.zip')) {
+      } else if (downloadedFileName.endsWith('.zip')) {
         await _extractZip(file, targetDir);
       }
     }
