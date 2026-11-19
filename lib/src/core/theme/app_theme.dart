@@ -1,5 +1,4 @@
-import 'package:google_fonts/google_fonts.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 class AppTheme {
   static const Color primaryTeal = Color(0xFF00D4AA);
@@ -21,13 +20,12 @@ class AppTheme {
         surface: Colors.white,
         error: errorRed,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.black87,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.black87,
@@ -47,7 +45,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           backgroundColor: primaryTeal,
           foregroundColor: Colors.white,
-          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -56,7 +54,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           side: const BorderSide(color: primaryTeal, width: 1.5),
           foregroundColor: primaryTeal,
-          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -79,16 +77,16 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: errorRed, width: 1.5),
         ),
-        labelStyle: GoogleFonts.inter(color: Colors.grey[600]),
-        hintStyle: GoogleFonts.inter(color: Colors.grey[400]),
+        labelStyle: TextStyle(color: Colors.grey[600]),
+        hintStyle: TextStyle(color: Colors.grey[400]),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         elevation: 8,
         selectedItemColor: primaryTeal,
         unselectedItemColor: Colors.grey[500],
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 12),
-        unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 12),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaryTeal,
@@ -103,8 +101,8 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: Colors.grey[100],
-        selectedColor: primaryTeal.withOpacity(0.15),
-        labelStyle: GoogleFonts.inter(fontSize: 13),
+        selectedColor: primaryTeal.withValues(alpha: 0.15),
+        labelStyle: const TextStyle(fontSize: 13),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         side: BorderSide(color: Colors.grey[300]!),
       ),
@@ -124,16 +122,12 @@ class AppTheme {
         surfaceContainerHighest: const Color(0xFF1F2A44),
         error: errorRed,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).apply(
-        bodyColor: Colors.white,
-        displayColor: Colors.white,
-      ),
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -153,7 +147,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           backgroundColor: primaryTeal,
           foregroundColor: primaryDark,
-          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -162,7 +156,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           side: const BorderSide(color: primaryTeal, width: 1.5),
           foregroundColor: primaryTeal,
-          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -185,8 +179,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: errorRed, width: 1.5),
         ),
-        labelStyle: GoogleFonts.inter(color: Colors.grey[400]),
-        hintStyle: GoogleFonts.inter(color: Colors.grey[600]),
+        labelStyle: TextStyle(color: Colors.grey[400]),
+        hintStyle: TextStyle(color: Colors.grey[600]),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         elevation: 8,
@@ -194,24 +188,24 @@ class AppTheme {
         selectedItemColor: primaryTeal,
         unselectedItemColor: Colors.grey[500],
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 12),
-        unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 12),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaryTeal,
-        foregroundColor: primaryDark,
+        foregroundColor: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       dividerTheme: DividerThemeData(
-        color: Colors.grey[800],
+        color: Colors.grey[700],
         thickness: 1,
         space: 1,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: const Color(0xFF16213E),
-        selectedColor: primaryTeal.withOpacity(0.2),
-        labelStyle: GoogleFonts.inter(fontSize: 13),
+        backgroundColor: const Color(0xFF1F2A44),
+        selectedColor: primaryTeal.withValues(alpha: 0.15),
+        labelStyle: const TextStyle(fontSize: 13),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         side: BorderSide(color: Colors.grey[700]!),
       ),

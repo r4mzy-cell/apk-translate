@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:translate_id/src/features/translation/presentation/translation_page.dart';
 import 'package:translate_id/src/features/conversation/presentation/conversation_page.dart';
