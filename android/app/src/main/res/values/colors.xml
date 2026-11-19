@@ -31,4 +31,5 @@
     <color name="colorOutline">#2A3550</color>
     <color name="colorOutlineVariant">#2A3550</color>
     <color name="colorError">#FF6B6B</color>
+	<color name="ic_launcher_background">#1A1A2E</color>
 </resources>
