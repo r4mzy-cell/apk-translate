@@ -24,6 +24,9 @@ dependencies:
   path_provider: ^2.1.3
   path: ^1.9.0
 
+  # Force path_provider_android to use MethodChannel (pre-JNI) - avoids jni package ClassNotFoundException
+  path_provider_android: 2.2.12
+
   # Native Integration
   ffi: ^2.1.2
   permission_handler: ^13.0.2

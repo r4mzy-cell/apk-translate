@@ -11,8 +11,8 @@ import 'package:translate_id/src/services/overlay/overlay_service.dart';
 final getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
-  // Database
-  final appDocDir = await getApplicationDocumentsDirectory().timeout(const Duration(seconds: 10));
+  // Database - called after path_provider_android fixed to use MethodChannel
+  final appDocDir = await getApplicationDocumentsDirectory();
   final dbPath = p.join(appDocDir.path, 'translate_id.sqlite');
   getIt.registerLazySingleton<AppDatabase>(() => AppDatabase.open(dbPath));
 
