@@ -280,11 +280,13 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
       } on DioException catch (e) {
         if (cancelToken.isCancelled) rethrow;
         if (attempt >= maxRetries) rethrow;
-        // Retry on transient errors
+        // Retry on transient errors: timeout, connection reset, 5xx, or HttpException (connection closed)
+        final isHttpException = e.error is HttpException;
         if (e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout ||
             e.type == DioExceptionType.sendTimeout ||
             e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.unknown && isHttpException ||
             (e.response?.statusCode != null && e.response!.statusCode! >= 500)) {
           attempt++;
           final delay = Duration(seconds: (2 * attempt)); // 2s, 4s, 6s
@@ -489,10 +491,17 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
         throw Exception('Required model files missing after download/extraction');
       }
 
-      // Update database
+      // Update database - include all required fields from existing model
+      final existingModel = modelList.firstWhere((m) => m.id == modelId);
       await _database.update(_database.models).replace(
         ModelsCompanion(
           id: Value(modelId),
+          name: Value(existingModel.name),
+          type: Value(existingModel.type.name),
+          language: Value(existingModel.language),
+          version: Value(existingModel.version),
+          sizeBytes: Value(existingModel.sizeBytes),
+          checksum: Value(existingModel.checksum),
           localPath: Value(targetDir.path),
           isDownloaded: const Value(true),
           isActive: const Value(true),
@@ -652,20 +661,28 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   }
 
   Future<bool> _validateFiles(Directory targetDir, ModelDownloadInfo config) async {
+    AppLogger.info('Validating files in ${targetDir.path} for ${config.files.length} expected files');
     for (final fileName in config.files) {
       // Check in root
       var file = File(p.join(targetDir.path, fileName));
-      if (await file.exists()) continue;
+      if (await file.exists()) {
+        AppLogger.info('Found: $fileName');
+        continue;
+      }
       
       // Check in extractPath
       if (config.extractPath.isNotEmpty) {
         file = File(p.join(targetDir.path, config.extractPath, fileName));
-        if (await file.exists()) continue;
+        if (await file.exists()) {
+          AppLogger.info('Found in extractPath: $fileName');
+          continue;
+        }
       }
       
-      AppLogger.error('Required file not found: $fileName');
+      AppLogger.error('Required file not found: $fileName (checked root and extractPath)');
       return false;
     }
+    AppLogger.info('All required files validated successfully');
     return true;
   }
 
