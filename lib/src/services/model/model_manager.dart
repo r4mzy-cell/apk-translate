@@ -193,7 +193,7 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
     return _loadModelsFromDb();
   }
 
-  /// Stream download directly to disk — preserves partial bytes on connection drop, enables true resume
+  /// Stream download directly to disk using dio.download — preserves partial bytes, enables true resume
   Future<int> _downloadFileToDisk(
     String url,
     String filePath,
@@ -208,10 +208,12 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   }) async {
     final file = File(filePath);
     int attempt = 0;
+    DateTime? lastProgressTime;
+    int lastProgressBytes = 0;
 
     while (true) {
       try {
-        // Determine existing bytes for Range header
+        // Determine existing bytes for Range header (resume)
         int existingBytes = 0;
         if (await file.exists()) {
           existingBytes = await file.length();
@@ -230,58 +232,50 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           }
         }
 
-        final options = Options(
-          responseType: ResponseType.stream,
-          headers: existingBytes > 0 ? {'Range': 'bytes=$existingBytes-'} : {},
-        );
+        lastProgressTime = DateTime.now();
+        lastProgressBytes = existingBytes;
 
-        final response = await _dio.get<Stream<List<int>>>(
+        // Use dio.download for native streaming to file with progress + resume support
+        await _dio.download(
           url,
-          options: options,
+          filePath,
           cancelToken: cancelToken,
+          onReceiveProgress: (received, total) {
+            if (cancelToken.isCancelled) return;
+            final currentTotal = existingBytes + received;
+            final displayTotal = totalDownloadedSoFar + currentTotal;
+
+            // Progress update (throttled to ~1Hz)
+            final now = DateTime.now();
+            final elapsedMs = now.difference(lastProgressTime!).inMilliseconds;
+            if (elapsedMs >= 500) {
+              final speed = (currentTotal - lastProgressBytes) / (elapsedMs / 1000);
+              lastProgressTime = now;
+              lastProgressBytes = currentTotal;
+              onProgressUpdate(displayTotal, speed);
+
+              _updateProgress(modelId, DownloadProgress(
+                modelId: modelId,
+                downloadedBytes: displayTotal,
+                totalBytes: totalExpectedBytes,
+                progress: totalExpectedBytes > 0 ? displayTotal / totalExpectedBytes : 0,
+                speedBytesPerSec: speed,
+                status: DownloadStatus.downloading,
+                filesCompleted: fileIndex,
+                filesTotal: totalFiles,
+              ));
+            }
+          },
+          options: Options(
+            headers: existingBytes > 0 ? {'Range': 'bytes=$existingBytes-'} : {},
+            followRedirects: true,
+            maxRedirects: 5,
+            validateStatus: (status) => status != null && status < 500,
+          ),
         );
 
-        // Open file for append (resume) or write (new)
-        final sink = file.openWrite(mode: existingBytes > 0 ? FileMode.append : FileMode.write);
-        int receivedInThisAttempt = 0;
-        final startTime = DateTime.now();
-        int lastProgressBytes = existingBytes;
-        DateTime lastProgressTime = startTime;
-
-        await for (final chunk in response.data!) {
-          if (cancelToken.isCancelled) {
-            await sink.close();
-            throw Exception('Cancelled');
-          }
-          sink.add(chunk);
-          receivedInThisAttempt += chunk.length;
-          final currentTotal = existingBytes + receivedInThisAttempt;
-          final displayTotal = totalDownloadedSoFar + currentTotal;
-
-          // Progress update (throttled to ~1Hz)
-          final now = DateTime.now();
-          final elapsedMs = now.difference(lastProgressTime).inMilliseconds;
-          if (elapsedMs >= 500) {
-            final speed = (currentTotal - lastProgressBytes) / (elapsedMs / 1000);
-            lastProgressTime = now;
-            lastProgressBytes = currentTotal;
-            onProgressUpdate(displayTotal, speed);
-
-            _updateProgress(modelId, DownloadProgress(
-              modelId: modelId,
-              downloadedBytes: displayTotal,
-              totalBytes: totalExpectedBytes,
-              progress: totalExpectedBytes > 0 ? displayTotal / totalExpectedBytes : 0,
-              speedBytesPerSec: speed,
-              status: DownloadStatus.downloading,
-              filesCompleted: fileIndex,
-              filesTotal: totalFiles,
-            ));
-          }
-        }
-
-        await sink.close();
-        return existingBytes + receivedInThisAttempt;
+        // Return final file size
+        return await file.length();
 
       } on DioException catch (e) {
         if (cancelToken.isCancelled) rethrow;
