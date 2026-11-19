@@ -15,6 +15,9 @@
 -keep class kotlinx.coroutines.** { *; }
 -dontwarn kotlinx.coroutines.**
 
+# Play Core (referenced by FlutterPlayStoreSplitApplication, not used by app)
+-dontwarn com.google.android.play.core.**
+
 # Google Play Services (for ML Kit)
 -keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**

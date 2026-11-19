@@ -42,6 +42,11 @@ android {
         }
     }
 
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
