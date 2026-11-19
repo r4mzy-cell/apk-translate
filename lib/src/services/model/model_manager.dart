@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
@@ -179,8 +177,13 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
   @override
   Future<List<ModelInfo>> build() async {
-    _dio.options.connectTimeout = const Duration(seconds: 30);
-    _dio.options.receiveTimeout = const Duration(minutes: 10);
+    _dio.options
+      ..connectTimeout = const Duration(seconds: 30)
+      ..receiveTimeout = const Duration(minutes: 15)
+      ..sendTimeout = const Duration(minutes: 15)
+      ..followRedirects = true
+      ..maxRedirects = 5
+      ..validateStatus = (status) => status != null && status < 500;
     ref.onDispose(() {
       _progressController.close();
       for (final token in _cancelTokens.values) {
@@ -188,6 +191,116 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
       }
     });
     return _loadModelsFromDb();
+  }
+
+  /// Stream download directly to disk — preserves partial bytes on connection drop, enables true resume
+  Future<int> _downloadFileToDisk(
+    String url,
+    String filePath,
+    CancelToken cancelToken,
+    int totalDownloadedSoFar,
+    int totalExpectedBytes,
+    String modelId,
+    int fileIndex,
+    int totalFiles,
+    void Function(int, double) onProgressUpdate, {
+    int maxRetries = 3,
+  }) async {
+    final file = File(filePath);
+    int attempt = 0;
+
+    while (true) {
+      try {
+        // Determine existing bytes for Range header
+        int existingBytes = 0;
+        if (await file.exists()) {
+          existingBytes = await file.length();
+        }
+
+        // Verify if already complete
+        if (existingBytes > 0) {
+          try {
+            final headResponse = await _dio.head(url);
+            final contentLength = headResponse.headers.value('content-length');
+            if (contentLength != null && existingBytes >= int.parse(contentLength)) {
+              return existingBytes;
+            }
+          } catch (_) {
+            // HEAD failed, proceed with download
+          }
+        }
+
+        final options = Options(
+          responseType: ResponseType.stream,
+          headers: existingBytes > 0 ? {'Range': 'bytes=$existingBytes-'} : {},
+        );
+
+        final response = await _dio.get<Stream<List<int>>>(
+          url,
+          options: options,
+          cancelToken: cancelToken,
+        );
+
+        // Open file for append (resume) or write (new)
+        final sink = file.openWrite(mode: existingBytes > 0 ? FileMode.append : FileMode.write);
+        int receivedInThisAttempt = 0;
+        final startTime = DateTime.now();
+        int lastProgressBytes = existingBytes;
+        DateTime lastProgressTime = startTime;
+
+        await for (final chunk in response.data!) {
+          if (cancelToken.isCancelled) {
+            await sink.close();
+            throw Exception('Cancelled');
+          }
+          sink.add(chunk);
+          receivedInThisAttempt += chunk.length;
+          final currentTotal = existingBytes + receivedInThisAttempt;
+          final displayTotal = totalDownloadedSoFar + currentTotal;
+
+          // Progress update (throttled to ~1Hz)
+          final now = DateTime.now();
+          final elapsedMs = now.difference(lastProgressTime).inMilliseconds;
+          if (elapsedMs >= 500) {
+            final speed = (currentTotal - lastProgressBytes) / (elapsedMs / 1000);
+            lastProgressTime = now;
+            lastProgressBytes = currentTotal;
+            onProgressUpdate(displayTotal, speed);
+
+            _updateProgress(modelId, DownloadProgress(
+              modelId: modelId,
+              downloadedBytes: displayTotal,
+              totalBytes: totalExpectedBytes,
+              progress: totalExpectedBytes > 0 ? displayTotal / totalExpectedBytes : 0,
+              speedBytesPerSec: speed,
+              status: DownloadStatus.downloading,
+              filesCompleted: fileIndex,
+              filesTotal: totalFiles,
+            ));
+          }
+        }
+
+        await sink.close();
+        return existingBytes + receivedInThisAttempt;
+
+      } on DioException catch (e) {
+        if (cancelToken.isCancelled) rethrow;
+        if (attempt >= maxRetries) rethrow;
+        // Retry on transient errors
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            (e.response?.statusCode != null && e.response!.statusCode! >= 500)) {
+          attempt++;
+          final delay = Duration(seconds: (2 * attempt)); // 2s, 4s, 6s
+          AppLogger.warning('Download retry $attempt/$maxRetries for $url after ${delay.inSeconds}s: ${e.message}');
+          await Future.delayed(delay);
+          continue;
+        }
+        rethrow;
+      }
+    }
   }
 
   Stream<DownloadProgress> get progressStream => _progressController.stream;
@@ -282,9 +395,6 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
     final cancelToken = _cancelTokens[modelId]!;
 
     int totalDownloaded = 0;
-    final startTime = DateTime.now();
-    int lastBytes = 0;
-    DateTime lastTime = startTime;
 
     try {
       // Calculate total size for progress
@@ -329,62 +439,21 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           filesTotal: config.urls.length,
         ));
 
-        // Check if file already exists (resume)
-        int existingBytes = 0;
-        final file = File(filePath);
-        if (resume && await file.exists()) {
-          existingBytes = await file.length();
-          if (existingBytes > 0) {
-            // Verify partial file
-            final headResponse = await _dio.head(url);
-            final contentLength = headResponse.headers.value('content-length');
-            if (contentLength != null && existingBytes >= int.parse(contentLength)) {
-              // File already complete
-              totalDownloaded += existingBytes;
-              continue;
-            }
-          }
-        }
-
-        final options = Options(
-          responseType: ResponseType.bytes,
-          headers: existingBytes > 0 ? {'Range': 'bytes=$existingBytes-'} : {},
-        );
-
-        final response = await _dio.get<List<int>>(
+        // Download file with streaming to disk (preserves partials, enables resume)
+        final bytesWritten = await _downloadFileToDisk(
           url,
-          options: options,
-          cancelToken: cancelToken,
-          onReceiveProgress: (received, total) {
-            if (cancelToken.isCancelled) return;
-            final currentDownloaded = existingBytes + received;
-            totalDownloaded = totalDownloaded - existingBytes + currentDownloaded;
-            lastBytes = currentDownloaded;
-            final now = DateTime.now();
-            final elapsed = now.difference(lastTime).inMilliseconds / 1000.0;
-            final speed = elapsed > 0 ? (currentDownloaded - lastBytes) / elapsed : 0.0;
-            lastTime = now;
-            lastBytes = currentDownloaded;
-
-            _updateProgress(modelId, DownloadProgress(
-              modelId: modelId,
-              downloadedBytes: totalDownloaded,
-              totalBytes: totalExpectedBytes,
-              progress: totalExpectedBytes > 0 ? totalDownloaded / totalExpectedBytes : 0,
-              speedBytesPerSec: speed,
-              status: DownloadStatus.downloading,
-              filesCompleted: i,
-              filesTotal: config.urls.length,
-            ));
+          filePath,
+          cancelToken,
+          totalDownloaded,
+          totalExpectedBytes,
+          modelId,
+          i,
+          config.urls.length,
+          (newTotalDownloaded, speed) {
+            totalDownloaded = newTotalDownloaded;
           },
         );
-
-        if (cancelToken.isCancelled) throw Exception('Cancelled');
-
-        // Write file (append if resuming)
-        final mode = existingBytes > 0 ? FileMode.append : FileMode.write;
-        await file.writeAsBytes(response.data!, mode: mode);
-        totalDownloaded += existingBytes + response.data!.length;
+        totalDownloaded = bytesWritten;
       }
 
       // Verify checksums
@@ -451,8 +520,8 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
       _refresh();
     } catch (e) {
       AppLogger.error('Download failed for $modelId', e);
-      // Don't delete on pause/cancel
-      if (e.toString() != 'Cancelled' && await targetDir.exists()) {
+      // Preserve partial downloads for resume — only clean up on explicit cancel
+      if (e.toString() == 'Cancelled' && await targetDir.exists()) {
         await targetDir.delete(recursive: true);
       }
 
