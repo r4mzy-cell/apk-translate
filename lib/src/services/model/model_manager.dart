@@ -1,17 +1,17 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:drift/drift.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/models/model_info.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
-
-part 'model_manager.g.dart';
 
 /// Download progress state
 class DownloadProgress {
@@ -167,8 +167,10 @@ class ModelDownloadInfo {
   });
 }
 
-@riverpod
-class ModelManager extends _$ModelManager {
+final modelManagerProvider =
+    AsyncNotifierProvider<ModelManager, List<ModelInfo>>(ModelManager.new);
+
+class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   AppDatabase get _database => ref.read(appDatabaseProvider);
   final Dio _dio = Dio();
   final Map<String, CancelToken> _cancelTokens = {};
@@ -179,12 +181,20 @@ class ModelManager extends _$ModelManager {
   Future<List<ModelInfo>> build() async {
     _dio.options.connectTimeout = const Duration(seconds: 30);
     _dio.options.receiveTimeout = const Duration(minutes: 10);
+    ref.onDispose(() {
+      _progressController.close();
+      for (final token in _cancelTokens.values) {
+        token.cancel();
+      }
+    });
     return _loadModelsFromDb();
   }
 
   Stream<DownloadProgress> get progressStream => _progressController.stream;
 
   DownloadProgress? getProgress(String modelId) => _progressMap[modelId];
+
+  List<ModelInfo> get currentModels => state.value ?? [];
 
   Future<List<ModelInfo>> _loadModelsFromDb() async {
     final rows = await _database.select(_database.models).get();
@@ -207,16 +217,16 @@ class ModelManager extends _$ModelManager {
           sizeBytes: model.sizeBytes,
           checksum: Value(model.checksum),
           localPath: Value(model.localPath),
-          isDownloaded: model.isDownloaded,
-          isActive: model.isActive,
-          downloadedAt: Value(model.downloadedAt),
-          updatedAt: Value(model.updatedAt),
+          isDownloaded: Value(model.isDownloaded),
+          isActive: Value(model.isActive),
+          downloadedAt: Value(model.downloadedAt?.millisecondsSinceEpoch),
+          updatedAt: Value(model.updatedAt?.millisecondsSinceEpoch),
         ),
       );
     }
   }
 
-  ModelInfo _rowToModelInfo(ModelInfoData row) {
+  ModelInfo _rowToModelInfo(ModelInfoEntity row) {
     return ModelInfo(
       id: row.id,
       name: row.name,
@@ -228,8 +238,12 @@ class ModelManager extends _$ModelManager {
       localPath: row.localPath,
       isDownloaded: row.isDownloaded,
       isActive: row.isActive,
-      downloadedAt: row.downloadedAt,
-      updatedAt: row.updatedAt,
+      downloadedAt: row.downloadedAt != null
+          ? DateTime.fromMillisecondsSinceEpoch(row.downloadedAt!)
+          : null,
+      updatedAt: row.updatedAt != null
+          ? DateTime.fromMillisecondsSinceEpoch(row.updatedAt!)
+          : null,
     );
   }
 
@@ -417,8 +431,8 @@ class ModelManager extends _$ModelManager {
           localPath: Value(targetDir.path),
           isDownloaded: const Value(true),
           isActive: const Value(true),
-          downloadedAt: Value(DateTime.now()),
-          updatedAt: Value(DateTime.now()),
+          downloadedAt: Value(DateTime.now().millisecondsSinceEpoch),
+          updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
         ),
       );
 
@@ -632,7 +646,7 @@ class ModelManager extends _$ModelManager {
         isDownloaded: const Value(false),
         isActive: const Value(false),
         downloadedAt: const Value.absent(),
-        updatedAt: Value(DateTime.now()),
+        updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
       ),
     );
     _refresh();
@@ -651,7 +665,7 @@ class ModelManager extends _$ModelManager {
           ModelsCompanion(
             id: Value(m.id),
             isActive: const Value(false),
-            updatedAt: Value(DateTime.now()),
+            updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
           ),
         );
       }
@@ -661,7 +675,7 @@ class ModelManager extends _$ModelManager {
       ModelsCompanion(
         id: Value(modelId),
         isActive: Value(active),
-        updatedAt: Value(DateTime.now()),
+        updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
       ),
     );
     _refresh();
@@ -678,19 +692,9 @@ class ModelManager extends _$ModelManager {
       state = AsyncValue.data(models);
     });
   }
-
-  @override
-  void dispose() {
-    _progressController.close();
-    for (final token in _cancelTokens.values) {
-      token.cancel();
-    }
-    super.dispose();
-  }
 }
 
 /// AppDatabase provider
-@riverpod
-AppDatabase appDatabase(AppDatabaseRef ref) {
+final appDatabaseProvider = Provider<AppDatabase>((ref) {
   throw UnimplementedError('AppDatabase provider must be overridden in main.dart');
-}
+});

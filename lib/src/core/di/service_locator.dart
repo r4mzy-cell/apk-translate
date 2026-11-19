@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:drift/drift.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:translate_id/src/services/database/app_database.dart';
@@ -18,7 +17,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<AppDatabase>(() => AppDatabase.open(dbPath));
 
   // Core Services
-  getIt.registerLazySingleton<ModelManager>(() => ModelManager(getIt<AppDatabase>()));
+  getIt.registerLazySingleton<ModelManager>(() => ModelManager());
   getIt.registerLazySingleton<TranslationEngine>(() => TranslationEngine(getIt<ModelManager>()));
   getIt.registerLazySingleton<VoiceEngine>(() => VoiceEngine(getIt<ModelManager>()));
   getIt.registerLazySingleton<OcrEngine>(() => OcrEngine());

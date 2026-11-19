@@ -241,8 +241,6 @@ extension ModelInfoPatterns on ModelInfo {
     switch (_that) {
       case _ModelInfo():
         return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 
@@ -368,8 +366,6 @@ extension ModelInfoPatterns on ModelInfo {
             _that.isActive,
             _that.downloadedAt,
             _that.updatedAt);
-      case _:
-        throw StateError('Unexpected subclass');
     }
   }
 

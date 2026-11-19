@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Formality mode for Indonesian translations
 enum FormalityMode { formal, slang }

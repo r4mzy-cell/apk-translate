@@ -1496,7 +1496,8 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
   }
 }
 
-class $ModelsTable extends Models with TableInfo<$ModelsTable, ModelInfo> {
+class $ModelsTable extends Models
+    with TableInfo<$ModelsTable, ModelInfoEntity> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1611,7 +1612,7 @@ class $ModelsTable extends Models with TableInfo<$ModelsTable, ModelInfo> {
   String get actualTableName => $name;
   static const String $name = 'models';
   @override
-  VerificationContext validateIntegrity(Insertable<ModelInfo> instance,
+  VerificationContext validateIntegrity(Insertable<ModelInfoEntity> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1682,9 +1683,9 @@ class $ModelsTable extends Models with TableInfo<$ModelsTable, ModelInfo> {
   @override
   Set<GeneratedColumn> get $primaryKey => const {};
   @override
-  ModelInfo map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ModelInfoEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ModelInfo(
+    return ModelInfoEntity(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
@@ -1718,7 +1719,7 @@ class $ModelsTable extends Models with TableInfo<$ModelsTable, ModelInfo> {
   }
 }
 
-class ModelInfo extends DataClass implements Insertable<ModelInfo> {
+class ModelInfoEntity extends DataClass implements Insertable<ModelInfoEntity> {
   final String id;
   final String name;
   final String type;
@@ -1731,7 +1732,7 @@ class ModelInfo extends DataClass implements Insertable<ModelInfo> {
   final bool isActive;
   final int? downloadedAt;
   final int? updatedAt;
-  const ModelInfo(
+  const ModelInfoEntity(
       {required this.id,
       required this.name,
       required this.type,
@@ -1799,10 +1800,10 @@ class ModelInfo extends DataClass implements Insertable<ModelInfo> {
     );
   }
 
-  factory ModelInfo.fromJson(Map<String, dynamic> json,
+  factory ModelInfoEntity.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ModelInfo(
+    return ModelInfoEntity(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       type: serializer.fromJson<String>(json['type']),
@@ -1836,7 +1837,7 @@ class ModelInfo extends DataClass implements Insertable<ModelInfo> {
     };
   }
 
-  ModelInfo copyWith(
+  ModelInfoEntity copyWith(
           {String? id,
           String? name,
           String? type,
@@ -1849,7 +1850,7 @@ class ModelInfo extends DataClass implements Insertable<ModelInfo> {
           bool? isActive,
           Value<int?> downloadedAt = const Value.absent(),
           Value<int?> updatedAt = const Value.absent()}) =>
-      ModelInfo(
+      ModelInfoEntity(
         id: id ?? this.id,
         name: name ?? this.name,
         type: type ?? this.type,
@@ -1864,8 +1865,8 @@ class ModelInfo extends DataClass implements Insertable<ModelInfo> {
             downloadedAt.present ? downloadedAt.value : this.downloadedAt,
         updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
       );
-  ModelInfo copyWithCompanion(ModelsCompanion data) {
-    return ModelInfo(
+  ModelInfoEntity copyWithCompanion(ModelsCompanion data) {
+    return ModelInfoEntity(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       type: data.type.present ? data.type.value : this.type,
@@ -1887,7 +1888,7 @@ class ModelInfo extends DataClass implements Insertable<ModelInfo> {
 
   @override
   String toString() {
-    return (StringBuffer('ModelInfo(')
+    return (StringBuffer('ModelInfoEntity(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('type: $type, ')
@@ -1910,7 +1911,7 @@ class ModelInfo extends DataClass implements Insertable<ModelInfo> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ModelInfo &&
+      (other is ModelInfoEntity &&
           other.id == this.id &&
           other.name == this.name &&
           other.type == this.type &&
@@ -1925,7 +1926,7 @@ class ModelInfo extends DataClass implements Insertable<ModelInfo> {
           other.updatedAt == this.updatedAt);
 }
 
-class ModelsCompanion extends UpdateCompanion<ModelInfo> {
+class ModelsCompanion extends UpdateCompanion<ModelInfoEntity> {
   final Value<String> id;
   final Value<String> name;
   final Value<String> type;
@@ -1973,7 +1974,7 @@ class ModelsCompanion extends UpdateCompanion<ModelInfo> {
         type = Value(type),
         language = Value(language),
         sizeBytes = Value(sizeBytes);
-  static Insertable<ModelInfo> custom({
+  static Insertable<ModelInfoEntity> custom({
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? type,
@@ -2161,7 +2162,7 @@ class $UserPreferencesTable extends UserPreferences
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {key};
   @override
   UserPreference map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -3917,14 +3918,17 @@ class $$ModelsTableAnnotationComposer
 class $$ModelsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ModelsTable,
-    ModelInfo,
+    ModelInfoEntity,
     $$ModelsTableFilterComposer,
     $$ModelsTableOrderingComposer,
     $$ModelsTableAnnotationComposer,
     $$ModelsTableCreateCompanionBuilder,
     $$ModelsTableUpdateCompanionBuilder,
-    (ModelInfo, BaseReferences<_$AppDatabase, $ModelsTable, ModelInfo>),
-    ModelInfo,
+    (
+      ModelInfoEntity,
+      BaseReferences<_$AppDatabase, $ModelsTable, ModelInfoEntity>
+    ),
+    ModelInfoEntity,
     PrefetchHooks Function()> {
   $$ModelsTableTableManager(_$AppDatabase db, $ModelsTable table)
       : super(TableManagerState(
@@ -3998,9 +4002,9 @@ class $$ModelsTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable<$ModelsTable, ModelInfo>(table),
-                    BaseReferences<_$AppDatabase, $ModelsTable, ModelInfo>(
-                        db, table, e)
+                    e.readTable<$ModelsTable, ModelInfoEntity>(table),
+                    BaseReferences<_$AppDatabase, $ModelsTable,
+                        ModelInfoEntity>(db, table, e)
                   ))
               .toList(),
           prefetchHooksCallback: null,
@@ -4010,14 +4014,17 @@ class $$ModelsTableTableManager extends RootTableManager<
 typedef $$ModelsTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
     $ModelsTable,
-    ModelInfo,
+    ModelInfoEntity,
     $$ModelsTableFilterComposer,
     $$ModelsTableOrderingComposer,
     $$ModelsTableAnnotationComposer,
     $$ModelsTableCreateCompanionBuilder,
     $$ModelsTableUpdateCompanionBuilder,
-    (ModelInfo, BaseReferences<_$AppDatabase, $ModelsTable, ModelInfo>),
-    ModelInfo,
+    (
+      ModelInfoEntity,
+      BaseReferences<_$AppDatabase, $ModelsTable, ModelInfoEntity>
+    ),
+    ModelInfoEntity,
     PrefetchHooks Function()>;
 typedef $$UserPreferencesTableCreateCompanionBuilder = UserPreferencesCompanion
     Function({

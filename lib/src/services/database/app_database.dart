@@ -3,6 +3,7 @@ import 'package:drift/native.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'dart:io';
 
 part 'app_database.g.dart';
 
@@ -50,7 +51,7 @@ class PhrasebookEntries extends Table {
 }
 
 /// Model metadata
-@DataClassName('ModelInfoData')
+@DataClassName('ModelInfoEntity')
 class Models extends Table {
   TextColumn get id => text().withLength(min: 1, max: 100)(); // unique identifier
   TextColumn get name => text().withLength(min: 1, max: 200)();
@@ -69,9 +70,12 @@ class Models extends Table {
 /// User preferences
 @DataClassName('UserPreference')
 class UserPreferences extends Table {
-  TextColumn get key => text().withLength(min: 1, max: 100).primaryKey()();
+  TextColumn get key => text().withLength(min: 1, max: 100)();
   TextColumn get value => text().nullable()();
   TextColumn get valueType => text().withLength(min: 1, max: 20).withDefault(const Constant('string'))(); // 'string', 'int', 'bool', 'double', 'json'
+
+  @override
+  Set<Column> get primaryKey => {key};
 }
 
 /// Conversation sessions - TEMPORARILY DISABLED DUE TO DRIFT BUG
@@ -129,7 +133,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._(QueryExecutor executor) : super(executor);
 
   static AppDatabase open(String path) {
-    return AppDatabase._(NativeDatabase.createInBackground(path));
+    return AppDatabase._(NativeDatabase.createInBackground(File(path)));
   }
 
   @override
@@ -154,31 +158,47 @@ class AppDatabase extends _$AppDatabase {
   }
 
   // Preference helpers
-  Future<T?> getPreference<T>(String key, T Function(String) parser) async {
+  Future<bool> _getBoolPreference(String key, bool defaultValue) async {
     final row = await (select(userPreferences)..where((p) => p.key.equals(key))).getSingleOrNull();
-    if (row == null) return null;
-    return parser(row.value ?? '');
+    if (row == null || row.value == null) return defaultValue;
+    return row.value == 'true';
   }
 
-  Future<void> setPreference<T>(String key, T value, String type) async {
+  Future<String> _getStringPreference(String key, String defaultValue) async {
+    final row = await (select(userPreferences)..where((p) => p.key.equals(key))).getSingleOrNull();
+    if (row == null || row.value == null) return defaultValue;
+    return row.value!;
+  }
+
+  Future<double> _getDoublePreference(String key, double defaultValue) async {
+    final row = await (select(userPreferences)..where((p) => p.key.equals(key))).getSingleOrNull();
+    if (row == null || row.value == null) return defaultValue;
+    return double.tryParse(row.value!) ?? defaultValue;
+  }
+
+  Future<void> _setPreference(String key, String value, String type) async {
     await into(userPreferences).insertOnConflictUpdate(
-      UserPreferencesCompanion.insert(key: key, value: value.toString(), valueType: type),
+      UserPreferencesCompanion.insert(
+        key: key,
+        value: Value(value),
+        valueType: Value(type),
+      ),
     );
   }
 
   // Convenience getters for common preferences
-  Future<bool> get isDarkMode async => getPreference('theme_dark', (v) => v == 'true') ?? false;
-  Future<void> setDarkMode(bool value) async => setPreference('theme_dark', value.toString(), 'bool');
+  Future<bool> get isDarkMode => _getBoolPreference('theme_dark', false);
+  Future<void> setDarkMode(bool value) => _setPreference('theme_dark', value.toString(), 'bool');
 
-  Future<String> get defaultFormality async => getPreference('formality', (v) => v) ?? 'formal';
-  Future<void> setDefaultFormality(String value) async => setPreference('formality', value, 'string');
+  Future<String> get defaultFormality => _getStringPreference('formality', 'formal');
+  Future<void> setDefaultFormality(String value) => _setPreference('formality', value, 'string');
 
-  Future<String> get ttsVoiceId async => getPreference('tts_voice_id', (v) => v) ?? 'id_female_0';
-  Future<void> setTtsVoiceId(String value) async => setPreference('tts_voice_id', value, 'string');
+  Future<String> get ttsVoiceId => _getStringPreference('tts_voice_id', 'id_female_0');
+  Future<void> setTtsVoiceId(String value) => _setPreference('tts_voice_id', value, 'string');
 
-  Future<double> get ttsSpeed async => getPreference('tts_speed', double.parse) ?? 1.0;
-  Future<void> setTtsSpeed(double value) async => setPreference('tts_speed', value.toString(), 'double');
+  Future<double> get ttsSpeed => _getDoublePreference('tts_speed', 1.0);
+  Future<void> setTtsSpeed(double value) => _setPreference('tts_speed', value.toString(), 'double');
 
-  Future<String> get modelStoragePath async => getPreference('model_storage_path', (v) => v) ?? '';
-  Future<void> setModelStoragePath(String value) async => setPreference('model_storage_path', value, 'string');
+  Future<String> get modelStoragePath => _getStringPreference('model_storage_path', '');
+  Future<void> setModelStoragePath(String value) => _setPreference('model_storage_path', value, 'string');
 }

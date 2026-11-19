@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
+import 'package:translate_id/src/shared/widgets/formality_toggle.dart';
 import 'package:translate_id/src/shared/widgets/voice_button.dart';
 
 class PhrasebookPage extends ConsumerStatefulWidget {

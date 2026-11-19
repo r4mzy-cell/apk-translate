@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:translate_id/src/models/model_info.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
 
@@ -322,7 +323,7 @@ class VoiceEngine {
     if (!_initialized) await initialize();
     if (_vadInitialized) return true;
     
-    final model = _modelManager.state.value?.firstWhere(
+    final model = _modelManager.currentModels?.firstWhere(
       (m) => m.id == 'sherpa-vad-langid',
       orElse: () => throw Exception('VAD model not found'),
     );
@@ -390,7 +391,7 @@ class VoiceEngine {
     if (!_initialized) await initialize();
     if (_langIdInitialized) return true;
     
-    final model = _modelManager.state.value?.firstWhere(
+    final model = _modelManager.currentModels?.firstWhere(
       (m) => m.id == 'sherpa-vad-langid',
       orElse: () => throw Exception('LangID model not found'),
     );
@@ -474,7 +475,7 @@ class VoiceEngine {
   // ============ Helpers ============
 
   ModelInfo? _getSttModel(String language) {
-    final models = _modelManager.state.value;
+    final models = _modelManager.currentModels;
     if (models == null) return null;
     try {
       return models.firstWhere((m) => m.type == ModelType.stt && m.language == language);
@@ -484,7 +485,7 @@ class VoiceEngine {
   }
 
   ModelInfo? _getTtsModel(String language) {
-    final models = _modelManager.state.value;
+    final models = _modelManager.currentModels;
     if (models == null) return null;
     try {
       return models.firstWhere((m) => m.type == ModelType.tts && m.language == language);

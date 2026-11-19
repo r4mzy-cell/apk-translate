@@ -65,7 +65,7 @@ class TranslationEngine {
     if (!_initialized) await initialize();
     
     final modelId = sourceLang == 'en' ? 'ctranslate-en-id' : 'ctranslate-id-en';
-    final model = _modelManager.state.value?.firstWhere(
+    final model = _modelManager.currentModels?.firstWhere(
       (m) => m.id == modelId,
       orElse: () => throw Exception('Translation model not found: $modelId'),
     );
