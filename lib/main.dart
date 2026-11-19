@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:translate_id/src/core/di/service_locator.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
@@ -12,8 +13,17 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await setupServiceLocator();
-  await AppLogger.init();
+  
+  try {
+    await setupServiceLocator();
+    await AppLogger.init();
+  } catch (e, stack) {
+    // Log to console (visible in logcat)
+    print('Startup error: $e');
+    print(stack);
+    // Re-throw to show error screen
+    rethrow;
+  }
 
   final container = ProviderContainer(
     overrides: [
@@ -38,7 +48,11 @@ class TranslateIdApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      localizationsDelegates: const [],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       supportedLocales: const [Locale('id'), Locale('en')],
       home: const HomePage(),
       debugShowCheckedModeBanner: false,

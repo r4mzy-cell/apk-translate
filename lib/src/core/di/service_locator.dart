@@ -12,7 +12,7 @@ final getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
   // Database
-  final appDocDir = await getApplicationDocumentsDirectory();
+  final appDocDir = await getApplicationDocumentsDirectory().timeout(const Duration(seconds: 10));
   final dbPath = p.join(appDocDir.path, 'translate_id.sqlite');
   getIt.registerLazySingleton<AppDatabase>(() => AppDatabase.open(dbPath));
 

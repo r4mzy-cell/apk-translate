@@ -22,6 +22,19 @@
 -keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**
 
+# SQLite3 / Drift (sqlite3_flutter_libs)
+-keep class com.tekartik.sqlite3.** { *; }
+-keep class com.tekartik.sqflite.** { *; }
+-dontwarn com.tekartik.sqlite3.**
+-dontwarn com.tekartik.sqflite.**
+
+# path_provider
+-keep class io.flutter.plugins.pathprovider.** { *; }
+-dontwarn io.flutter.plugins.pathprovider.**
+
+# GeneratedPluginRegistrant
+-keep class io.flutter.plugins.GeneratedPluginRegistrant { *; }
+
 # Keep annotations
 -keepattributes *Annotation*
 -keepattributes Signature
