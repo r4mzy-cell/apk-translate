@@ -4,12 +4,150 @@ import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/models/model_info.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
+
+/// Serializable config for background isolate
+class _ExtractValidateParams {
+  final String targetDirPath;
+  final List<String> urls;
+  final List<String> expectedFiles;
+  final String extractPath;
+  final Map<String, String> checksums;
+
+  const _ExtractValidateParams({
+    required this.targetDirPath,
+    required this.urls,
+    required this.expectedFiles,
+    required this.extractPath,
+    required this.checksums,
+  });
+}
+
+/// Result from background isolate
+class _ExtractValidateResult {
+  final bool success;
+  final String? error;
+  final List<String> missingFiles;
+
+  const _ExtractValidateResult({
+    required this.success,
+    this.error,
+    this.missingFiles = const [],
+  });
+}
+
+/// Background isolate function: extract archives + validate files
+_ExtractValidateResult _extractAndValidateInBackground(_ExtractValidateParams params) {
+  try {
+    final targetDir = Directory(params.targetDirPath);
+    
+    // Extract archives
+    for (final url in params.urls) {
+      final uri = Uri.parse(url);
+      final downloadedFileName = p.basename(uri.path);
+      final filePath = p.join(targetDir.path, downloadedFileName);
+      final file = File(filePath);
+      
+      if (!file.existsSync()) continue;
+
+      if (downloadedFileName.endsWith('.tar.bz2') || downloadedFileName.endsWith('.tbz2')) {
+        _extractTarBz2Sync(file, targetDir);
+      } else if (downloadedFileName.endsWith('.tar.gz') || downloadedFileName.endsWith('.tgz')) {
+        _extractTarGzSync(file, targetDir);
+      } else if (downloadedFileName.endsWith('.zip')) {
+        _extractZipSync(file, targetDir);
+      }
+    }
+    
+    // Validate files
+    final missingFiles = <String>[];
+    for (final fileName in params.expectedFiles) {
+      var file = File(p.join(targetDir.path, fileName));
+      if (file.existsSync()) continue;
+      
+      if (params.extractPath.isNotEmpty) {
+        file = File(p.join(targetDir.path, params.extractPath, fileName));
+        if (file.existsSync()) continue;
+      }
+      
+      missingFiles.add(fileName);
+    }
+    
+    if (missingFiles.isNotEmpty) {
+      return _ExtractValidateResult(
+        success: false,
+        error: 'Missing files: ${missingFiles.join(', ')}',
+        missingFiles: missingFiles,
+      );
+    }
+    
+    return const _ExtractValidateResult(success: true);
+  } catch (e) {
+    return _ExtractValidateResult(success: false, error: e.toString());
+  }
+}
+
+void _extractTarBz2Sync(File archiveFile, Directory destination) {
+  final bytes = archiveFile.readAsBytesSync();
+  final decompressed = BZip2Decoder().decodeBytes(bytes);
+  final tarArchive = TarDecoder().decodeBytes(decompressed);
+  
+  for (final entry in tarArchive) {
+    final entryPath = p.join(destination.path, entry.name);
+    if (entry.isFile) {
+      final outFile = File(entryPath);
+      if (!outFile.parent.existsSync()) {
+        outFile.parent.createSync(recursive: true);
+      }
+      outFile.writeAsBytesSync(entry.content as List<int>);
+    } else if (entry.isDirectory) {
+      Directory(entryPath).createSync(recursive: true);
+    }
+  }
+}
+
+void _extractTarGzSync(File archiveFile, Directory destination) {
+  final bytes = archiveFile.readAsBytesSync();
+  final decompressed = GZipDecoder().decodeBytes(bytes);
+  final tarArchive = TarDecoder().decodeBytes(decompressed);
+  
+  for (final entry in tarArchive) {
+    final entryPath = p.join(destination.path, entry.name);
+    if (entry.isFile) {
+      final outFile = File(entryPath);
+      if (!outFile.parent.existsSync()) {
+        outFile.parent.createSync(recursive: true);
+      }
+      outFile.writeAsBytesSync(entry.content as List<int>);
+    } else if (entry.isDirectory) {
+      Directory(entryPath).createSync(recursive: true);
+    }
+  }
+}
+
+void _extractZipSync(File archiveFile, Directory destination) {
+  final bytes = archiveFile.readAsBytesSync();
+  final zipArchive = ZipDecoder().decodeBytes(bytes);
+  
+  for (final entry in zipArchive) {
+    final entryPath = p.join(destination.path, entry.name);
+    if (entry.isFile) {
+      final outFile = File(entryPath);
+      if (!outFile.parent.existsSync()) {
+        outFile.parent.createSync(recursive: true);
+      }
+      outFile.writeAsBytesSync(entry.content as List<int>);
+    } else if (entry.isDirectory) {
+      Directory(entryPath).createSync(recursive: true);
+    }
+  }
+}
 
 /// Download progress state
 class DownloadProgress {
@@ -247,7 +385,7 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
             // Progress update (throttled to ~1Hz)
             final now = DateTime.now();
-            final elapsedMs = now.difference(lastProgressTime!).inMilliseconds;
+            final elapsedMs = lastProgressTime != null ? now.difference(lastProgressTime!).inMilliseconds : 500;
             if (elapsedMs >= 500) {
               final speed = (currentTotal - lastProgressBytes) / (elapsedMs / 1000);
               lastProgressTime = now;
@@ -470,8 +608,8 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
         throw Exception('Checksum verification failed');
       }
 
-      // Extract archives if needed
-      if (config.extractPath.isNotEmpty) {
+      // Extract archives + validate in background isolate (prevents ANR)
+      if (config.extractPath.isNotEmpty || config.files.isNotEmpty) {
         _updateProgress(modelId, DownloadProgress(
           modelId: modelId,
           downloadedBytes: totalDownloaded,
@@ -483,12 +621,19 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           filesTotal: config.urls.length,
         ));
 
-        await _extractArchives(targetDir, config);
-      }
+        final params = _ExtractValidateParams(
+          targetDirPath: targetDir.path,
+          urls: config.urls,
+          expectedFiles: config.files,
+          extractPath: config.extractPath,
+          checksums: config.checksums,
+        );
 
-      // Validate required files exist
-      if (!await _validateFiles(targetDir, config)) {
-        throw Exception('Required model files missing after download/extraction');
+        final result = await compute(_extractAndValidateInBackground, params);
+        
+        if (!result.success) {
+          throw Exception(result.error ?? 'Extraction/validation failed');
+        }
       }
 
       // Update database - include all required fields from existing model
@@ -580,109 +725,6 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
       AppLogger.error('Checksum mismatch for ${file.path}: expected $expectedChecksum, got $actual');
       return false;
     }
-    return true;
-  }
-
-  Future<void> _extractArchives(Directory targetDir, ModelDownloadInfo config) async {
-    for (int i = 0; i < config.urls.length; i++) {
-      final url = config.urls[i];
-      // Determine downloaded filename from URL (not config.files which lists extracted contents)
-      final uri = Uri.parse(url);
-      final downloadedFileName = p.basename(uri.path);
-      final filePath = p.join(targetDir.path, downloadedFileName);
-      final file = File(filePath);
-      
-      if (!await file.exists()) continue;
-
-      if (downloadedFileName.endsWith('.tar.bz2') || downloadedFileName.endsWith('.tbz2')) {
-        await _extractTarBz2(file, targetDir);
-      } else if (downloadedFileName.endsWith('.tar.gz') || downloadedFileName.endsWith('.tgz')) {
-        await _extractTarGz(file, targetDir);
-      } else if (downloadedFileName.endsWith('.zip')) {
-        await _extractZip(file, targetDir);
-      }
-    }
-  }
-
-  Future<void> _extractTarBz2(File archiveFile, Directory destination) async {
-    final bytes = await archiveFile.readAsBytes();
-    final decompressed = BZip2Decoder().decodeBytes(bytes);
-    final tarArchive = TarDecoder().decodeBytes(decompressed);
-    
-    for (final entry in tarArchive) {
-      final entryPath = p.join(destination.path, entry.name);
-      if (entry.isFile) {
-        final outFile = File(entryPath);
-        if (!await outFile.parent.exists()) {
-          await outFile.parent.create(recursive: true);
-        }
-        await outFile.writeAsBytes(entry.content as List<int>);
-      } else if (entry.isDirectory) {
-        await Directory(entryPath).create(recursive: true);
-      }
-    }
-  }
-
-  Future<void> _extractTarGz(File archiveFile, Directory destination) async {
-    final bytes = await archiveFile.readAsBytes();
-    final decompressed = GZipDecoder().decodeBytes(bytes);
-    final tarArchive = TarDecoder().decodeBytes(decompressed);
-    
-    for (final entry in tarArchive) {
-      final entryPath = p.join(destination.path, entry.name);
-      if (entry.isFile) {
-        final outFile = File(entryPath);
-        if (!await outFile.parent.exists()) {
-          await outFile.parent.create(recursive: true);
-        }
-        await outFile.writeAsBytes(entry.content as List<int>);
-      } else if (entry.isDirectory) {
-        await Directory(entryPath).create(recursive: true);
-      }
-    }
-  }
-
-  Future<void> _extractZip(File archiveFile, Directory destination) async {
-    final bytes = await archiveFile.readAsBytes();
-    final zipArchive = ZipDecoder().decodeBytes(bytes);
-    
-    for (final entry in zipArchive) {
-      final entryPath = p.join(destination.path, entry.name);
-      if (entry.isFile) {
-        final outFile = File(entryPath);
-        if (!await outFile.parent.exists()) {
-          await outFile.parent.create(recursive: true);
-        }
-        await outFile.writeAsBytes(entry.content as List<int>);
-      } else if (entry.isDirectory) {
-        await Directory(entryPath).create(recursive: true);
-      }
-    }
-  }
-
-  Future<bool> _validateFiles(Directory targetDir, ModelDownloadInfo config) async {
-    AppLogger.info('Validating files in ${targetDir.path} for ${config.files.length} expected files');
-    for (final fileName in config.files) {
-      // Check in root
-      var file = File(p.join(targetDir.path, fileName));
-      if (await file.exists()) {
-        AppLogger.info('Found: $fileName');
-        continue;
-      }
-      
-      // Check in extractPath
-      if (config.extractPath.isNotEmpty) {
-        file = File(p.join(targetDir.path, config.extractPath, fileName));
-        if (await file.exists()) {
-          AppLogger.info('Found in extractPath: $fileName');
-          continue;
-        }
-      }
-      
-      AppLogger.error('Required file not found: $fileName (checked root and extractPath)');
-      return false;
-    }
-    AppLogger.info('All required files validated successfully');
     return true;
   }
 
