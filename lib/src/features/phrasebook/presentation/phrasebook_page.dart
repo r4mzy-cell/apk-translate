@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
+import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
 import 'package:translate_id/src/shared/widgets/formality_toggle.dart';
 import 'package:translate_id/src/shared/widgets/voice_button.dart';
@@ -26,6 +27,8 @@ class _PhrasebookPageState extends ConsumerState<PhrasebookPage>
     PhraseCategory(id: 'shopping', label: 'Belanja', icon: Icons.shopping_bag_outlined, color: Colors.green),
     PhraseCategory(id: 'work', label: 'Kerja', icon: Icons.work_outline, color: Colors.purple),
     PhraseCategory(id: 'slang', label: 'Slang/Gaul', icon: Icons.chat_bubble_outline, color: Colors.pink),
+    PhraseCategory(id: 'favorites', label: 'Favorit', icon: Icons.star, color: Colors.amber),
+    PhraseCategory(id: 'custom', label: 'Kustom', icon: Icons.star_outline, color: Colors.amber),
   ];
 
   @override
@@ -107,6 +110,7 @@ class _PhrasebookPageState extends ConsumerState<PhrasebookPage>
                   category: category,
                   searchQuery: _searchQuery,
                   displayFormality: _displayFormality,
+                  onEdit: _showAddPhraseDialog,
                 );
               }).toList(),
             ),
@@ -121,17 +125,18 @@ class _PhrasebookPageState extends ConsumerState<PhrasebookPage>
     );
   }
 
-  void _showAddPhraseDialog(BuildContext context) {
+  Future<void> _showAddPhraseDialog(BuildContext context, {PhrasebookEntry? existing}) async {
+    final db = ref.read(appDatabaseProvider);
     final theme = Theme.of(context);
-    final sourceController = TextEditingController();
-    final formalController = TextEditingController();
-    final slangController = TextEditingController();
-    String selectedCategory = _categories.first.id;
+    final sourceController = TextEditingController(text: existing?.sourceText ?? '');
+    final formalController = TextEditingController(text: existing?.targetTextFormal ?? '');
+    final slangController = TextEditingController(text: existing?.targetTextSlang ?? '');
+    String selectedCategory = existing?.category ?? _categories.first.id;
 
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tambah Frasa Baru'),
+        title: Text(existing == null ? 'Tambah Frasa Baru' : 'Edit Frasa'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -169,12 +174,35 @@ class _PhrasebookPageState extends ConsumerState<PhrasebookPage>
             child: const Text('Batal'),
           ),
           FilledButton(
-            onPressed: () {
-              // TODO: Save to database
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Frasa ditambahkan')),
-              );
+            onPressed: () async {
+              final source = sourceController.text.trim();
+              final formal = formalController.text.trim();
+              final slang = slangController.text.trim();
+              if (source.isEmpty || formal.isEmpty || slang.isEmpty) return;
+
+              if (existing == null) {
+                await db.addPhrase(
+                  category: selectedCategory,
+                  sourceText: source,
+                  targetTextFormal: formal,
+                  targetTextSlang: slang,
+                  isCustom: true,
+                );
+              } else {
+                await db.updatePhrase(existing.id,
+                  category: selectedCategory,
+                  sourceText: source,
+                  targetTextFormal: formal,
+                  targetTextSlang: slang,
+                );
+              }
+
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(existing == null ? 'Frasa ditambahkan' : 'Frasa diperbarui')),
+                );
+              }
             },
             child: const Text('Simpan'),
           ),
@@ -198,146 +226,149 @@ class PhraseCategory {
   });
 }
 
-class _PhraseListView extends StatelessWidget {
+class _PhraseListView extends ConsumerWidget {
   final PhraseCategory category;
   final String searchQuery;
   final FormalityMode displayFormality;
+  final Function(PhrasebookEntry) onEdit;
 
   const _PhraseListView({
     required this.category,
     required this.searchQuery,
     required this.displayFormality,
+    required this.onEdit,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.watch(appDatabaseProvider);
     final theme = Theme.of(context);
 
-    // Mock data - replace with database query
-    final phrases = _getMockPhrases(category.id);
+    final phrasesAsync = category.id == 'custom'
+        ? db.getAllPhrases(category: null).asStream()
+        : (category.id == 'favorites'
+            ? db.getFavoritePhrases().asStream()
+            : db.getAllPhrases(category: category.id).asStream());
 
-    final filtered = phrases.where((p) =>
-      p.source.toLowerCase().contains(searchQuery.toLowerCase()) ||
-      p.formal.toLowerCase().contains(searchQuery.toLowerCase()) ||
-      p.slang.toLowerCase().contains(searchQuery.toLowerCase())
-    ).toList();
+    return StreamBuilder<List<PhrasebookEntry>>(
+      stream: phrasesAsync,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
 
-    if (filtered.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(category.icon, size: 64, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.3)),
-            const Gap(16),
-            Text(
-              searchQuery.isEmpty ? 'Belum ada frasa di kategori ini' : 'Tidak ditemukan',
-              style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        final phrases = snapshot.data ?? [];
+        final filtered = phrases.where((p) =>
+          p.sourceText.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          p.targetTextFormal.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          p.targetTextSlang.toLowerCase().contains(searchQuery.toLowerCase())
+        ).toList();
+
+        // For custom tab, only show isCustom=true
+        final displayPhrases = category.id == 'custom'
+            ? filtered.where((p) => p.isCustom).toList()
+            : filtered;
+
+        if (displayPhrases.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(category.icon, size: 64, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.3)),
+                const Gap(16),
+                Text(
+                  searchQuery.isEmpty 
+                    ? (category.id == 'custom' ? 'Belum ada frasa kustom' : 'Belum ada frasa di kategori ini')
+                    : 'Tidak ditemukan',
+                  style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-    }
+          );
+        }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: filtered.length,
-      itemBuilder: (context, index) {
-        final phrase = filtered[index];
-        return _PhraseCard(
-          phrase: phrase,
-          displayFormality: displayFormality,
-          categoryColor: category.color,
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          itemCount: displayPhrases.length,
+          itemBuilder: (context, index) {
+            final phrase = displayPhrases[index];
+            return _PhraseCard(
+              phrase: phrase,
+              displayFormality: displayFormality,
+              categoryColor: category.color,
+              onToggleFavorite: () => db.togglePhraseFavorite(phrase.id, !phrase.isFavorite),
+              onEdit: () => onEdit(phrase),
+              onDelete: () => _confirmDelete(context, phrase),
+              onTap: () => _copyToTranslationPage(context, phrase),
+            );
+          },
         );
       },
     );
   }
 
-  List<_MockPhrase> _getMockPhrases(String categoryId) {
-    switch (categoryId) {
-      case 'emergency':
-        return [
-          _MockPhrase('Help!', 'Tolong!', 'Tolong dong!'),
-          _MockPhrase('Call the police!', 'Hubungi polisi!', 'Telpon polisi dong!'),
-          _MockPhrase('I need a doctor', 'Saya butuh dokter', 'Gue butuh dokter nih'),
-          _MockPhrase('Where is the hospital?', 'Di mana rumah sakitnya?', 'Rumah sakitnya di mana sih?'),
-          _MockPhrase('I\'m lost', 'Saya tersesat', 'Gue kesasar nih'),
-        ];
-      case 'transport':
-        return [
-          _MockPhrase('Where is the bus stop?', 'Di mana halte busnya?', 'Haltenya di mana ya?'),
-          _MockPhrase('How much is the fare?', 'Berapa ongkosnya?', 'Ongkosnya berapa sih?'),
-          _MockPhrase('I want to go to...', 'Saya mau ke...', 'Gue mau ke...'),
-          _MockPhrase('Does this go to...?', 'Apakah ini ke...?', 'Ini ke... nggak?'),
-          _MockPhrase('One ticket, please', 'Satu tiket, tolong', 'Satu tiket ya'),
-        ];
-      case 'food':
-        return [
-          _MockPhrase('I\'m hungry', 'Saya lapar', 'Gue lapar nih'),
-          _MockPhrase('What do you recommend?', 'Apa rekomendasinya?', 'Recomend nya apa?'),
-          _MockPhrase('No spicy, please', 'Tidak pedas, tolong', 'Nggak pedes ya'),
-          _MockPhrase('The bill, please', 'Bonnya, tolong', 'Bon ya'),
-          _MockPhrase('Delicious!', 'Enak sekali!', 'Enak banget!'),
-        ];
-      case 'shopping':
-        return [
-          _MockPhrase('How much is this?', 'Ini berapa harganya?', 'Ini berapa ya?'),
-          _MockPhrase('Too expensive', 'Terlalu mahal', 'Mahal banget'),
-          _MockPhrase('Can you lower the price?', 'Bisa ditawar?', 'Bisa nggak ditawar?'),
-          _MockPhrase('I\'ll take it', 'Saya beli ini', 'Gue ambil ini'),
-          _MockPhrase('Do you have...?', 'Apakah ada...?', 'Ada... nggak?'),
-        ];
-      case 'work':
-        return [
-          _MockPhrase('Good morning', 'Selamat pagi', 'Pagi'),
-          _MockPhrase('See you tomorrow', 'Sampai jumpa besok', 'Dah jumpa besok'),
-          _MockPhrase('I\'ll send the file', 'Saya kirim filenya', 'Gue kirim filenya ya'),
-          _MockPhrase('Meeting at 2 PM', 'Rapat jam 2 siang', 'Meeting jam 2'),
-          _MockPhrase('Thank you for your help', 'Terima kasih atas bantuannya', 'Makasih ya bantuannya'),
-        ];
-      case 'slang':
-        return [
-          _MockPhrase('What\'s up?', 'Apa kabar?', 'Gimana kabarnya? / Apa kabar?'),
-          _MockPhrase('No way!', 'Tidak mungkin!', 'Nggak mungkin deh! / Emang nggak bisa!'),
-          _MockPhrase('Are you serious?', 'Apakah kamu serius?', 'Beneran? / Serius?'),
-          _MockPhrase('Whatever', 'Terserah', 'Bebas aja / Terserah lu'),
-          _MockPhrase('No problem', 'Tidak masalah', 'Nggak apa-apa / Enggak masala'),
-        ];
-      default:
-        return [];
+  Future<void> _confirmDelete(BuildContext context, PhrasebookEntry phrase) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hapus Frasa?'),
+        content: Text('Frasa "${phrase.sourceText}" akan dihapus.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true && context.mounted) {
+      await ref.read(appDatabaseProvider).deletePhrase(phrase.id);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Frasa dihapus')));
+      }
     }
+  }
+
+  void _copyToTranslationPage(BuildContext context, PhrasebookEntry phrase) {
+    final text = displayFormality == FormalityMode.formal ? phrase.targetTextFormal : phrase.targetTextSlang;
+    // TODO: Navigate to translation page with pre-filled text
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Disalin: $text')));
   }
 }
 
-class _MockPhrase {
-  final String source;
-  final String formal;
-  final String slang;
-
-  _MockPhrase(this.source, this.formal, this.slang);
-}
-
 class _PhraseCard extends StatelessWidget {
-  final _MockPhrase phrase;
+  final PhrasebookEntry phrase;
   final FormalityMode displayFormality;
   final Color categoryColor;
+  final VoidCallback onToggleFavorite;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onTap;
 
   const _PhraseCard({
     required this.phrase,
     required this.displayFormality,
     required this.categoryColor,
+    required this.onToggleFavorite,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final targetText = displayFormality == FormalityMode.formal ? phrase.formal : phrase.slang;
+    final targetText = displayFormality == FormalityMode.formal ? phrase.targetTextFormal : phrase.targetTextSlang;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
-        onTap: () {
-          // TODO: Copy to translation page
-        },
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -355,11 +386,13 @@ class _PhraseCard extends StatelessWidget {
                     ),
                   ),
                   const Gap(8),
-                  Text(
-                    phrase.source,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: theme.colorScheme.onSurfaceVariant,
+                  Expanded(
+                    child: Text(
+                      phrase.sourceText,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
@@ -388,25 +421,26 @@ class _PhraseCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.star_border_outlined, color: AppTheme.primaryTeal),
-                    onPressed: () {
-                      // TODO: Star
-                    },
-                    tooltip: 'Favorit',
+                    icon: Icon(phrase.isFavorite ? Icons.star : Icons.star_border_outlined, color: AppTheme.primaryTeal),
+                    onPressed: onToggleFavorite,
+                    tooltip: phrase.isFavorite ? 'Hapus favorit' : 'Favorit',
                     style: IconButton.styleFrom(
                       backgroundColor: AppTheme.primaryTeal.withOpacity(0.1),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.content_copy_outlined, color: theme.colorScheme.onSurfaceVariant),
-                    onPressed: () {
-                      // TODO: Copy
-                    },
-                    tooltip: 'Salin',
+                    icon: Icon(Icons.edit_outlined, color: theme.colorScheme.onSurfaceVariant),
+                    onPressed: onEdit,
+                    tooltip: 'Edit',
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete_outline, color: Colors.red),
+                    onPressed: onDelete,
+                    tooltip: 'Hapus',
                   ),
                 ],
               ),
-              if (displayFormality == FormalityMode.formal && phrase.slang != phrase.formal) ...[
+              if (displayFormality == FormalityMode.formal && phrase.targetTextSlang != phrase.targetTextFormal) ...[
                 const Gap(8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -415,7 +449,7 @@ class _PhraseCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    'Tidak formal: ${phrase.slang}',
+                    'Tidak formal: ${phrase.targetTextSlang}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.orange[700],
                       fontStyle: FontStyle.italic,
@@ -430,3 +464,4 @@ class _PhraseCard extends StatelessWidget {
     );
   }
 }
+

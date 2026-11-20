@@ -48,6 +48,9 @@ class PhrasebookEntries extends Table {
   TextColumn get targetLang => text().withLength(min: 2, max: 2)();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   BoolColumn get isCustom => boolean().withDefault(const Constant(false))(); // user added vs built-in
+  BoolColumn get isFavorite => boolean().withDefault(const Constant(false))(); // user starred
+  IntColumn get createdAt => integer()();
+  IntColumn get updatedAt => integer()();
 }
 
 /// Model metadata
@@ -137,7 +140,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -147,7 +150,12 @@ class AppDatabase extends _$AppDatabase {
         await _insertDefaultData();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        // Handle future migrations
+        if (from < 2) {
+          // Add isFavorite, createdAt, updatedAt to phrasebook_entries
+          await m.addColumn(phrasebookEntries, phrasebookEntries.isFavorite);
+          await m.addColumn(phrasebookEntries, phrasebookEntries.createdAt);
+          await m.addColumn(phrasebookEntries, phrasebookEntries.updatedAt);
+        }
       },
     );
   }
@@ -222,4 +230,195 @@ class AppDatabase extends _$AppDatabase {
 
   Future<String> get modelStoragePath => _getStringPreference('model_storage_path', '');
   Future<void> setModelStoragePath(String value) => _setPreference('model_storage_path', value, 'string');
+
+  // ============ PHRASEBOOK HELPERS ============
+  Future<List<PhrasebookEntry>> getAllPhrases({String? category}) async {
+    final query = select(phrasebookEntries)..orderBy([(t) => OrderingTerm.asc(t.sortOrder)]);
+    if (category != null) {
+      query.where((t) => t.category.equals(category));
+    }
+    return query.get();
+  }
+
+  Future<List<PhrasebookEntry>> getFavoritePhrases() async {
+    return (select(phrasebookEntries)..where((t) => t.isFavorite.equals(true))).get();
+  }
+
+  Future<int> addPhrase({
+    required String category,
+    required String sourceText,
+    required String targetTextFormal,
+    required String targetTextSlang,
+    String sourceLang = 'en',
+    String targetLang = 'id',
+    int sortOrder = 0,
+    bool isCustom = true,
+  }) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    return await into(phrasebookEntries).insert(
+      PhrasebookEntriesCompanion.insert(
+        category: category,
+        sourceText: sourceText,
+        targetTextFormal: targetTextFormal,
+        targetTextSlang: targetTextSlang,
+        sourceLang: sourceLang,
+        targetLang: targetLang,
+        sortOrder: Value(sortOrder),
+        isCustom: Value(isCustom),
+        createdAt: Value(now),
+        updatedAt: Value(now),
+      ),
+    );
+  }
+
+  Future<void> updatePhrase(int id, {
+    String? category,
+    String? sourceText,
+    String? targetTextFormal,
+    String? targetTextSlang,
+    bool? isFavorite,
+  }) async {
+    final companion = PhrasebookEntriesCompanion(
+      id: Value(id),
+      category: category != null ? Value(category) : const Value.absent(),
+      sourceText: sourceText != null ? Value(sourceText) : const Value.absent(),
+      targetTextFormal: targetTextFormal != null ? Value(targetTextFormal) : const Value.absent(),
+      targetTextSlang: targetTextSlang != null ? Value(targetTextSlang) : const Value.absent(),
+      isFavorite: isFavorite != null ? Value(isFavorite) : const Value.absent(),
+      updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
+    );
+    await update(phrasebookEntries).replace(companion);
+  }
+
+  Future<void> deletePhrase(int id) async {
+    await (delete(phrasebookEntries)..where((t) => t.id.equals(id))).go();
+  }
+
+  Future<void> togglePhraseFavorite(int id, bool isFavorite) async {
+    await (update(phrasebookEntries)..where((t) => t.id.equals(id)))
+        .write(PhrasebookEntriesCompanion(
+      isFavorite: Value(isFavorite),
+      updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
+    ));
+  }
+
+  Future<void> insertDefaultPhrases() async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final defaultPhrases = [
+      // Emergency
+      ('emergency', 'Help!', 'Tolong!', 'Tolong dong!', 'en', 'id', 0),
+      ('emergency', 'Call the police!', 'Hubungi polisi!', 'Telpon polisi dong!', 'en', 'id', 1),
+      ('emergency', 'I need a doctor', 'Saya butuh dokter', 'Gue butuh dokter nih', 'en', 'id', 2),
+      ('emergency', 'Where is the hospital?', 'Di mana rumah sakitnya?', 'Rumah sakitnya di mana sih?', 'en', 'id', 3),
+      ('emergency', 'I\'m lost', 'Saya tersesat', 'Gue kesasar nih', 'en', 'id', 4),
+      // Transport
+      ('transport', 'Where is the bus stop?', 'Di mana halte busnya?', 'Haltenya di mana ya?', 'en', 'id', 0),
+      ('transport', 'How much is the fare?', 'Berapa ongkosnya?', 'Ongkosnya berapa sih?', 'en', 'id', 1),
+      ('transport', 'I want to go to...', 'Saya mau ke...', 'Gue mau ke...', 'en', 'id', 2),
+      ('transport', 'Does this go to...?', 'Apakah ini ke...?', 'Ini ke... nggak?', 'en', 'id', 3),
+      ('transport', 'One ticket, please', 'Satu tiket, tolong', 'Satu tiket ya', 'en', 'id', 4),
+      // Food
+      ('food', 'I\'m hungry', 'Saya lapar', 'Gue lapar nih', 'en', 'id', 0),
+      ('food', 'What do you recommend?', 'Apa rekomendasinya?', 'Recomend nya apa?', 'en', 'id', 1),
+      ('food', 'No spicy, please', 'Tidak pedas, tolong', 'Nggak pedes ya', 'en', 'id', 2),
+      ('food', 'The bill, please', 'Bonnya, tolong', 'Bon ya', 'en', 'id', 3),
+      ('food', 'Delicious!', 'Enak sekali!', 'Enak banget!', 'en', 'id', 4),
+      // Shopping
+      ('shopping', 'How much is this?', 'Ini berapa harganya?', 'Ini berapa ya?', 'en', 'id', 0),
+      ('shopping', 'Too expensive', 'Terlalu mahal', 'Mahal banget', 'en', 'id', 1),
+      ('shopping', 'Can you lower the price?', 'Bisa ditawar?', 'Bisa nggak ditawar?', 'en', 'id', 2),
+      ('shopping', 'I\'ll take it', 'Saya beli ini', 'Gue ambil ini', 'en', 'id', 3),
+      ('shopping', 'Do you have...?', 'Apakah ada...?', 'Ada... nggak?', 'en', 'id', 4),
+      // Work
+      ('work', 'Good morning', 'Selamat pagi', 'Pagi', 'en', 'id', 0),
+      ('work', 'See you tomorrow', 'Sampai jumpa besok', 'Dah jumpa besok', 'en', 'id', 1),
+      ('work', 'I\'ll send the file', 'Saya kirim filenya', 'Gue kirim filenya ya', 'en', 'id', 2),
+      ('work', 'Meeting at 2 PM', 'Rapat jam 2 siang', 'Meeting jam 2', 'en', 'id', 3),
+      ('work', 'Thank you for your help', 'Terima kasih atas bantuannya', 'Makasih ya bantuannya', 'en', 'id', 4),
+      // Slang
+      ('slang', 'What\'s up?', 'Apa kabar?', 'Gimana kabarnya? / Apa kabar?', 'en', 'id', 0),
+      ('slang', 'No way!', 'Tidak mungkin!', 'Nggak mungkin deh! / Emang nggak bisa!', 'en', 'id', 1),
+      ('slang', 'Are you serious?', 'Apakah kamu serius?', 'Beneran? / Serius?', 'en', 'id', 2),
+      ('slang', 'Whatever', 'Terserah', 'Bebas aja / Terserah lu', 'en', 'id', 3),
+      ('slang', 'No problem', 'Tidak masalah', 'Nggak apa-apa / Enggak masala', 'en', 'id', 4),
+    ];
+
+    for (final p in defaultPhrases) {
+      await into(phrasebookEntries).insertOnConflictUpdate(
+        PhrasebookEntriesCompanion.insert(
+          category: p.$1,
+          sourceText: p.$2,
+          targetTextFormal: p.$3,
+          targetTextSlang: p.$4,
+          sourceLang: p.$5,
+          targetLang: p.$6,
+          sortOrder: Value(p.$7),
+          isCustom: const Value(false),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+      );
+    }
+  }
+
+  // ============ HISTORY HELPERS ============
+  Future<List<HistoryEntry>> getAllHistory() async {
+    return (select(historyEntries)..orderBy([(t) => OrderingTerm.desc(t.timestamp)])).get();
+  }
+
+  Stream<List<HistoryEntry>> watchHistory({HistoryFilter? filter}) {
+    var query = select(historyEntries)..orderBy([(t) => OrderingTerm.desc(t.timestamp)]);
+    if (filter != null && filter != HistoryFilter.all) {
+      query = query.where((t) => t.type.equals(filter.name));
+    }
+    return query.watch();
+  }
+
+  Stream<List<HistoryEntry>> watchStarredHistory() {
+    return (select(historyEntries)
+          ..where((t) => t.isStarred.equals(true))
+          ..orderBy([(t) => OrderingTerm.desc(t.timestamp)]))
+        .watch();
+  }
+
+  HistoryEntry? getHistoryEntry(int id) {
+    return (select(historyEntries)..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
+
+  Future<void> toggleHistoryStar(int id, bool isStarred) async {
+    await (update(historyEntries)..where((t) => t.id.equals(id)))
+        .write(HistoryEntriesCompanion(isStarred: Value(isStarred)));
+  }
+
+  Future<void> deleteHistoryEntry(int id) async {
+    await (delete(historyEntries)..where((t) => t.id.equals(id))).go();
+  }
+
+  Future<void> clearHistoryOlderThan(int millisecondsSinceEpoch) async {
+    await (delete(historyEntries)..where((t) => t.timestamp.isSmallerThanValue(millisecondsSinceEpoch))).go();
+  }
+
+  Future<void> clearAllHistory() async {
+    await delete(historyEntries).go();
+  }
+
+  Future<int> addHistory({
+    required String sourceText,
+    required String targetText,
+    required String sourceLang,
+    required String targetLang,
+    String type = 'text',
+  }) async {
+    return await into(historyEntries).insert(
+      HistoryEntriesCompanion.insert(
+        sourceText: sourceText,
+        targetText: targetText,
+        sourceLang: sourceLang,
+        targetLang: targetLang,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+        type: type,
+        isStarred: const Value(false),
+      ),
+    );
+  }
 }

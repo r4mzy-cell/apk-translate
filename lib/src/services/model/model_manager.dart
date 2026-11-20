@@ -1111,19 +1111,19 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
     
     // Use insertOnConflictUpdate for both new and existing rows - handles nullables correctly
     await _database.into(_database.models).insertOnConflictUpdate(
-      ModelsCompanion.insert(
-        id: model.id,
-        name: model.name,
-        type: model.type.name,
-        language: model.language,
-        version: model.version,
-        sizeBytes: model.sizeBytes,
-        checksum: model.checksum,
-        localPath: localPath,
-        isDownloaded: true,
-        isActive: false,
-        downloadedAt: now,
-        updatedAt: now,
+      ModelsCompanion(
+        id: Value(model.id),
+        name: Value(model.name),
+        type: Value(model.type.name),
+        language: Value(model.language),
+        version: Value(model.version),
+        sizeBytes: Value(model.sizeBytes),
+        checksum: Value(model.checksum),
+        localPath: Value(localPath),
+        isDownloaded: const Value(true),
+        isActive: const Value(false),
+        downloadedAt: Value(now),
+        updatedAt: Value(now),
       ),
     );
   }

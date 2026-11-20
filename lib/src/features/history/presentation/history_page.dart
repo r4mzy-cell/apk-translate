@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
+import 'package:translate_id/src/services/database/app_database.dart';
 
 class HistoryPage extends ConsumerStatefulWidget {
   const HistoryPage({super.key});
@@ -163,22 +164,35 @@ class _HistoryPageState extends ConsumerState<HistoryPage>
   }
 
   void _handleMenuAction(String action) {
+    final db = ref.read(appDatabaseProvider);
     switch (action) {
       case 'export_json':
-        // TODO: Export to JSON
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ekspor JSON...')));
+        _exportHistory(db, 'json');
         break;
       case 'export_csv':
-        // TODO: Export to CSV
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ekspor CSV...')));
+        _exportHistory(db, 'csv');
         break;
       case 'clear_all':
-        _showClearAllDialog();
+        _showClearAllDialog(db);
         break;
     }
   }
 
-  void _showClearAllDialog() {
+  Future<void> _exportHistory(AppDatabase db, String format) async {
+    try {
+      final entries = await db.getAllHistory();
+      if (entries.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Riwayat kosong')));
+        return;
+      }
+      // TODO: Implement actual export
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ekspor $format belum diimplementasikan')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal ekspor: $e')));
+    }
+  }
+
+  void _showClearAllDialog(AppDatabase db) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -187,10 +201,12 @@ class _HistoryPageState extends ConsumerState<HistoryPage>
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
           FilledButton(
-            onPressed: () {
-              // TODO: Clear all history
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Riwayat dihapus')));
+            onPressed: () async {
+              await db.clearAllHistory();
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Semua riwayat dihapus')));
+              }
             },
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Hapus Semua'),
@@ -204,7 +220,6 @@ class _HistoryPageState extends ConsumerState<HistoryPage>
     if (_selectionMode) {
       _toggleSelection(id);
     } else {
-      // TODO: Navigate to detail page
       _showDetailDialog(entry);
     }
   }
@@ -237,24 +252,34 @@ class _HistoryPageState extends ConsumerState<HistoryPage>
   }
 
   void _toggleStarSelected() {
-    // TODO: Toggle star for selected items
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Favorit diperbarui')));
+    final db = ref.read(appDatabaseProvider);
+    for (final id in _selectedIds) {
+      final entry = db.getHistoryEntry(id);
+      if (entry != null) {
+        db.toggleHistoryStar(id, !entry.isStarred);
+      }
+    }
     setState(() {
       _selectionMode = false;
       _selectedIds.clear();
     });
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Favorit diperbarui')));
   }
 
   void _deleteSelected() {
-    // TODO: Delete selected items
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_selectedIds.length} item dihapus')));
+    final db = ref.read(appDatabaseProvider);
+    for (final id in _selectedIds) {
+      db.deleteHistoryEntry(id);
+    }
     setState(() {
       _selectionMode = false;
       _selectedIds.clear();
     });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_selectedIds.length} item dihapus')));
   }
 
   void _showDetailDialog(HistoryEntry entry) {
+    final db = ref.read(appDatabaseProvider);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -278,16 +303,16 @@ class _HistoryPageState extends ConsumerState<HistoryPage>
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Tutup')),
           IconButton(
             icon: Icon(entry.isStarred ? Icons.star : Icons.star_border, color: AppTheme.primaryTeal),
-            onPressed: () {
-              // TODO: Toggle star
-              Navigator.pop(context);
+            onPressed: () async {
+              await db.toggleHistoryStar(entry.id, !entry.isStarred);
+              if (context.mounted) Navigator.pop(context);
             },
           ),
           IconButton(
             icon: Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: () {
-              // TODO: Delete
-              Navigator.pop(context);
+            onPressed: () async {
+              await db.deleteHistoryEntry(entry.id);
+              if (context.mounted) Navigator.pop(context);
             },
           ),
         ],
@@ -311,30 +336,7 @@ extension HistoryFilterExt on HistoryFilter {
   }
 }
 
-// Mock entry for UI
-class HistoryEntry {
-  final int id;
-  final String sourceText;
-  final String targetText;
-  final String sourceLang;
-  final String targetLang;
-  final int timestamp;
-  final String type;
-  final bool isStarred;
-
-  HistoryEntry({
-    required this.id,
-    required this.sourceText,
-    required this.targetText,
-    required this.sourceLang,
-    required this.targetLang,
-    required this.timestamp,
-    required this.type,
-    required this.isStarred,
-  });
-}
-
-class _HistoryListView extends StatelessWidget {
+class _HistoryListView extends ConsumerWidget {
   final HistoryFilter filter;
   final String searchQuery;
   final bool starredOnly;
@@ -356,70 +358,72 @@ class _HistoryListView extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.watch(appDatabaseProvider);
     final theme = Theme.of(context);
-    final entries = _getMockEntries();
 
-    var filtered = entries.where((e) {
-      if (starredOnly && !e.isStarred) return false;
-      if (filter != HistoryFilter.all && e.type != filter.name) return false;
-      if (searchQuery.isNotEmpty) {
-        final q = searchQuery.toLowerCase();
-        if (!e.sourceText.toLowerCase().contains(q) &&
-            !e.targetText.toLowerCase().contains(q)) {
-          return false;
+    final historyStream = starredOnly
+        ? db.watchStarredHistory()
+        : db.watchHistory(filter: filter);
+
+    return StreamBuilder<List<HistoryEntry>>(
+      stream: historyStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
         }
-      }
-      return true;
-    }).toList();
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
 
-    if (filtered.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.history_outlined, size: 64, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.3)),
-            const Gap(16),
-            Text(
-              searchQuery.isEmpty ? 'Riwayat kosong' : 'Tidak ditemukan',
-              style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        var entries = snapshot.data ?? [];
+
+        if (searchQuery.isNotEmpty) {
+          final q = searchQuery.toLowerCase();
+          entries = entries.where((e) =>
+            e.sourceText.toLowerCase().contains(q) ||
+            e.targetText.toLowerCase().contains(q)
+          ).toList();
+        }
+
+        if (entries.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.history_outlined, size: 64, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.3)),
+                const Gap(16),
+                Text(
+                  searchQuery.isEmpty ? 'Riwayat kosong' : 'Tidak ditemukan',
+                  style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-    }
+          );
+        }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: filtered.length,
-      itemBuilder: (context, index) {
-        final entry = filtered[index];
-        final isSelected = selectedIds.contains(entry.id);
-        return _HistoryCard(
-          entry: entry,
-          isSelected: isSelected,
-          selectionMode: selectionMode,
-          onTap: () => onItemTap(entry.id, entry),
-          onLongPress: () => onItemLongPress(entry.id),
-          onSelectionChanged: (selected) {
-            final newSet = Set<int>.from(selectedIds);
-            if (selected) newSet.add(entry.id); else newSet.remove(entry.id);
-            onSelectionChanged(newSet);
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: entries.length,
+          itemBuilder: (context, index) {
+            final entry = entries[index];
+            final isSelected = selectedIds.contains(entry.id);
+            return _HistoryCard(
+              entry: entry,
+              isSelected: isSelected,
+              selectionMode: selectionMode,
+              onTap: () => onItemTap(entry.id, entry),
+              onLongPress: () => onItemLongPress(entry.id),
+              onSelectionChanged: (selected) {
+                final newSet = Set<int>.from(selectedIds);
+                if (selected) newSet.add(entry.id); else newSet.remove(entry.id);
+                onSelectionChanged(newSet);
+              },
+            );
           },
         );
       },
     );
-  }
-
-  List<HistoryEntry> _getMockEntries() {
-    final now = DateTime.now().millisecondsSinceEpoch;
-    return [
-      HistoryEntry(id: 1, sourceText: 'Hello, how are you?', targetText: 'Halo, apa kabar?', sourceLang: 'en', targetLang: 'id', timestamp: now - 1000*60*5, type: 'text', isStarred: true),
-      HistoryEntry(id: 2, sourceText: 'Saya mau makan nasi goreng', targetText: 'I want to eat fried rice', sourceLang: 'id', targetLang: 'en', timestamp: now - 1000*60*30, type: 'voice', isStarred: false),
-      HistoryEntry(id: 3, sourceText: 'Terima kasih banyak', targetText: 'Thank you very much', sourceLang: 'id', targetLang: 'en', timestamp: now - 1000*60*60*2, type: 'text', isStarred: true),
-      HistoryEntry(id: 4, sourceText: 'Where is the bathroom?', targetText: 'Di mana kamar mandinya?', sourceLang: 'en', targetLang: 'id', timestamp: now - 1000*60*60*24, type: 'camera', isStarred: false),
-      HistoryEntry(id: 5, sourceText: 'Good morning everyone', targetText: 'Selamat pagi semuanya', sourceLang: 'en', targetLang: 'id', timestamp: now - 1000*60*60*48, type: 'screen', isStarred: false),
-    ];
   }
 }
 

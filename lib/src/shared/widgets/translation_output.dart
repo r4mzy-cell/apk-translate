@@ -7,6 +7,8 @@ class TranslationOutput extends StatelessWidget {
   final String sourceLang;
   final String targetLang;
   final FormalityMode formality;
+  final String translationResult;
+  final bool isTranslating;
   final VoidCallback onCopy;
   final VoidCallback onSpeak;
   final VoidCallback onStar;
@@ -16,6 +18,8 @@ class TranslationOutput extends StatelessWidget {
     required this.sourceLang,
     required this.targetLang,
     required this.formality,
+    required this.translationResult,
+    required this.isTranslating,
     required this.onCopy,
     required this.onSpeak,
     required this.onStar,
@@ -98,13 +102,29 @@ class TranslationOutput extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Gap(8),
-                    SelectableText(
-                      'Hasil terjemahan akan muncul di sini...',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        height: 1.6,
-                        color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    if (isTranslating)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: CircularProgressIndicator(color: AppTheme.primaryTeal),
+                        ),
+                      )
+                    else if (translationResult.isEmpty)
+                      SelectableText(
+                        'Hasil terjemahan akan muncul di sini...',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          height: 1.6,
+                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                        ),
+                      )
+                    else
+                      SelectableText(
+                        translationResult,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          height: 1.6,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
                     const Gap(16),
                   ],
                 ),

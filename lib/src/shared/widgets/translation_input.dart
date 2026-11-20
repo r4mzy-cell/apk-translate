@@ -7,6 +7,7 @@ class TranslationInput extends StatelessWidget {
   final String sourceLang;
   final VoidCallback onVoiceTap;
   final VoidCallback onCameraTap;
+  final VoidCallback onPasteTap;
   final ValueChanged<String> onTextChanged;
 
   const TranslationInput({
@@ -15,6 +16,7 @@ class TranslationInput extends StatelessWidget {
     required this.sourceLang,
     required this.onVoiceTap,
     required this.onCameraTap,
+    required this.onPasteTap,
     required this.onTextChanged,
   });
 
@@ -119,9 +121,7 @@ class TranslationInput extends StatelessWidget {
                 const Gap(8),
                 IconButton(
                   icon: Icon(Icons.content_paste_outlined, color: theme.colorScheme.onSurfaceVariant),
-                  onPressed: () {
-                    // Paste from clipboard
-                  },
+                  onPressed: onPasteTap,
                   tooltip: 'Tempel dari clipboard',
                 ),
                 const Spacer(),
