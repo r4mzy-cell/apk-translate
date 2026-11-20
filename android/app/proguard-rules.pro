@@ -57,3 +57,6 @@
 # Flutter method channels
 -keep class * implements io.flutter.plugin.common.MethodChannel$MethodCallHandler
 -keep class * implements io.flutter.plugin.common.EventChannel$StreamHandler
+
+# flutter_background_service entry point (background isolate)
+-keep class translate_id.main { *; }
