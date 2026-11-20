@@ -80,7 +80,9 @@
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:exported="false"
-            android:foregroundServiceType="dataSync" />
+            android:foregroundServiceType="dataSync"
+            tools:node="merge"
+            tools:replace="android:exported,android:foregroundServiceType" />
 
         <!-- Accessibility Service for Live Translate -->
         <service
