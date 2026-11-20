@@ -823,6 +823,58 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
     _refresh();
   }
 
+  /// Scan user-provided models directory for pre-placed (sideloaded) models.
+  /// Returns list of model IDs found complete and marked as downloaded.
+  Future<List<String>> scanLocalModels() async {
+    final modelDir = await _getModelDir();
+    final foundIds = <String>[];
+
+    for (final model in ModelRegistry.requiredModels) {
+      final config = ModelDownloadConfig.configs[model.id];
+      if (config == null) continue;
+      final dir = Directory(p.join(modelDir.path, model.id));
+      if (!await dir.exists()) continue;
+      final checkDir = config.extractPath.isNotEmpty
+          ? Directory(p.join(dir.path, config.extractPath))
+          : dir;
+      final allPresent = await Future.wait(
+        config.files.map((f) async => File(p.join(checkDir.path, f)).existsSync()),
+      );
+      if (allPresent.every((ok) => ok)) {
+        foundIds.add(model.id);
+        await _markModelDownloaded(model, dir.path);
+      }
+    }
+
+    if (foundIds.isNotEmpty) _refresh();
+    return foundIds;
+  }
+
+  Future<void> _markModelDownloaded(ModelInfo model, String localPath) async {
+    final rows = await _database.select(_database.models).get();
+    ModelInfoEntity? row;
+    for (final r in rows) {
+      if (r.id == model.id) { row = r; break; }
+    }
+    if (row == null) return;
+    await _database.update(_database.models).replace(
+      ModelsCompanion(
+        id: Value(model.id),
+        name: Value(row.name),
+        type: Value(row.type),
+        language: Value(row.language),
+        version: Value(row.version),
+        sizeBytes: Value(row.sizeBytes),
+        checksum: Value(row.checksum),
+        localPath: Value(localPath),
+        isDownloaded: const Value(true),
+        isActive: Value(row.isActive),
+        downloadedAt: Value(row.downloadedAt),
+        updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
+      ),
+    );
+  }
+
   void _updateProgress(String modelId, DownloadProgress progress) {
     _progressMap[modelId] = progress;
     _progressController.add(progress);

@@ -15,6 +15,21 @@ class ModelManagerPage extends ConsumerStatefulWidget {
 class _ModelManagerPageState extends ConsumerState<ModelManagerPage> {
   String _filter = 'all'; // all, downloaded, not_downloaded
 
+  Future<void> _scanLocalModels() async {
+    final manager = ref.read(modelManagerProvider.notifier);
+    final found = await manager.scanLocalModels();
+    if (!mounted) return;
+    if (found.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ditemukan: ${found.join(', ')}')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tidak ada model lokal yang valid ditemukan')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -43,17 +58,33 @@ class _ModelManagerPageState extends ConsumerState<ModelManagerPage> {
             return true;
           }).toList();
 
-          if (filtered.isEmpty) {
-            return _EmptyState(filter: _filter);
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: filtered.length,
-            itemBuilder: (context, index) {
-              final model = filtered[index];
-              return _ModelCard(model: model);
-            },
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.folder_open),
+                  label: const Text('Pindai Model Lokal'),
+                  onPressed: _scanLocalModels,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppTheme.primaryTeal,
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: filtered.isEmpty
+                    ? _EmptyState(filter: _filter)
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final model = filtered[index];
+                          return _ModelCard(model: model);
+                        },
+                      ),
+              ),
+            ],
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
