@@ -622,8 +622,8 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           'http://clients3.google.com/generate_204',
           options: Options(
             validateStatus: (s) => s != null && s < 500,
-            receiveTimeout: const Duration(seconds: 5).inMilliseconds,
-            sendTimeout: const Duration(seconds: 5).inMilliseconds,
+            receiveTimeout: const Duration(seconds: 5),
+            sendTimeout: const Duration(seconds: 5),
           ),
         );
         if (connectivityResult.statusCode != 204) {
