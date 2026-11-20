@@ -1028,8 +1028,3 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
     });
   }
 }
-
-/// AppDatabase provider
-final appDatabaseProvider = Provider<AppDatabase>((ref) {
-  throw UnimplementedError('AppDatabase provider must be overridden in main.dart');
-});
