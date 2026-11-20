@@ -274,18 +274,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   Future<void> _showStoragePicker(BuildContext context) async {
     try {
-      String? result;
-      try {
-        // Try new API first (file_picker 13.x+)
-        result = await FilePicker.platform.getDirectoryPath(
-          dialogTitle: 'Pilih Folder Model (Download/Sideload)',
-        );
-      } catch (_) {
-        // Fallback to static method
-        result = await FilePicker.getDirectoryPath(
-          dialogTitle: 'Pilih Folder Model (Download/Sideload)',
-        );
-      }
+      // file_picker 13.x+ uses static method
+      final result = await FilePicker.getDirectoryPath(
+        dialogTitle: 'Pilih Folder Model (Download/Sideload)',
+      );
       
       if (result != null && context.mounted) {
         await ref.read(modelStoragePathProvider.notifier).setPath(result);
