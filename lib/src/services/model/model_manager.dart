@@ -988,20 +988,25 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   Future<List<String>> scanLocalModels() async {
     try {
       AppLogger.info('Starting local model scan...');
+      
+      // ALWAYS check external Documents/TranslateID/models first (sideload standard)
+      final externalDir = await _getExternalModelDir();
+      AppLogger.info('External model dir: ${externalDir?.path ?? "null"}');
+      
       final modelDir = await _getModelDir();
-      AppLogger.info('Internal model dir: ${modelDir.path}');
+      AppLogger.info('Internal/configured model dir: ${modelDir.path}');
       
       final hasPerm = await hasExternalStoragePermission();
       AppLogger.info('External storage permission: $hasPerm');
       
-      final externalDir = hasPerm ? await _getExternalModelDir() : null;
+      final scanDirs = <Directory>[];
+      // Add external dir FIRST (priority for sideload)
       if (externalDir != null) {
-        AppLogger.info('External model dir: ${externalDir.path}');
-      }
-      
-      final scanDirs = <Directory>[modelDir];
-      if (externalDir != null && externalDir.path != modelDir.path) {
         scanDirs.add(externalDir);
+      }
+      // Add internal/configured dir if different
+      if (modelDir.path != externalDir?.path) {
+        scanDirs.add(modelDir);
       }
 
       final foundIds = <String>[];
