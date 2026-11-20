@@ -4,6 +4,7 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'dart:io';
+import 'package:translate_id/src/shared/enums/history_filter.dart';
 
 part 'app_database.g.dart';
 
@@ -263,10 +264,10 @@ class AppDatabase extends _$AppDatabase {
         targetTextSlang: targetTextSlang,
         sourceLang: sourceLang,
         targetLang: targetLang,
-        sortOrder: Value(sortOrder),
-        isCustom: Value(isCustom),
-        createdAt: Value(now),
-        updatedAt: Value(now),
+        sortOrder: sortOrder,
+        isCustom: isCustom,
+        createdAt: now,
+        updatedAt: now,
       ),
     );
   }
@@ -352,10 +353,10 @@ class AppDatabase extends _$AppDatabase {
           targetTextSlang: p.$4,
           sourceLang: p.$5,
           targetLang: p.$6,
-          sortOrder: Value(p.$7),
-          isCustom: const Value(false),
-          createdAt: Value(now),
-          updatedAt: Value(now),
+          sortOrder: p.$7,
+          isCustom: false,
+          createdAt: now,
+          updatedAt: now,
         ),
       );
     }
@@ -381,7 +382,7 @@ class AppDatabase extends _$AppDatabase {
         .watch();
   }
 
-  HistoryEntry? getHistoryEntry(int id) {
+  Future<HistoryEntry?> getHistoryEntry(int id) async {
     return (select(historyEntries)..where((t) => t.id.equals(id))).getSingleOrNull();
   }
 

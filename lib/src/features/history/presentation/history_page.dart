@@ -4,6 +4,8 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
+import 'package:translate_id/src/shared/enums/history_filter.dart';
+import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 
 class HistoryPage extends ConsumerStatefulWidget {
   const HistoryPage({super.key});
@@ -318,21 +320,6 @@ class _HistoryPageState extends ConsumerState<HistoryPage>
         ],
       ),
     );
-  }
-}
-
-enum HistoryFilter { all, text, voice, camera, screen, document }
-
-extension HistoryFilterExt on HistoryFilter {
-  String get label {
-    switch (this) {
-      case HistoryFilter.all: return 'Semua';
-      case HistoryFilter.text: return 'Teks';
-      case HistoryFilter.voice: return 'Suara';
-      case HistoryFilter.camera: return 'Kamera';
-      case HistoryFilter.screen: return 'Layar';
-      case HistoryFilter.document: return 'Dokumen';
-    }
   }
 }
 

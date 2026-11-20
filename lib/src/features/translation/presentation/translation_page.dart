@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
-import 'package:translate_id/src/services/translation/translation_engine.dart';
 import 'package:translate_id/src/services/voice/voice_engine.dart';
 import 'package:translate_id/src/services/ocr/ocr_engine.dart';
 import 'package:translate_id/src/shared/widgets/language_selector.dart';
@@ -12,6 +12,7 @@ import 'package:translate_id/src/shared/widgets/translation_input.dart';
 import 'package:translate_id/src/shared/widgets/translation_output.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
 import 'package:translate_id/src/shared/widgets/formality_toggle.dart';
+import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/features/history/presentation/history_page.dart';
 import 'package:translate_id/src/features/camera/presentation/camera_page.dart';
@@ -299,7 +300,7 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
       // Create TTS for target language
       final created = await voiceEngine.createTts(
         _targetLang,
-        speakerId: int.tryParse(ttsVoiceId[_targetLang]?.split('_').last ?? '0') ?? 0,
+        speakerId: ttsVoiceId[_targetLang],
         speed: ttsSpeed,
       );
       

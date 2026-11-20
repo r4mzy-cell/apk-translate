@@ -6,6 +6,7 @@ import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
 import 'package:translate_id/src/shared/widgets/formality_toggle.dart';
 import 'package:translate_id/src/shared/widgets/voice_button.dart';
+import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 
 class PhrasebookPage extends ConsumerStatefulWidget {
   const PhrasebookPage({super.key});
@@ -230,7 +231,7 @@ class _PhraseListView extends ConsumerWidget {
   final PhraseCategory category;
   final String searchQuery;
   final FormalityMode displayFormality;
-  final Function(PhrasebookEntry) onEdit;
+  final void Function(BuildContext, PhrasebookEntry) onEdit;
 
   const _PhraseListView({
     required this.category,
@@ -300,7 +301,7 @@ class _PhraseListView extends ConsumerWidget {
               displayFormality: displayFormality,
               categoryColor: category.color,
               onToggleFavorite: () => db.togglePhraseFavorite(phrase.id, !phrase.isFavorite),
-              onEdit: () => onEdit(phrase),
+              onEdit: () => onEdit(context, phrase),
               onDelete: () => _confirmDelete(context, phrase),
               onTap: () => _copyToTranslationPage(context, phrase),
             );
