@@ -1020,21 +1020,32 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           
           if (!dirExists) continue;
           
-          // Files may live at the model root (post-extract renameMap) or inside extractPath.
+          // Files may live at:
+          // 1. Model root with FINAL names (after renameMap applied)
+          // 2. extractPath subfolder with FINAL names
+          // 3. extractPath subfolder with ORIGINAL names (renameMap keys - raw extraction)
           final allPresent = await Future.wait(
-            config.files.map((f) async {
-              final rootPath = p.join(dir.path, f);
-              final extractPath = config.extractPath.isNotEmpty 
-                  ? p.join(dir.path, config.extractPath, f)
-                  : null;
+            config.files.map((finalName) async {
+              // Check 1: root with final name
+              final rootPath = p.join(dir.path, finalName);
+              if (File(rootPath).existsSync()) return true;
               
-              final rootExists = File(rootPath).existsSync();
-              final extractExists = extractPath != null && File(extractPath).existsSync();
+              // Check 2: extractPath with final name
+              if (config.extractPath.isNotEmpty) {
+                final extractPathFinal = p.join(dir.path, config.extractPath, finalName);
+                if (File(extractPathFinal).existsSync()) return true;
+                
+                // Check 3: extractPath with ORIGINAL name (reverse lookup in renameMap)
+                final originalName = config.renameMap.entries
+                    .firstWhere((e) => e.value == finalName, orElse: () => MapEntry('', ''))
+                    .key;
+                if (originalName.isNotEmpty) {
+                  final extractPathOriginal = p.join(dir.path, config.extractPath, originalName);
+                  if (File(extractPathOriginal).existsSync()) return true;
+                }
+              }
               
-              AppLogger.debug('  File $f: root=$rootExists, extract=$extractExists');
-              
-              if (rootExists) return true;
-              if (extractExists) return true;
+              AppLogger.debug('  File $finalName: NOT FOUND (checked root, extractPath/final, extractPath/original)');
               return false;
             }),
           );
