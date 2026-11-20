@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:translate_id/src/core/di/service_locator.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/features/home/presentation/home_page.dart';
@@ -11,8 +12,46 @@ import 'package:get_it/get_it.dart';
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
+/// Background service entry point — runs in separate isolate
+/// Keeps the process alive (foreground service) while downloads run.
+@pragma('vm:entry-point')
+void backgroundServiceOnStart(ServiceInstance service) {
+  debugPrint('Background download service started');
+  if (service is AndroidServiceInstance) {
+    service.on('setAsForeground').listen((event) {
+      service.setAsForegroundService();
+    });
+    service.on('setAsBackground').listen((event) {
+      service.setAsBackgroundService();
+    });
+  }
+  service.on('stopService').listen((event) {
+    service.stopSelf();
+  });
+}
+
+Future<void> _configureBackgroundService() async {
+  final service = FlutterBackgroundService();
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: backgroundServiceOnStart,
+      autoStart: false,
+      isForegroundMode: true,
+      notificationChannelId: 'translateid_download',
+      initialNotificationTitle: 'Translator ID',
+      initialNotificationContent: 'Mengunduh model...',
+      foregroundServiceNotificationId: 8888,
+      foregroundServiceTypes: [AndroidForegroundType.dataSync],
+    ),
+    iosConfiguration: IosConfiguration(autoStart: false),
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Configure background/foreground service for downloads
+  await _configureBackgroundService();
   
   try {
     await setupServiceLocator();

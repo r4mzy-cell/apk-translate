@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -534,6 +535,13 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
     int totalDownloaded = 0;
 
+    // Start foreground service to keep process alive while download runs
+    final bgService = FlutterBackgroundService();
+    if (!await bgService.isRunning()) {
+      await bgService.startService();
+    }
+    bgService.invoke('setAsForeground');
+
     try {
       // Calculate total size for progress
       int totalExpectedBytes = 0;
@@ -691,6 +699,9 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
       _cancelTokens.remove(modelId);
       rethrow;
+    } finally {
+      // Stop foreground service (allow process to be killed if no other work)
+      bgService.invoke('setAsBackground');
     }
   }
 
