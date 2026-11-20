@@ -1107,50 +1107,25 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   }
 
   Future<void> _markModelDownloaded(ModelInfo model, String localPath) async {
-    // Check if row exists in DB
-    final existingRow = await (_database.select(_database.models)
-          ..where((m) => m.id.equals(model.id)))
-        .getSingleOrNull();
-    
     final now = DateTime.now().millisecondsSinceEpoch;
     
-    if (existingRow != null) {
-      // Update existing row
-      await _database.update(_database.models).replace(
-        ModelsCompanion(
-          id: Value(model.id),
-          name: Value(existingRow.name),
-          type: Value(existingRow.type),
-          language: Value(existingRow.language),
-          version: Value(existingRow.version),
-          sizeBytes: Value(existingRow.sizeBytes),
-          checksum: Value(existingRow.checksum),
-          localPath: Value(localPath),
-          isDownloaded: const Value(true),
-          isActive: Value(existingRow.isActive),
-          downloadedAt: Value(existingRow.downloadedAt),
-          updatedAt: Value(now),
-        ),
-      );
-    } else {
-      // Insert new row for sideloaded model
-      await _database.into(_database.models).insertOnConflictUpdate(
-        ModelsCompanion(
-          id: Value(model.id),
-          name: Value(model.name),
-          type: Value(model.type.name),
-          language: Value(model.language),
-          version: Value(model.version),
-          sizeBytes: Value(model.sizeBytes),
-          checksum: Value(model.checksum),
-          localPath: Value(localPath),
-          isDownloaded: const Value(true),
-          isActive: const Value(false),
-          downloadedAt: Value(now),
-          updatedAt: Value(now),
-        ),
-      );
-    }
+    // Use insertOnConflictUpdate for both new and existing rows - handles nullables correctly
+    await _database.into(_database.models).insertOnConflictUpdate(
+      ModelsCompanion.insert(
+        id: model.id,
+        name: model.name,
+        type: model.type.name,
+        language: model.language,
+        version: model.version,
+        sizeBytes: model.sizeBytes,
+        checksum: model.checksum,
+        localPath: localPath,
+        isDownloaded: true,
+        isActive: false,
+        downloadedAt: now,
+        updatedAt: now,
+      ),
+    );
   }
 
   void _updateProgress(String modelId, DownloadProgress progress) {
