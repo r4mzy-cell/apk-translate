@@ -11,8 +11,6 @@ class PermissionService {
     Permission.manageExternalStorage,
     Permission.microphone,
     Permission.camera,
-    Permission.foregroundService,
-    Permission.foregroundServiceDataSync,
   ];
 
   /// Request all required permissions on first launch
