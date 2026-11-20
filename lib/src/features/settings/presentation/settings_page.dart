@@ -273,29 +273,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   Future<void> _showStoragePicker(BuildContext context) async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final result = await showDialog<String>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Pilih Lokasi Model'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.phone_android),
-                title: const Text('Internal Storage'),
-                subtitle: Text('${dir.path}/models'),
-                onTap: () => Navigator.pop(ctx, dir.path),
-              ),
-              ListTile(
-                leading: const Icon(Icons.sd_card),
-                title: const Text('Documents/TranslateID'),
-                subtitle: const Text('/storage/emulated/0/Documents/TranslateID/models'),
-                onTap: () => Navigator.pop(ctx, '/storage/emulated/0/Documents/TranslateID/models'),
-              ),
-            ],
-          ),
-        ),
+      final result = await FilePicker.platform.getDirectoryPath(
+        dialogTitle: 'Pilih Folder Model (Download/Sideload)',
       );
       if (result != null && context.mounted) {
         await ref.read(modelStoragePathProvider.notifier).setPath(result);

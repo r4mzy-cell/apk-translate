@@ -406,7 +406,12 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
         token.cancel();
       }
     });
-    return _loadModelsFromDb();
+    try {
+      return await _loadModelsFromDb();
+    } catch (e, stack) {
+      AppLogger.error('ModelManager build failed, returning empty list', e, stack);
+      return [];
+    }
   }
 
   /// Stream download directly to disk using dio.download — preserves partial bytes, enables true resume
@@ -762,8 +767,17 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
         _ExtractValidateResult result;
         try {
           AppLogger.info('Starting background extraction for $modelId');
-          result = await compute(_extractAndValidateInBackground, params);
+          result = await compute(_extractAndValidateInBackground, params).timeout(
+            const Duration(minutes: 10),
+            onTimeout: () {
+              AppLogger.error('Background extraction timeout for $modelId');
+              return _ExtractValidateResult(success: false, error: 'Extraction timeout');
+            },
+          );
           AppLogger.info('Background extraction completed for $modelId: success=${result.success}');
+        } on TimeoutException catch (e) {
+          AppLogger.error('Background extraction timeout for $modelId', e);
+          throw Exception('Extraction timeout: $e');
         } catch (e, stack) {
           AppLogger.error('Background extraction failed for $modelId', e, stack);
           throw Exception('Extraction failed: $e');

@@ -21,13 +21,23 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   }
 
   Future<void> _load() async {
-    final dark = await _db.isDarkMode;
-    state = dark ? ThemeMode.dark : ThemeMode.light;
+    final themeStr = await _db.getThemeMode();
+    switch (themeStr) {
+      case 'dark':
+        state = ThemeMode.dark;
+        break;
+      case 'light':
+        state = ThemeMode.light;
+        break;
+      case 'system':
+      default:
+        state = ThemeMode.system;
+    }
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
     state = mode;
-    await _db.setDarkMode(mode == ThemeMode.dark);
+    await _db.setThemeMode(mode.name);
   }
 }
 

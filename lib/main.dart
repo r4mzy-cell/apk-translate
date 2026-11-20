@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:translate_id/src/core/di/service_locator.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/features/home/presentation/home_page.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
+import 'package:translate_id/src/services/permissions/permission_service.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
 import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 import 'package:get_it/get_it.dart';
@@ -46,11 +48,23 @@ Future<void> _configureBackgroundService() async {
   );
 }
 
+Future<void> _requestPermissionsOnFirstLaunch() async {
+  final prefs = await SharedPreferences.getInstance();
+  final hasRequested = prefs.getBool('permissions_requested') ?? false;
+  if (!hasRequested) {
+    await PermissionService().requestAllPermissions();
+    await prefs.setBool('permissions_requested', true);
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Configure background/foreground service for downloads
   await _configureBackgroundService();
+  
+  // Request permissions on first launch
+  await _requestPermissionsOnFirstLaunch();
   
   try {
     await setupServiceLocator();

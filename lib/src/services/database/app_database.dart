@@ -187,7 +187,13 @@ class AppDatabase extends _$AppDatabase {
   }
 
   // Convenience getters for common preferences
+  Future<String> getThemeMode() => _getStringPreference('theme_mode', 'system');
+  Future<void> setThemeMode(String value) => _setPreference('theme_mode', value, 'string');
+
+  // Deprecated: kept for migration
+  @Deprecated('Use getThemeMode/setThemeMode')
   Future<bool> get isDarkMode => _getBoolPreference('theme_dark', false);
+  @Deprecated('Use getThemeMode/setThemeMode')
   Future<void> setDarkMode(bool value) => _setPreference('theme_dark', value.toString(), 'bool');
 
   Future<String> get defaultFormality => _getStringPreference('formality', 'formal');
