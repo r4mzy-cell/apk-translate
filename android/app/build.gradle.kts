@@ -22,10 +22,21 @@ android {
         versionName = flutter.versionName
     }
 
+    // Release keystore — create once: 
+    // keytool -genkeypair -v -keystore android/app/release.keystore -alias release -keyalg RSA -keysize 2048 -validity 10000
+    // Then set RELEASE_STORE_PASSWORD, RELEASE_KEY_PASSWORD in ~/.gradle/gradle.properties or CI secrets
+    signingConfigs {
+        create("release") {
+            storeFile = file("release.keystore")
+            storePassword = System.getenv("RELEASE_STORE_PASSWORD") ?: project.findProperty("RELEASE_STORE_PASSWORD") as String? ?: ""
+            keyAlias = "release"
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: project.findProperty("RELEASE_KEY_PASSWORD") as String? ?: ""
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = false
             proguardFiles(
