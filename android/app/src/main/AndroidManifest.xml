@@ -75,6 +75,12 @@
             android:name=".services.OverlayService"
             android:exported="false" />
 
+        <!-- Background download service (flutter_background_service) -->
+        <service
+            android:name="id.flutter.flutter_background_service.BackgroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
         <!-- Accessibility Service for Live Translate -->
         <service
             android:name=".services.TranslationAccessibilityService"
