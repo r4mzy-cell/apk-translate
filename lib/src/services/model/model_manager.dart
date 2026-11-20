@@ -13,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/models/model_info.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
+import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 
 /// MethodChannel for model-related native operations
 const _modelChannel = MethodChannel('com.translateid/native');
