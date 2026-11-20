@@ -20,6 +20,7 @@ class _ExtractValidateParams {
   final List<String> expectedFiles;
   final String extractPath;
   final Map<String, String> checksums;
+  final Map<String, String> renameMap;
 
   const _ExtractValidateParams({
     required this.targetDirPath,
@@ -27,6 +28,7 @@ class _ExtractValidateParams {
     required this.expectedFiles,
     required this.extractPath,
     required this.checksums,
+    this.renameMap = const {},
   });
 }
 
@@ -63,8 +65,14 @@ _ExtractValidateResult _extractAndValidateInBackground(_ExtractValidateParams pa
         _extractTarGzSync(file, targetDir);
       } else if (downloadedFileName.endsWith('.zip')) {
         _extractZipSync(file, targetDir);
+      } else {
+        // Raw file (e.g., silero_vad.onnx) - copy to expected name
+        _copyRawFile(file, targetDir, params.renameMap);
       }
     }
+    
+    // Apply post-extract renames
+    _applyRenameMap(targetDir, params.renameMap);
     
     // Validate files
     final missingFiles = <String>[];
@@ -91,6 +99,43 @@ _ExtractValidateResult _extractAndValidateInBackground(_ExtractValidateParams pa
     return const _ExtractValidateResult(success: true);
   } catch (e) {
     return _ExtractValidateResult(success: false, error: e.toString());
+  }
+}
+
+void _copyRawFile(File src, Directory targetDir, Map<String, String> renameMap) {
+  // For raw files, determine target name from renameMap or use original
+  final srcName = p.basename(src.path);
+  final targetName = renameMap[srcName] ?? srcName;
+  final destFile = File(p.join(targetDir.path, targetName));
+  if (!destFile.parent.existsSync()) {
+    destFile.parent.createSync(recursive: true);
+  }
+  src.copySync(destFile.path);
+}
+
+void _applyRenameMap(Directory targetDir, Map<String, String> renameMap) {
+  for (final entry in renameMap.entries) {
+    final srcName = entry.key;
+    final destName = entry.value;
+    
+    // Recursive search for file with matching basename
+    File? srcFile;
+    targetDir.listSync(recursive: true, followLinks: false).forEach((entity) {
+      if (entity is File && p.basename(entity.path) == srcName) {
+        srcFile = entity;
+      }
+    });
+    
+    if (srcFile != null) {
+      final destFile = File(p.join(targetDir.path, destName));
+      if (!destFile.parent.existsSync()) {
+        destFile.parent.createSync(recursive: true);
+      }
+      if (destFile.existsSync()) {
+        destFile.deleteSync();
+      }
+      srcFile.renameSync(destFile.path);
+    }
   }
 }
 
@@ -205,22 +250,22 @@ class ModelDownloadConfig {
   static const Map<String, ModelDownloadInfo> configs = {
     'sherpa-stt-id': ModelDownloadInfo(
       urls: [
-        'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer2-id-2024-04-07.tar.bz2',
+        'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2',
       ],
-      extractPath: 'sherpa-onnx-streaming-zipformer2-id-2024-04-07',
+      extractPath: 'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18',
       files: ['model.onnx', 'tokens.txt', 'config.json'],
       checksums: {
-        'sherpa-onnx-streaming-zipformer2-id-2024-04-07.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // placeholder
+        'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // placeholder
       },
     ),
     'sherpa-stt-en': ModelDownloadInfo(
       urls: [
-        'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-en-2024-02-17.tar.bz2',
+        'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2',
       ],
-      extractPath: 'sherpa-onnx-streaming-zipformer-en-2024-02-17',
+      extractPath: 'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18',
       files: ['model.onnx', 'tokens.txt', 'config.json'],
       checksums: {
-        'sherpa-onnx-streaming-zipformer-en-2024-02-17.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // placeholder
+        'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
       },
     ),
     'sherpa-tts-id': ModelDownloadInfo(
@@ -230,7 +275,12 @@ class ModelDownloadConfig {
       extractPath: 'vits-piper-id_ID-news_tts-medium',
       files: ['model.onnx', 'tokens.txt', 'config.json', 'espeak-ng-data'],
       checksums: {
-        'vits-piper-id_ID-news_tts-medium.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // placeholder
+        'vits-piper-id_ID-news_tts-medium.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      },
+      renameMap: {
+        'id_ID-news_tts-medium.onnx': 'model.onnx',
+        'id_ID-news_tts-medium.onnx.json': 'config.json',
+        'id_ID-news_tts-medium.tokens.txt': 'tokens.txt',
       },
     ),
     'sherpa-tts-en': ModelDownloadInfo(
@@ -240,7 +290,12 @@ class ModelDownloadConfig {
       extractPath: 'vits-piper-en_US-lessac-medium',
       files: ['model.onnx', 'tokens.txt', 'config.json', 'espeak-ng-data'],
       checksums: {
-        'vits-piper-en_US-lessac-medium.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // placeholder
+        'vits-piper-en_US-lessac-medium.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      },
+      renameMap: {
+        'en_US-lessac-medium.onnx': 'model.onnx',
+        'en_US-lessac-medium.onnx.json': 'config.json',
+        'en_US-lessac-medium.tokens.txt': 'tokens.txt',
       },
     ),
     'sherpa-vad-langid': ModelDownloadInfo(
@@ -251,8 +306,13 @@ class ModelDownloadConfig {
       extractPath: '',
       files: ['silero_vad.onnx', 'sherpa-onnx-whisper-tiny/encoder.onnx', 'sherpa-onnx-whisper-tiny/decoder.onnx', 'sherpa-onnx-whisper-tiny/tokens.txt'],
       checksums: {
-        'silero_vad.onnx': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // placeholder
-        'sherpa-onnx-whisper-tiny.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // placeholder
+        'silero_vad.onnx': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        'sherpa-onnx-whisper-tiny.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      },
+      renameMap: {
+        'tiny-encoder.onnx': 'sherpa-onnx-whisper-tiny/encoder.onnx',
+        'tiny-decoder.int8.onnx': 'sherpa-onnx-whisper-tiny/decoder.onnx',
+        'tiny.tokens.txt': 'sherpa-onnx-whisper-tiny/tokens.txt',
       },
     ),
     'ctranslate-en-id': ModelDownloadInfo(
@@ -295,12 +355,15 @@ class ModelDownloadInfo {
   final String extractPath;
   final List<String> files;
   final Map<String, String> checksums;
+  /// Optional: map of extracted filename -> expected final filename (for post-extract renames)
+  final Map<String, String> renameMap;
 
   const ModelDownloadInfo({
     required this.urls,
     required this.extractPath,
     required this.files,
     this.checksums = const {},
+    this.renameMap = const {},
   });
 }
 
@@ -639,6 +702,7 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           expectedFiles: config.files,
           extractPath: config.extractPath,
           checksums: config.checksums,
+          renameMap: config.renameMap,
         );
 
         final result = await compute(_extractAndValidateInBackground, params);
