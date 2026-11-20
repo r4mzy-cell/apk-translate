@@ -134,7 +134,7 @@ void _applyRenameMap(Directory targetDir, Map<String, String> renameMap) {
       if (destFile.existsSync()) {
         destFile.deleteSync();
       }
-      srcFile.renameSync(destFile.path);
+      srcFile!.renameSync(destFile.path);
     }
   }
 }
