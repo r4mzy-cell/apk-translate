@@ -231,7 +231,7 @@ class _PhraseListView extends ConsumerWidget {
   final PhraseCategory category;
   final String searchQuery;
   final FormalityMode displayFormality;
-  final void Function(BuildContext, PhrasebookEntry) onEdit;
+  final void Function(BuildContext, {PhrasebookEntry? existing}) onEdit;
 
   const _PhraseListView({
     required this.category,
@@ -301,7 +301,7 @@ class _PhraseListView extends ConsumerWidget {
               displayFormality: displayFormality,
               categoryColor: category.color,
               onToggleFavorite: () => db.togglePhraseFavorite(phrase.id, !phrase.isFavorite),
-              onEdit: () => onEdit(context, phrase),
+              onEdit: () => onEdit(context, existing: phrase),
               onDelete: () => _confirmDelete(context, phrase),
               onTap: () => _copyToTranslationPage(context, phrase),
             );
