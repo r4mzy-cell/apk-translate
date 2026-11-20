@@ -988,16 +988,20 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   Future<List<String>> scanLocalModels() async {
     try {
       AppLogger.info('Starting local model scan...');
+      print('[SCAN] Starting local model scan...');
       
       // ALWAYS check external Documents/TranslateID/models first (sideload standard)
       final externalDir = await _getExternalModelDir();
       AppLogger.info('External model dir: ${externalDir?.path ?? "null"}');
+      print('[SCAN] External model dir: ${externalDir?.path ?? "null"}');
       
       final modelDir = await _getModelDir();
       AppLogger.info('Internal/configured model dir: ${modelDir.path}');
+      print('[SCAN] Internal/configured model dir: ${modelDir.path}');
       
       final hasPerm = await hasExternalStoragePermission();
       AppLogger.info('External storage permission: $hasPerm');
+      print('[SCAN] External storage permission: $hasPerm');
       
       final scanDirs = <Directory>[];
       // Add external dir FIRST (priority for sideload)
@@ -1022,6 +1026,7 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           final dir = Directory(p.join(baseDir.path, model.id));
           final dirExists = await dir.exists();
           AppLogger.debug('Checking ${model.id} in ${dir.path} - exists: $dirExists');
+          print('[SCAN] Checking ${model.id} in ${dir.path} - exists: $dirExists');
           
           if (!dirExists) continue;
           
@@ -1033,12 +1038,20 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
             config.files.map((finalName) async {
               // Check 1: root with final name
               final rootPath = p.join(dir.path, finalName);
-              if (File(rootPath).existsSync()) return true;
+              final rootExists = File(rootPath).existsSync();
+              if (rootExists) {
+                print('[SCAN]   $finalName: FOUND at root');
+                return true;
+              }
               
               // Check 2: extractPath with final name
               if (config.extractPath.isNotEmpty) {
                 final extractPathFinal = p.join(dir.path, config.extractPath, finalName);
-                if (File(extractPathFinal).existsSync()) return true;
+                final extractFinalExists = File(extractPathFinal).existsSync();
+                if (extractFinalExists) {
+                  print('[SCAN]   $finalName: FOUND at extractPath/final');
+                  return true;
+                }
                 
                 // Check 3: extractPath with ORIGINAL name (reverse lookup in renameMap)
                 final originalName = config.renameMap.entries
@@ -1046,8 +1059,17 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
                     .key;
                 if (originalName.isNotEmpty) {
                   final extractPathOriginal = p.join(dir.path, config.extractPath, originalName);
-                  if (File(extractPathOriginal).existsSync()) return true;
+                  final extractOriginalExists = File(extractPathOriginal).existsSync();
+                  if (extractOriginalExists) {
+                    print('[SCAN]   $finalName: FOUND at extractPath/original ($originalName)');
+                    return true;
+                  }
+                  print('[SCAN]   $finalName: NOT FOUND (original=$originalName)');
+                } else {
+                  print('[SCAN]   $finalName: NOT FOUND (no renameMap entry)');
                 }
+              } else {
+                print('[SCAN]   $finalName: NOT FOUND (no extractPath)');
               }
               
               AppLogger.debug('  File $finalName: NOT FOUND (checked root, extractPath/final, extractPath/original)');
@@ -1056,11 +1078,13 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           );
           
           AppLogger.debug('  allPresent: $allPresent');
+          print('[SCAN]   allPresent: $allPresent');
           
           if (allPresent.every((ok) => ok)) {
             foundIds.add(model.id);
             await _markModelDownloaded(model, dir.path);
             AppLogger.info('Found complete model: ${model.id} at ${dir.path}');
+            print('[SCAN] Found complete model: ${model.id} at ${dir.path}');
             break; // Found in one dir, no need to check others
           }
         }
@@ -1068,13 +1092,16 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
       if (foundIds.isNotEmpty) {
         AppLogger.info('Scan complete. Found models: $foundIds');
+        print('[SCAN] Scan complete. Found models: $foundIds');
         _refresh();
       } else {
         AppLogger.info('Scan complete. No complete models found.');
+        print('[SCAN] Scan complete. No complete models found.');
       }
       return foundIds;
     } catch (e, stack) {
       AppLogger.error('scanLocalModels failed', e, stack);
+      print('[SCAN] ERROR: $e\n$stack');
       return [];
     }
   }

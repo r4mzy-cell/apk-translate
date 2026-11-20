@@ -317,7 +317,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Future<void> _viewLogs(BuildContext context) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
-      final logDir = Directory('${dir.path}/app_flutter/logs');
+      // AppLogger writes to /logs, not /app_flutter/logs
+      final logDir = Directory('${dir.path}/logs');
       if (!await logDir.exists()) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Folder log tidak ditemukan')));
