@@ -185,52 +185,9 @@ class TranslationEngine {
     return indonesianCount > words.length * 0.15 ? 'id' : 'en';
   }
 
+  /// Slang is applied to the translated output only. Rewriting the source would
+  /// feed the MT model non-standard text, which lowers translation quality.
   String _applyFormalityPreprocess(String text, String lang, FormalityMode mode) {
-    if (mode == FormalityMode.formal) return text;
-
-    // For slang mode: convert formal Indonesian to informal
-    if (lang == 'id' && mode == FormalityMode.slang) {
-      String result = text;
-      final replacements = {
-        'saya': 'gue',
-        'anda': 'lu',
-        'kamu': 'lu',
-        'tidak': 'nggak',
-        'bukan': 'bukan',
-        'apakah': 'apa',
-        'apa': 'apaan',
-        'bagaimana': 'gimana',
-        'mengapa': 'kenapa',
-        'dimana': 'dimana',
-        'kapan': 'kapan',
-        'siapa': 'siapa',
-        'apa saja': 'apaan aja',
-        'terima kasih': 'makasih',
-        'mohon maaf': 'maap',
-        'permisi': 'permisi',
-        'tolong': 'tolong',
-        'silakan': 'silakan',
-        'mari': 'yuk',
-        'ayo': 'yuk',
-        'sudah': 'udah',
-        'belum': 'belum',
-        'sedang': 'lagi',
-        'akan': 'bakal',
-        'mau': 'mau',
-        'ingin': 'mau',
-        'perlu': 'perlu',
-        'harus': 'harus',
-        'bisa': 'bisa',
-        'boleh': 'boleh',
-      };
-      for (final entry in replacements.entries) {
-        result = result.replaceAll(RegExp(r'\b${entry.key}\b', caseSensitive: false), entry.value);
-      }
-      // Suffix particles
-      result = result.replaceAllMapped(RegExp(r'\b(\w+)kan\b'), (m) => '${m.group(1)}in');
-      result = result.replaceAllMapped(RegExp(r'\b(\w+)i\b'), (m) => '${m.group(1)}in');
-      return result;
-    }
     return text;
   }
 
@@ -270,6 +227,93 @@ class TranslationEngine {
       // Add casual particles randomly
       if (result.endsWith('.')) {
         final particles = [' deh', ' dong', ' sih', ' ya', ' lah', ' kok'];
+        result = result.substring(0, result.length - 1) + particles[DateTime.now().millisecond % particles.length] + '.';
+      }
+      return result;
+    }
+
+    // For slang mode: convert formal English to informal
+    if (lang == 'en' && mode == FormalityMode.slang) {
+      String result = text;
+      final replacements = {
+        'you': 'u',
+        'what': 'wut',
+        'going to': 'gonna',
+        'want to': 'wanna',
+        'have to': 'hafta',
+        'got to': 'gotta',
+        'let me': 'lemme',
+        'give me': 'gimme',
+        'i am': 'im',
+        'i will': 'ill',
+        'do not': 'dont',
+        'cannot': 'cant',
+        'what is': 'whats',
+        'it is': 'its',
+        'that is': 'thats',
+        'there is': 'theres',
+        'how is': 'hows',
+        'where is': 'wheres',
+        'who is': 'whos',
+        'when is': 'whens',
+        'why is': 'whys',
+        'because': 'cuz',
+        'about': 'bout',
+        'probably': 'prolly',
+        'something': 'somethin',
+        'nothing': 'nothin',
+        'anything': 'anythin',
+        'everything': 'everythin',
+        'yes': 'yeah',
+        'no': 'nah',
+        'maybe': 'mayb',
+        'sure': 'shure',
+        'really': 'rly',
+        'very': 'v',
+        'so': 's0',
+        'too': '2',
+        'also': 'als0',
+        'but': 'bt',
+        'and': 'n',
+        'or': 'r',
+        'please': 'pls',
+        'thanks': 'thx',
+        'thank you': 'thx',
+        'okay': 'ok',
+        'oh my god': 'omg',
+        'oh my gosh': 'omg',
+        'by the way': 'btw',
+        'for your information': 'fyi',
+        'in my opinion': 'imo',
+        'to be honest': 'tbh',
+        'i don\'t know': 'idk',
+        'i don\'t care': 'idc',
+        'i guess': 'iguess',
+        'i think': 'ithink',
+        'i know': 'iknow',
+        'i see': 'isee',
+        'let\'s': 'lets',
+        'what\'s': 'whats',
+        'that\'s': 'thats',
+        'it\'s': 'its',
+        'there\'s': 'theres',
+        'here\'s': 'heres',
+        'how\'s': 'hows',
+        'where\'s': 'wheres',
+        'who\'s': 'whos',
+        'when\'s': 'whens',
+        'why\'s': 'whys',
+      };
+      // Longer phrases first to avoid partial replacements
+      final sortedKeys = replacements.keys.toList()..sort((a, b) => b.length.compareTo(a.length));
+      for (final key in sortedKeys) {
+        result = result.replaceAllMapped(RegExp(r'\b${RegExp.escape(key)}\b', caseSensitive: false), (m) => replacements[key]!);
+      }
+      // -ing -> -in suffix
+      result = result.replaceAllMapped(RegExp(r'\b(\w+)ing\b'), (m) => '${m.group(1)}in');
+      // Add casual particles randomly
+      if (result.endsWith('.')) {
+        final particles = [' lol', ' tbh', ' ngl', ' fr', ' smh', ' no cap', ' btw', ' imo', ' fyi'];
         result = result.substring(0, result.length - 1) + particles[DateTime.now().millisecond % particles.length] + '.';
       }
       return result;
