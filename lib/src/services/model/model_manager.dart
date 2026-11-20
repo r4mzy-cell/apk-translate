@@ -759,7 +759,15 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
           renameMap: config.renameMap,
         );
 
-        final result = await compute(_extractAndValidateInBackground, params);
+        _ExtractValidateResult result;
+        try {
+          AppLogger.info('Starting background extraction for $modelId');
+          result = await compute(_extractAndValidateInBackground, params);
+          AppLogger.info('Background extraction completed for $modelId: success=${result.success}');
+        } catch (e, stack) {
+          AppLogger.error('Background extraction failed for $modelId', e, stack);
+          throw Exception('Extraction failed: $e');
+        }
         
         if (!result.success) {
           throw Exception(result.error ?? 'Extraction/validation failed');
@@ -799,8 +807,8 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
       _cancelTokens.remove(modelId);
       _refresh();
-    } catch (e) {
-      AppLogger.error('Download failed for $modelId', e);
+    } catch (e, stack) {
+      AppLogger.error('Download failed for $modelId', e, stack);
       // Preserve partial downloads for resume — only clean up on explicit cancel
       if (e.toString() == 'Cancelled' && await targetDir.exists()) {
         await targetDir.delete(recursive: true);
