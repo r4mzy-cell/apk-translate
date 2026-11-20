@@ -264,10 +264,10 @@ class AppDatabase extends _$AppDatabase {
         targetTextSlang: targetTextSlang,
         sourceLang: sourceLang,
         targetLang: targetLang,
-        sortOrder: sortOrder,
-        isCustom: isCustom,
-        createdAt: now,
-        updatedAt: now,
+        sortOrder: Value(sortOrder),
+        isCustom: Value(isCustom),
+        createdAt: Value(now),
+        updatedAt: Value(now),
       ),
     );
   }
@@ -353,10 +353,10 @@ class AppDatabase extends _$AppDatabase {
           targetTextSlang: p.$4,
           sourceLang: p.$5,
           targetLang: p.$6,
-          sortOrder: p.$7,
-          isCustom: false,
-          createdAt: now,
-          updatedAt: now,
+          sortOrder: Value(p.$7),
+          isCustom: const Value(false),
+          createdAt: Value(now),
+          updatedAt: Value(now),
         ),
       );
     }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
+import 'package:translate_id/src/shared/enums/formality_mode.dart';
 
 /// Translation result
 class TranslationResult {
@@ -29,9 +30,6 @@ class TranslationResult {
     );
   }
 }
-
-/// Translation formality mode
-enum FormalityMode { formal, slang }
 
 /// Translation engine using ONNX Runtime + Opus-MT via MethodChannel
 class TranslationEngine {

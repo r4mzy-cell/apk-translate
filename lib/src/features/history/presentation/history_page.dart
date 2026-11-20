@@ -253,19 +253,21 @@ class _HistoryPageState extends ConsumerState<HistoryPage>
     });
   }
 
-  void _toggleStarSelected() {
+  Future<void> _toggleStarSelected() async {
     final db = ref.read(appDatabaseProvider);
     for (final id in _selectedIds) {
-      final entry = db.getHistoryEntry(id);
+      final entry = await db.getHistoryEntry(id);
       if (entry != null) {
-        db.toggleHistoryStar(id, !entry.isStarred);
+        await db.toggleHistoryStar(id, !entry.isStarred);
       }
     }
     setState(() {
       _selectionMode = false;
       _selectedIds.clear();
     });
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Favorit diperbarui')));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Favorit diperbarui')));
+    }
   }
 
   void _deleteSelected() {

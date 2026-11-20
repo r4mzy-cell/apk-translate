@@ -112,6 +112,7 @@ class _PhrasebookPageState extends ConsumerState<PhrasebookPage>
                   searchQuery: _searchQuery,
                   displayFormality: _displayFormality,
                   onEdit: _showAddPhraseDialog,
+                  db: ref.read(appDatabaseProvider),
                 );
               }).toList(),
             ),
@@ -232,17 +233,18 @@ class _PhraseListView extends ConsumerWidget {
   final String searchQuery;
   final FormalityMode displayFormality;
   final void Function(BuildContext, {PhrasebookEntry? existing}) onEdit;
+  final AppDatabase db;
 
   const _PhraseListView({
     required this.category,
     required this.searchQuery,
     required this.displayFormality,
     required this.onEdit,
+    required this.db,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(appDatabaseProvider);
     final theme = Theme.of(context);
 
     final phrasesAsync = category.id == 'custom'
@@ -328,7 +330,7 @@ class _PhraseListView extends ConsumerWidget {
       ),
     );
     if (confirm == true && context.mounted) {
-      await ref.read(appDatabaseProvider).deletePhrase(phrase.id);
+      await db.deletePhrase(phrase.id);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Frasa dihapus')));
       }
