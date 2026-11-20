@@ -8,9 +8,8 @@ import 'package:translate_id/src/features/home/presentation/home_page.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
+import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 import 'package:get_it/get_it.dart';
-
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
 /// Background service entry point — runs in separate isolate
 /// Keeps the process alive (foreground service) while downloads run.

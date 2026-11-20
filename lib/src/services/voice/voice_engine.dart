@@ -287,15 +287,16 @@ class VoiceEngine {
   }
 
   /// Generate speech from text
-  Future<TtsResult?> generateTts(String text) async {
+  Future<TtsResult?> generateTts(String text, {int speakerId = 0, double speed = 1.0, double pitch = 1.0}) async {
     if (!_initialized) return null;
     
     try {
       final result = await _channel.invokeMethod('ttsGenerate', {
         'id': _ttsId,
         'text': text,
-        'speakerId': 0,
-        'speed': 1.0,
+        'speakerId': speakerId,
+        'speed': speed,
+        // 'pitch': pitch, // TODO: native support needed
       });
       
       if (result is Map) {

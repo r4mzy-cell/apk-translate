@@ -199,6 +199,21 @@ class AppDatabase extends _$AppDatabase {
   Future<double> get ttsSpeed => _getDoublePreference('tts_speed', 1.0);
   Future<void> setTtsSpeed(double value) => _setPreference('tts_speed', value.toString(), 'double');
 
+  Future<double> get ttsPitch => _getDoublePreference('tts_pitch', 1.0);
+  Future<void> setTtsPitch(double value) => _setPreference('tts_pitch', value.toString(), 'double');
+
+  Future<bool> get downloadWifiOnly => _getBoolPreference('download_wifi_only', true);
+  Future<void> setDownloadWifiOnly(bool value) => _setPreference('download_wifi_only', value.toString(), 'bool');
+
+  Future<String> get autoClearHistory => _getStringPreference('auto_clear_history', 'never');
+  Future<void> setAutoClearHistory(String value) => _setPreference('auto_clear_history', value, 'string');
+
+  Future<bool> get strictOfflineMode => _getBoolPreference('strict_offline_mode', false);
+  Future<void> setStrictOfflineMode(bool value) => _setPreference('strict_offline_mode', value.toString(), 'bool');
+
+  Future<bool> get debugLoggingEnabled => _getBoolPreference('debug_logging', false);
+  Future<void> setDebugLoggingEnabled(bool value) => _setPreference('debug_logging', value.toString(), 'bool');
+
   Future<String> get modelStoragePath => _getStringPreference('model_storage_path', '');
   Future<void> setModelStoragePath(String value) => _setPreference('model_storage_path', value, 'string');
 }

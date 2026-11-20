@@ -1,9 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/features/settings/presentation/model_manager_page.dart';
+import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 import 'package:translate_id/src/services/translation/translation_engine.dart';
+import 'package:translate_id/src/shared/utils/app_logger.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -16,6 +22,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final themeMode = ref.watch(themeModeProvider);
+    final formality = ref.watch(defaultFormalityProvider);
+    final ttsVoiceId = ref.watch(ttsVoiceIdProvider);
+    final ttsSpeed = ref.watch(ttsSpeedProvider);
+    final ttsPitch = ref.watch(ttsPitchProvider);
+    final downloadWifiOnly = ref.watch(downloadWifiOnlyProvider);
+    final autoClearHistory = ref.watch(autoClearHistoryProvider);
+    final strictOffline = ref.watch(strictOfflineModeProvider);
+    final debugLogging = ref.watch(debugLoggingProvider);
+    final modelStoragePath = ref.watch(modelStoragePathProvider);
+    final versionAsync = ref.watch(appVersionProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pengaturan')),
@@ -29,7 +46,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               leading: Icon(Icons.palette_outlined, color: AppTheme.primaryTeal),
               title: 'Tema',
               subtitle: 'Pilih mode tampilan',
-              trailing: const _ThemeSelector(),
+              trailing: _ThemeSelector(current: themeMode),
               onTap: () {},
             ),
             _SettingsDivider(),
@@ -51,7 +68,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               leading: Icon(Icons.translate_outlined, color: AppTheme.primaryTeal),
               title: 'Formalitas Default',
               subtitle: 'Pilih gaya terjemahan default',
-              trailing: const _FormalitySelector(),
+              trailing: _FormalitySelector(current: formality),
               onTap: () {},
             ),
             _SettingsDivider(),
@@ -81,7 +98,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               leading: Icon(Icons.record_voice_over_outlined, color: AppTheme.primaryTeal),
               title: 'Suara TTS Indonesia',
               subtitle: 'Pilih suara (10 speaker tersedia)',
-              trailing: const _TtsVoiceSelector(language: 'id'),
+              trailing: _TtsVoiceSelector(language: 'id', current: ttsVoiceId['id'] ?? 'id_female_0'),
               onTap: () {},
             ),
             _SettingsDivider(),
@@ -89,23 +106,23 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               leading: Icon(Icons.record_voice_over_outlined, color: AppTheme.primaryTeal),
               title: 'Suara TTS Inggris',
               subtitle: 'Pilih suara',
-              trailing: const _TtsVoiceSelector(language: 'en'),
+              trailing: _TtsVoiceSelector(language: 'en', current: ttsVoiceId['en'] ?? 'en_female_0'),
               onTap: () {},
             ),
             _SettingsDivider(),
             _SettingsTile(
               leading: Icon(Icons.speed_outlined, color: AppTheme.primaryTeal),
               title: 'Kecepatan Bicara',
-              subtitle: '0.5x - 2.0x',
-              trailing: const _SpeedSlider(),
+              subtitle: '${ttsSpeed.toStringAsFixed(1)}x',
+              trailing: _SpeedSlider(current: ttsSpeed),
               onTap: () {},
             ),
             _SettingsDivider(),
             _SettingsTile(
               leading: Icon(Icons.tune_outlined, color: AppTheme.primaryTeal),
               title: 'Pitch',
-              subtitle: '0.5 - 2.0',
-              trailing: const _PitchSlider(),
+              subtitle: ttsPitch.toStringAsFixed(1),
+              trailing: _PitchSlider(current: ttsPitch),
               onTap: () {},
             ),
           ]),
@@ -118,7 +135,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _SettingsTile(
               leading: Icon(Icons.folder_outlined, color: AppTheme.primaryTeal),
               title: 'Lokasi Penyimpanan Model',
-              subtitle: 'Pilih folder (bisa SD card)',
+              subtitle: modelStoragePath.isEmpty ? 'Default: Internal/TranslateID/models' : modelStoragePath,
               trailing: const _StoragePathSelector(),
               onTap: () => _showStoragePicker(context),
             ),
@@ -135,7 +152,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               leading: Icon(Icons.wifi_outlined, color: AppTheme.primaryTeal),
               title: 'Download Hanya Via WiFi',
               subtitle: 'Hindari penggunaan data seluler',
-              trailing: Switch(value: true, onChanged: (v) {}),
+              trailing: Switch(value: downloadWifiOnly, onChanged: (v) => ref.read(downloadWifiOnlyProvider.notifier).setWifiOnly(v)),
               onTap: () {},
             ),
           ]),
@@ -149,7 +166,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               leading: Icon(Icons.history_outlined, color: AppTheme.primaryTeal),
               title: 'Hapus Riwayat Otomatis',
               subtitle: 'Hapus riwayat lebih lama dari...',
-              trailing: const _AutoClearSelector(),
+              trailing: _AutoClearSelector(current: autoClearHistory),
               onTap: () {},
             ),
             _SettingsDivider(),
@@ -157,7 +174,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               leading: Icon(Icons.cloud_off_outlined, color: AppTheme.primaryTeal),
               title: 'Mode Offline Ketat',
               subtitle: 'Blokir semua akses jaringan kecuali download model',
-              trailing: Switch(value: false, onChanged: (v) {}),
+              trailing: Switch(value: strictOffline, onChanged: (v) => ref.read(strictOfflineModeProvider.notifier).setStrictOffline(v)),
               onTap: () {},
             ),
             _SettingsDivider(),
@@ -187,7 +204,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               leading: Icon(Icons.developer_mode_outlined, color: AppTheme.primaryTeal),
               title: 'Debug Logging',
               subtitle: 'Aktifkan log detail untuk troubleshooting',
-              trailing: Switch(value: false, onChanged: (v) {}),
+              trailing: Switch(value: debugLogging, onChanged: (v) => ref.read(debugLoggingProvider.notifier).setDebugLogging(v)),
               onTap: () {},
             ),
             _SettingsDivider(),
@@ -208,7 +225,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _SettingsTile(
               leading: Icon(Icons.info_outline, color: AppTheme.primaryTeal),
               title: 'Versi Aplikasi',
-              subtitle: '1.0.0 (Build 1)',
+              subtitle: versionAsync.when(
+                data: (v) => v,
+                loading: () => 'Memuat...',
+                error: (_, _) => '1.0.0 (Build 1)',
+              ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {},
             ),
@@ -250,29 +271,123 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  void _showStoragePicker(BuildContext context) {
-    // TODO: Implement storage picker
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pemilih folder...')));
+  Future<void> _showStoragePicker(BuildContext context) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final result = await showDialog<String>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Pilih Lokasi Model'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.phone_android),
+                title: const Text('Internal Storage'),
+                subtitle: Text('${dir.path}/models'),
+                onTap: () => Navigator.pop(ctx, dir.path),
+              ),
+              ListTile(
+                leading: const Icon(Icons.sd_card),
+                title: const Text('Documents/TranslateID'),
+                subtitle: const Text('/storage/emulated/0/Documents/TranslateID/models'),
+                onTap: () => Navigator.pop(ctx, '/storage/emulated/0/Documents/TranslateID/models'),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (result != null && context.mounted) {
+        await ref.read(modelStoragePathProvider.notifier).setPath(result);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lokasi disetel: $result')));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal: $e')));
+      }
+    }
   }
 
-  void _exportData(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Mengekspor data...')));
+  Future<void> _exportData(BuildContext context) async {
+    try {
+      final dir = await getExternalStorageDirectory();
+      if (dir == null) throw Exception('Storage not available');
+      final file = File('${dir.path}/translateid_backup_${DateTime.now().millisecondsSinceEpoch}.json');
+      // TODO: Implement actual export (history, favorites, phrases)
+      await file.writeAsString('{"exported": true, "timestamp": ${DateTime.now().millisecondsSinceEpoch}}');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Diekspor ke: ${file.path}')));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal ekspor: $e'), backgroundColor: Colors.red));
+      }
+    }
   }
 
-  void _importData(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Memilih file backup...')));
+  Future<void> _importData(BuildContext context) async {
+    // TODO: Implement file picker for import
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fitur impor belum tersedia')));
+    }
   }
 
-  void _viewLogs(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Membuka log...')));
+  Future<void> _viewLogs(BuildContext context) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final logDir = Directory('${dir.path}/app_flutter/logs');
+      if (!await logDir.exists()) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Folder log tidak ditemukan')));
+        }
+        return;
+      }
+      final files = await logDir.list().toList();
+      if (files.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tidak ada file log')));
+        }
+        return;
+      }
+      final latest = files
+          .whereType<File>()
+          .toList()
+        ..sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
+      if (latest.isEmpty) return;
+      final content = await latest.first.readAsString();
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Log: ${latest.first.uri.pathSegments.last}'),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 400,
+              child: SingleChildScrollView(child: SelectableText(content)),
+            ),
+            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Tutup'))],
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal baca log: $e')));
+      }
+    }
   }
 
   void _showLicenses(BuildContext context) {
     showLicensePage(context: context, applicationName: 'TranslateID', applicationVersion: '1.0.0');
   }
 
-  void _shareApp(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Membuka berbagi LAN...')));
+  Future<void> _shareApp(BuildContext context) async {
+    try {
+      await Share.share('Coba TranslateID - Translator offline EN↔ID\nhttps://github.com/r4mzy-cell/apk-translate');
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal bagikan: $e')));
+      }
+    }
   }
 
   void _confirmResetAll(BuildContext context) {
@@ -292,9 +407,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Menghapus semua data...')));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Menghapus semua data...')));
+              }
+              // TODO: Implement actual reset
             },
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('HAPUS SEMUA'),
@@ -402,20 +520,21 @@ class _SettingsDivider extends StatelessWidget {
 
 // Theme Selector
 class _ThemeSelector extends ConsumerWidget {
-  const _ThemeSelector();
+  final ThemeMode current;
+
+  const _ThemeSelector({required this.current});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Connect to theme provider
     return DropdownButton<ThemeMode>(
-      value: ThemeMode.system,
+      value: current,
       underline: const SizedBox(),
       items: const [
         DropdownMenuItem(value: ThemeMode.system, child: Text('Mengikuti Sistem')),
         DropdownMenuItem(value: ThemeMode.light, child: Text('Terang')),
         DropdownMenuItem(value: ThemeMode.dark, child: Text('Gelap')),
       ],
-      onChanged: (v) {},
+      onChanged: (v) => ref.read(themeModeProvider.notifier).setThemeMode(v!),
     );
   }
 }
@@ -441,78 +560,89 @@ class _LanguageSelector extends StatelessWidget {
 
 // Formality Selector
 class _FormalitySelector extends ConsumerWidget {
-  const _FormalitySelector();
+  final FormalityMode current;
+
+  const _FormalitySelector({required this.current});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return DropdownButton<FormalityMode>(
-      value: FormalityMode.formal,
+      value: current,
       underline: const SizedBox(),
       items: const [
         DropdownMenuItem(value: FormalityMode.formal, child: Text('Formal (Anda, tidak, apakah)')),
         DropdownMenuItem(value: FormalityMode.slang, child: Text('Tidak Formal (lu/gue, nggak, apa)')),
       ],
-      onChanged: (v) {},
+      onChanged: (v) => ref.read(defaultFormalityProvider.notifier).setFormality(v!),
     );
   }
 }
 
 // TTS Voice Selector
-class _TtsVoiceSelector extends StatelessWidget {
+class _TtsVoiceSelector extends ConsumerWidget {
   final String language;
+  final String current;
 
-  const _TtsVoiceSelector({required this.language});
+  const _TtsVoiceSelector({required this.language, required this.current});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final voices = language == 'id'
+        ? ['id_female_0', 'id_female_1', 'id_male_0', 'id_male_1', 'id_child', 'id_elderly', 'id_formal', 'id_casual', 'id_news', 'id_story']
+        : ['en_female_0', 'en_male_0', 'en_female_1', 'en_male_1'];
+
+    final labels = language == 'id'
         ? ['Wanita 1', 'Wanita 2', 'Pria 1', 'Pria 2', 'Anak', 'Lansia', 'Formal', 'Kasual', 'News', 'Story']
         : ['Wanita (US)', 'Pria (US)', 'Wanita (UK)', 'Pria (UK)'];
 
     return DropdownButton<String>(
-      value: voices.first,
+      value: current,
       underline: const SizedBox(),
-      items: voices.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(),
-      onChanged: (v) {},
+      items: List.generate(voices.length, (i) => DropdownMenuItem(value: voices[i], child: Text(labels[i]))),
+      onChanged: (v) => ref.read(ttsVoiceIdProvider.notifier).setVoiceId(language, v!),
     );
   }
 }
 
 // Speed Slider
-class _SpeedSlider extends StatelessWidget {
-  const _SpeedSlider();
+class _SpeedSlider extends ConsumerWidget {
+  final double current;
+
+  const _SpeedSlider({required this.current});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       width: 120,
       child: Slider(
-        value: 1.0,
+        value: current,
         min: 0.5,
         max: 2.0,
         divisions: 15,
-        label: '1.0x',
-        onChanged: (v) {},
+        label: '${current.toStringAsFixed(1)}x',
+        onChanged: (v) => ref.read(ttsSpeedProvider.notifier).setSpeed(v),
       ),
     );
   }
 }
 
 // Pitch Slider
-class _PitchSlider extends StatelessWidget {
-  const _PitchSlider();
+class _PitchSlider extends ConsumerWidget {
+  final double current;
+
+  const _PitchSlider({required this.current});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       width: 120,
       child: Slider(
-        value: 1.0,
+        value: current,
         min: 0.5,
         max: 2.0,
         divisions: 15,
-        label: '1.0',
-        onChanged: (v) {},
+        label: current.toStringAsFixed(1),
+        onChanged: (v) => ref.read(ttsPitchProvider.notifier).setPitch(v),
       ),
     );
   }
@@ -524,21 +654,20 @@ class _StoragePathSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      'Internal Storage/TranslateID/models',
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-    );
+    return const Icon(Icons.chevron_right);
   }
 }
 
 // Auto Clear Selector
-class _AutoClearSelector extends StatelessWidget {
-  const _AutoClearSelector();
+class _AutoClearSelector extends ConsumerWidget {
+  final String current;
+
+  const _AutoClearSelector({required this.current});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return DropdownButton<String>(
-      value: 'never',
+      value: current,
       underline: const SizedBox(),
       items: const [
         DropdownMenuItem(value: 'never', child: Text('Tidak pernah')),
@@ -547,7 +676,7 @@ class _AutoClearSelector extends StatelessWidget {
         DropdownMenuItem(value: '90d', child: Text('90 hari')),
         DropdownMenuItem(value: '365d', child: Text('1 tahun')),
       ],
-      onChanged: (v) {},
+      onChanged: (v) => ref.read(autoClearHistoryProvider.notifier).setAutoClear(v!),
     );
   }
 }

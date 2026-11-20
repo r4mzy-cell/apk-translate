@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/models/model_info.dart';
+import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 
 class ModelManagerPage extends ConsumerStatefulWidget {
   const ModelManagerPage({super.key});
@@ -101,7 +102,7 @@ class _ModelManagerPageState extends ConsumerState<ModelManagerPage> {
                         itemCount: filtered.length,
                         itemBuilder: (context, index) {
                           final model = filtered[index];
-                          return _ModelCard(model: model);
+                          return _ModelCard(model: model, wifiOnly: ref.watch(downloadWifiOnlyProvider));
                         },
                       ),
               ),
@@ -155,8 +156,9 @@ class _EmptyState extends StatelessWidget {
 
 class _ModelCard extends ConsumerWidget {
   final ModelInfo model;
+  final bool wifiOnly;
 
-  const _ModelCard({required this.model});
+  const _ModelCard({required this.model, required this.wifiOnly});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -313,9 +315,8 @@ class _ModelCard extends ConsumerWidget {
   }
 
   Future<void> _downloadWithWifiCheck(BuildContext context, ModelManager manager) async {
-    // TODO: Check WiFi connectivity
     try {
-      await manager.downloadModel(model.id, wifiOnly: true);
+      await manager.downloadModel(model.id, wifiOnly: wifiOnly);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${model.name} selesai diunduh')));
       }
