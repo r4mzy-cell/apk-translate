@@ -616,7 +616,24 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
     if (model.isDownloaded) return;
 
     if (wifiOnly) {
-      // TODO: Check network type - implement connectivity check
+      // Check connectivity - if not WiFi, show error but don't crash
+      try {
+        final connectivityResult = await _dio.get(
+          'http://clients3.google.com/generate_204',
+          options: Options(
+            validateStatus: (s) => s != null && s < 500,
+            receiveTimeout: const Duration(seconds: 5).inMilliseconds,
+            sendTimeout: const Duration(seconds: 5).inMilliseconds,
+          ),
+        );
+        if (connectivityResult.statusCode != 204) {
+          throw Exception('Tidak ada koneksi internet');
+        }
+      } on DioException catch (e) {
+        AppLogger.warning('Connectivity check failed: ${e.message}, proceeding anyway');
+      } catch (e) {
+        AppLogger.warning('Connectivity check error: $e, proceeding anyway');
+      }
     }
 
     final config = ModelDownloadConfig.configs[modelId];
@@ -749,17 +766,18 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
         }
       }
 
-      // Update database - include all required fields from existing model
-      final existingModel = modelList.firstWhere((m) => m.id == modelId);
+      // Update database - refetch model from DB to avoid stale state
+      final existingRows = await _database.select(_database.models).get();
+      final existingRow = existingRows.firstWhere((r) => r.id == modelId);
       await _database.update(_database.models).replace(
         ModelsCompanion(
           id: Value(modelId),
-          name: Value(existingModel.name),
-          type: Value(existingModel.type.name),
-          language: Value(existingModel.language),
-          version: Value(existingModel.version),
-          sizeBytes: Value(existingModel.sizeBytes),
-          checksum: Value(existingModel.checksum),
+          name: Value(existingRow.name),
+          type: Value(existingRow.type),
+          language: Value(existingRow.language),
+          version: Value(existingRow.version),
+          sizeBytes: Value(existingRow.sizeBytes),
+          checksum: Value(existingRow.checksum),
           localPath: Value(targetDir.path),
           isDownloaded: const Value(true),
           isActive: const Value(true),
@@ -946,44 +964,81 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   /// Checks both configured model dir and default external Documents/TranslateID/models.
   /// Returns list of model IDs found complete and marked as downloaded.
   Future<List<String>> scanLocalModels() async {
-    final modelDir = await _getModelDir();
-    final hasPerm = await hasExternalStoragePermission();
-    final externalDir = hasPerm ? await _getExternalModelDir() : null;
-    final scanDirs = <Directory>[modelDir];
-    if (externalDir != null && externalDir.path != modelDir.path) {
-      scanDirs.add(externalDir);
-    }
+    try {
+      AppLogger.info('Starting local model scan...');
+      final modelDir = await _getModelDir();
+      AppLogger.info('Internal model dir: ${modelDir.path}');
+      
+      final hasPerm = await hasExternalStoragePermission();
+      AppLogger.info('External storage permission: $hasPerm');
+      
+      final externalDir = hasPerm ? await _getExternalModelDir() : null;
+      if (externalDir != null) {
+        AppLogger.info('External model dir: ${externalDir.path}');
+      }
+      
+      final scanDirs = <Directory>[modelDir];
+      if (externalDir != null && externalDir.path != modelDir.path) {
+        scanDirs.add(externalDir);
+      }
 
-    final foundIds = <String>[];
+      final foundIds = <String>[];
 
-    for (final model in ModelRegistry.requiredModels) {
-      final config = ModelDownloadConfig.configs[model.id];
-      if (config == null) continue;
+      for (final model in ModelRegistry.requiredModels) {
+        final config = ModelDownloadConfig.configs[model.id];
+        if (config == null) {
+          AppLogger.warning('No download config for model: ${model.id}');
+          continue;
+        }
 
-      for (final baseDir in scanDirs) {
-        final dir = Directory(p.join(baseDir.path, model.id));
-        if (!await dir.exists()) continue;
-        // Files may live at the model root (post-extract renameMap) or inside extractPath.
-        final allPresent = await Future.wait(
-          config.files.map((f) async {
-            if (File(p.join(dir.path, f)).existsSync()) return true;
-            if (config.extractPath.isNotEmpty &&
-                File(p.join(dir.path, config.extractPath, f)).existsSync()) {
-              return true;
-            }
-            return false;
-          }),
-        );
-        if (allPresent.every((ok) => ok)) {
-          foundIds.add(model.id);
-          await _markModelDownloaded(model, dir.path);
-          break; // Found in one dir, no need to check others
+        for (final baseDir in scanDirs) {
+          final dir = Directory(p.join(baseDir.path, model.id));
+          final dirExists = await dir.exists();
+          AppLogger.debug('Checking ${model.id} in ${dir.path} - exists: $dirExists');
+          
+          if (!dirExists) continue;
+          
+          // Files may live at the model root (post-extract renameMap) or inside extractPath.
+          final allPresent = await Future.wait(
+            config.files.map((f) async {
+              final rootPath = p.join(dir.path, f);
+              final extractPath = config.extractPath.isNotEmpty 
+                  ? p.join(dir.path, config.extractPath, f)
+                  : null;
+              
+              final rootExists = File(rootPath).existsSync();
+              final extractExists = extractPath != null && File(extractPath).existsSync();
+              
+              AppLogger.debug('  File $f: root=$rootExists, extract=$extractExists');
+              
+              if (rootExists) return true;
+              if (extractExists) return true;
+              return false;
+            }),
+          );
+          
+          AppLogger.debug('  allPresent: $allPresent');
+          
+          if (allPresent.every((ok) => ok)) {
+            foundIds.add(model.id);
+            await _markModelDownloaded(model, dir.path);
+            AppLogger.info('Found complete model: ${model.id} at ${dir.path}');
+            break; // Found in one dir, no need to check others
+          }
         }
       }
-    }
 
-    if (foundIds.isNotEmpty) _refresh();
-    return foundIds;
+      if (foundIds.isNotEmpty) {
+        AppLogger.info('Scan complete. Found models: $foundIds');
+        _refresh();
+      } else {
+        AppLogger.info('Scan complete. No complete models found.');
+      }
+      return foundIds;
+    } catch (e, stack) {
+      AppLogger.error('scanLocalModels failed', e, stack);
+      return [];
+    }
   }
 
   Future<void> _markModelDownloaded(ModelInfo model, String localPath) async {
