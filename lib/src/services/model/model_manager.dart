@@ -253,9 +253,12 @@ class ModelDownloadConfig {
         'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2',
       ],
       extractPath: 'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18',
-      files: ['model.onnx', 'tokens.txt', 'config.json'],
+      files: ['model.onnx', 'tokens.txt'],
       checksums: {
-        'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // placeholder
+        'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      },
+      renameMap: {
+        'ctc-epoch-30-avg-3-chunk-16-left-128.int8.onnx': 'model.onnx',
       },
     ),
     'sherpa-stt-en': ModelDownloadInfo(
@@ -263,9 +266,12 @@ class ModelDownloadConfig {
         'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2',
       ],
       extractPath: 'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18',
-      files: ['model.onnx', 'tokens.txt', 'config.json'],
+      files: ['model.onnx', 'tokens.txt'],
       checksums: {
         'sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      },
+      renameMap: {
+        'ctc-epoch-30-avg-3-chunk-16-left-128.int8.onnx': 'model.onnx',
       },
     ),
     'sherpa-tts-id': ModelDownloadInfo(
