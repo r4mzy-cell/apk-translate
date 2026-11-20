@@ -110,9 +110,7 @@ class _ModelCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final manager = ref.read(modelManagerProvider.notifier);
-    final progress = ref.watch(modelManagerProvider.select((v) => v.valueOrNull))
-        ?.firstWhere((m) => m.id == model.id, orElse: () => model);
-    final downloadProgress = ref.watch(modelManagerProvider.notifier).getProgress(model.id);
+    final downloadProgress = ref.watch(downloadProgressProvider)[model.id];
 
     final isDownloading = downloadProgress?.status == DownloadStatus.downloading ||
         downloadProgress?.status == DownloadStatus.connecting ||
@@ -150,7 +148,12 @@ class _ModelCard extends ConsumerWidget {
               children: [
                 Icon(Icons.storage_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
                 const Gap(4),
-                Text(model.sizeFormatted, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                Text(
+                  (isDownloading && downloadProgress != null)
+                      ? downloadProgress.totalFormatted
+                      : model.sizeFormatted,
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
                 const Spacer(),
                 if (model.isDownloaded && model.localPath != null)
                   Text('Tersimpan', style: theme.textTheme.bodySmall?.copyWith(color: AppTheme.primaryTeal)),

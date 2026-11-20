@@ -306,6 +306,9 @@ class ModelDownloadInfo {
 final modelManagerProvider =
     AsyncNotifierProvider<ModelManager, List<ModelInfo>>(ModelManager.new);
 
+/// Reactive download progress state — UI watches this for real-time updates
+final downloadProgressProvider = StateProvider<Map<String, DownloadProgress>>((ref) => {});
+
 class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   AppDatabase get _database => ref.read(appDatabaseProvider);
   final Dio _dio = Dio();
@@ -522,8 +525,9 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
 
     final modelDir = await _getModelDir();
     final targetDir = Directory(p.join(modelDir.path, modelId));
-    if (await targetDir.exists()) await targetDir.delete(recursive: true);
-    await targetDir.create(recursive: true);
+    // Only clear when NOT resuming — preserve partial files for Range resume
+    if (!resume && await targetDir.exists()) await targetDir.delete(recursive: true);
+    if (!await targetDir.exists()) await targetDir.create(recursive: true);
 
     _cancelTokens[modelId] = CancelToken();
     final cancelToken = _cancelTokens[modelId]!;
@@ -811,6 +815,12 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
   void _updateProgress(String modelId, DownloadProgress progress) {
     _progressMap[modelId] = progress;
     _progressController.add(progress);
+    // Push to reactive provider so UI rebuilds in real-time
+    ref.read(downloadProgressProvider.notifier).update((map) {
+      final next = Map<String, DownloadProgress>.from(map);
+      next[modelId] = progress;
+      return next;
+    });
   }
 
   void _refresh() {
