@@ -101,6 +101,7 @@ class MainActivity : FlutterActivity() {
                     when (call.method) {
                         "getPlatformVersion" -> result.success("Android ${Build.VERSION.RELEASE}")
                         "getModelDirectory" -> result.success(getModelDirectory().absolutePath)
+                        "getPublicModelDirectory" -> result.success(getPublicModelDirectory().absolutePath)
                         "checkOverlayPermission" -> result.success(Settings.canDrawOverlays(this@MainActivity))
                         "requestOverlayPermission" -> requestOverlayPermission(result)
                         "checkCameraPermission" -> result.success(checkCameraPermission())
@@ -252,6 +253,13 @@ class MainActivity : FlutterActivity() {
     private fun getModelDirectory(): File {
         val externalFilesDir = getExternalFilesDir(null) ?: filesDir
         val modelDir = File(externalFilesDir, "models")
+        if (!modelDir.exists()) modelDir.mkdirs()
+        return modelDir
+    }
+
+    private fun getPublicModelDirectory(): File {
+        val publicDocsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val modelDir = File(publicDocsDir, "TranslateID/models")
         if (!modelDir.exists()) modelDir.mkdirs()
         return modelDir
     }

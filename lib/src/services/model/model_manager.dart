@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -12,6 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/models/model_info.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
+
+/// MethodChannel for model-related native operations
+const _modelChannel = MethodChannel('com.translateid/native');
 
 /// Serializable config for background isolate
 class _ExtractValidateParams {
@@ -573,10 +577,36 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
       final dir = Directory(customPath);
       if (await dir.exists()) return dir;
     }
+    // Default to external Documents/TranslateID/models (sideload standard location)
+    final externalDir = await _getExternalModelDir();
+    if (externalDir != null) return externalDir;
+    // Fallback to internal app directory
     final appDir = await getApplicationDocumentsDirectory();
     final modelDir = Directory(p.join(appDir.path, 'models'));
     if (!await modelDir.exists()) await modelDir.create(recursive: true);
     return modelDir;
+  }
+
+  /// Get the public external models directory (Documents/TranslateID/models).
+  /// Uses native path so it works across devices/storage layouts.
+  Future<Directory?> _getExternalModelDir() async {
+    try {
+      final path = await _modelChannel.invokeMethod<String>('getPublicModelDirectory');
+      if (path != null && path.isNotEmpty) {
+        final dir = Directory(path);
+        if (await dir.exists()) return dir;
+        // Dir may not exist yet (no sideload) — still return it so downloads use it,
+        // but only if parent Documents is writable.
+        final parent = dir.parent;
+        if (await parent.exists()) return dir;
+      }
+    } catch (_) {
+      // Channel unavailable (tests) — fall through
+    }
+    const fallback = '/storage/emulated/0/Documents/TranslateID/models';
+    final fallbackDir = Directory(fallback);
+    if (await fallbackDir.exists()) return fallbackDir;
+    return null;
   }
 
   Future<void> downloadModel(String modelId, {bool wifiOnly = true, bool resume = true}) async {
@@ -893,31 +923,61 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
     _refresh();
   }
 
+  /// Check if we have MANAGE_EXTERNAL_STORAGE permission (Android 11+)
+  Future<bool> hasExternalStoragePermission() async {
+    try {
+      return await _modelChannel.invokeMethod<bool>('checkStoragePermission') ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Request MANAGE_EXTERNAL_STORAGE permission (Android 11+)
+  Future<void> requestExternalStoragePermission() async {
+    try {
+      await _modelChannel.invokeMethod('requestStoragePermission');
+    } catch (_) {
+      // Ignore
+    }
+  }
+
   /// Scan user-provided models directory for pre-placed (sideloaded) models.
+  /// Checks both configured model dir and default external Documents/TranslateID/models.
   /// Returns list of model IDs found complete and marked as downloaded.
   Future<List<String>> scanLocalModels() async {
     final modelDir = await _getModelDir();
+    final hasPerm = await hasExternalStoragePermission();
+    final externalDir = hasPerm ? await _getExternalModelDir() : null;
+    final scanDirs = <Directory>[modelDir];
+    if (externalDir != null && externalDir.path != modelDir.path) {
+      scanDirs.add(externalDir);
+    }
+
     final foundIds = <String>[];
 
     for (final model in ModelRegistry.requiredModels) {
       final config = ModelDownloadConfig.configs[model.id];
       if (config == null) continue;
-      final dir = Directory(p.join(modelDir.path, model.id));
-      if (!await dir.exists()) continue;
-      // Files may live at the model root (post-extract renameMap) or inside extractPath.
-      final allPresent = await Future.wait(
-        config.files.map((f) async {
-          if (File(p.join(dir.path, f)).existsSync()) return true;
-          if (config.extractPath.isNotEmpty &&
-              File(p.join(dir.path, config.extractPath, f)).existsSync()) {
-            return true;
-          }
-          return false;
-        }),
-      );
-      if (allPresent.every((ok) => ok)) {
-        foundIds.add(model.id);
-        await _markModelDownloaded(model, dir.path);
+
+      for (final baseDir in scanDirs) {
+        final dir = Directory(p.join(baseDir.path, model.id));
+        if (!await dir.exists()) continue;
+        // Files may live at the model root (post-extract renameMap) or inside extractPath.
+        final allPresent = await Future.wait(
+          config.files.map((f) async {
+            if (File(p.join(dir.path, f)).existsSync()) return true;
+            if (config.extractPath.isNotEmpty &&
+                File(p.join(dir.path, config.extractPath, f)).existsSync()) {
+              return true;
+            }
+            return false;
+          }),
+        );
+        if (allPresent.every((ok) => ok)) {
+          foundIds.add(model.id);
+          await _markModelDownloaded(model, dir.path);
+          break; // Found in one dir, no need to check others
+        }
       }
     }
 

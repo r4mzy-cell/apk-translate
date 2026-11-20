@@ -17,6 +17,27 @@ class _ModelManagerPageState extends ConsumerState<ModelManagerPage> {
 
   Future<void> _scanLocalModels() async {
     final manager = ref.read(modelManagerProvider.notifier);
+    // Ensure external storage permission for sideload directory access
+    final hasPerm = await manager.hasExternalStoragePermission();
+    if (!hasPerm) {
+      if (!mounted) return;
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Izin Akses Penyimpanan'),
+          content: const Text('Untuk memindai model yang ditempatkan di Documents/TranslateID/models, aplikasi memerlukan izin "Semua File" (MANAGE_EXTERNAL_STORAGE). Buka pengaturan?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Buka Pengaturan')),
+          ],
+        ),
+      );
+      if (confirm == true) {
+        await manager.requestExternalStoragePermission();
+        // Give user time to grant permission
+        await Future.delayed(const Duration(seconds: 2));
+      }
+    }
     final found = await manager.scanLocalModels();
     if (!mounted) return;
     if (found.isNotEmpty) {

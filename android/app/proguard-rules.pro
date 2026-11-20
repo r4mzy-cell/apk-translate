@@ -58,5 +58,6 @@
 -keep class * implements io.flutter.plugin.common.MethodChannel$MethodCallHandler
 -keep class * implements io.flutter.plugin.common.EventChannel$StreamHandler
 
-# flutter_background_service entry point (background isolate)
--keep class translate_id.main { *; }
+# flutter_background_service native classes (callback handling, service lifecycle)
+-keep class id.flutter.flutter_background_service.** { *; }
+-keep class id.flutter.flutter_background_service.BackgroundService { *; }
