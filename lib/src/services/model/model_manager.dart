@@ -904,11 +904,16 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
       if (config == null) continue;
       final dir = Directory(p.join(modelDir.path, model.id));
       if (!await dir.exists()) continue;
-      final checkDir = config.extractPath.isNotEmpty
-          ? Directory(p.join(dir.path, config.extractPath))
-          : dir;
+      // Files may live at the model root (post-extract renameMap) or inside extractPath.
       final allPresent = await Future.wait(
-        config.files.map((f) async => File(p.join(checkDir.path, f)).existsSync()),
+        config.files.map((f) async {
+          if (File(p.join(dir.path, f)).existsSync()) return true;
+          if (config.extractPath.isNotEmpty &&
+              File(p.join(dir.path, config.extractPath, f)).existsSync()) {
+            return true;
+          }
+          return false;
+        }),
       );
       if (allPresent.every((ok) => ok)) {
         foundIds.add(model.id);
