@@ -46,8 +46,8 @@ class OcrResult {
       text: map['text'] as String? ?? '',
       blocks: blocks,
       imageSize: ui.Size(
-        width: (map['imageWidth'] as num?)?.toDouble() ?? 0,
-        height: (map['imageHeight'] as num?)?.toDouble() ?? 0,
+        (map['imageWidth'] as num?)?.toDouble() ?? 0,
+        (map['imageHeight'] as num?)?.toDouble() ?? 0,
       ),
       latency: Duration(milliseconds: (map['latency'] as num?)?.toInt() ?? 0),
     );
