@@ -10,6 +10,7 @@ import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/features/settings/presentation/model_manager_page.dart';
 import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 import 'package:translate_id/src/services/translation/translation_engine.dart';
+import 'package:translate_id/src/shared/enums/formality_mode.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {

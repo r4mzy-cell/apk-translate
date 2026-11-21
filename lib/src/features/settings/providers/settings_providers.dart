@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/services/translation/translation_engine.dart';
+import 'package:translate_id/src/shared/enums/formality_mode.dart';
 
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   throw UnimplementedError('AppDatabase provider must be overridden in main.dart');
