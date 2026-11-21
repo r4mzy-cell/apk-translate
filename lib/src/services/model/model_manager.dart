@@ -1124,7 +1124,7 @@ class ModelManager extends AsyncNotifier<List<ModelInfo>> {
         checksum: Value(model.checksum),
         localPath: Value(localPath),
         isDownloaded: const Value(true),
-        isActive: const Value(false),
+        isActive: const Value(true), // Auto-activate on download/detection
         downloadedAt: Value(now),
         updatedAt: Value(now),
       ),

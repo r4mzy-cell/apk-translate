@@ -272,16 +272,14 @@ class _ModelCard extends ConsumerWidget {
                     ),
                   ),
                 ] else ...[
-                  if (model.type != ModelType.vad && model.type != ModelType.langId) ...[
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        icon: Icon(model.isActive ? Icons.check_circle : Icons.radio_button_unchecked),
-                        label: Text(model.isActive ? 'Aktif' : 'Aktifkan'),
-                        onPressed: () => manager.setActiveModel(model.id, !model.isActive),
-                      ),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: Icon(model.isActive ? Icons.check_circle : Icons.radio_button_unchecked),
+                      label: Text(model.isActive ? 'Aktif' : 'Aktifkan'),
+                      onPressed: () => manager.setActiveModel(model.id, !model.isActive),
                     ),
-                    const Gap(8),
-                  ],
+                  ),
+                  const Gap(8),
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.delete_outline),
