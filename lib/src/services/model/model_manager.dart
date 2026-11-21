@@ -284,14 +284,14 @@ class ModelDownloadConfig {
         'https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-id_ID-news_tts-medium.tar.bz2',
       ],
       extractPath: 'vits-piper-id_ID-news_tts-medium',
-      files: ['model.onnx', 'tokens.txt', 'config.json', 'espeak-ng-data'],
+      files: ['model.onnx', 'tokens.txt', 'config.json'],
+      optionalFiles: ['espeak-ng-data'],
       checksums: {
         'vits-piper-id_ID-news_tts-medium.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
       },
       renameMap: {
         'id_ID-news_tts-medium.onnx': 'model.onnx',
         'id_ID-news_tts-medium.onnx.json': 'config.json',
-        'id_ID-news_tts-medium.tokens.txt': 'tokens.txt',
       },
     ),
     'sherpa-tts-en': ModelDownloadInfo(
@@ -299,14 +299,14 @@ class ModelDownloadConfig {
         'https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-lessac-medium.tar.bz2',
       ],
       extractPath: 'vits-piper-en_US-lessac-medium',
-      files: ['model.onnx', 'tokens.txt', 'config.json', 'espeak-ng-data'],
+      files: ['model.onnx', 'tokens.txt', 'config.json'],
+      optionalFiles: ['espeak-ng-data'],
       checksums: {
         'vits-piper-en_US-lessac-medium.tar.bz2': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
       },
       renameMap: {
         'en_US-lessac-medium.onnx': 'model.onnx',
         'en_US-lessac-medium.onnx.json': 'config.json',
-        'en_US-lessac-medium.tokens.txt': 'tokens.txt',
       },
     ),
     'sherpa-vad-langid': ModelDownloadInfo(
@@ -368,6 +368,8 @@ class ModelDownloadInfo {
   final Map<String, String> checksums;
   /// Optional: map of extracted filename -> expected final filename (for post-extract renames)
   final Map<String, String> renameMap;
+  /// Optional files that are not required for model to be considered "complete" (e.g., espeak-ng-data directory)
+  final List<String> optionalFiles;
 
   const ModelDownloadInfo({
     required this.urls,
@@ -375,6 +377,7 @@ class ModelDownloadInfo {
     required this.files,
     this.checksums = const {},
     this.renameMap = const {},
+    this.optionalFiles = const [],
   });
 }
 
