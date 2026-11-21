@@ -57,7 +57,7 @@ class OcrResult {
 class TextBlock {
   final String text;
   final Rect boundingBox; // normalized 0-1
-  final List<Point> cornerPoints; // 4 corners
+  final List<Offset> cornerPoints; // 4 corners
   final double confidence;
   final String language;
 
@@ -78,37 +78,6 @@ class TextBlock {
       boundingBox.bottom * imageSize.height,
     );
   }
-}
-
-class Point {
-  final double x;
-  final double y;
-
-  const Point({required this.x, required this.y});
-}
-
-class Rect {
-  final double left;
-  final double top;
-  final double right;
-  final double bottom;
-
-  const Rect({required this.left, required this.top, required this.right, required this.bottom});
-
-  factory Rect.fromLTRB(double left, double top, double right, double bottom) {
-    return Rect(left: left, top: top, right: right, bottom: bottom);
-  }
-
-  double get width => right - left;
-  double get height => bottom - top;
-  Point get center => Point(x: (left + right) / 2, y: (top + bottom) / 2);
-}
-
-class Size {
-  final double width;
-  final double height;
-
-  const Size({required this.width, required this.height});
 }
 
 /// OCR Engine using ML Kit Text Recognition v2 via MethodChannel

@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/services/ocr/ocr_engine.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
-import 'package:translate_id/src/services/voice/voice_engine.dart';
 
 class CameraPage extends ConsumerStatefulWidget {
   const CameraPage({super.key});
