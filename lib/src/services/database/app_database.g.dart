@@ -12,104 +12,158 @@ class $HistoryEntriesTable extends HistoryEntries
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _sourceTextMeta =
-      const VerificationMeta('sourceText');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _sourceTextMeta = const VerificationMeta(
+    'sourceText',
+  );
   @override
   late final GeneratedColumn<String> sourceText = GeneratedColumn<String>(
-      'source_text', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(
-          minTextLength: 1, maxTextLength: 5000),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _targetTextMeta =
-      const VerificationMeta('targetText');
+    'source_text',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 5000,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetTextMeta = const VerificationMeta(
+    'targetText',
+  );
   @override
   late final GeneratedColumn<String> targetText = GeneratedColumn<String>(
-      'target_text', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(
-          minTextLength: 1, maxTextLength: 5000),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _sourceLangMeta =
-      const VerificationMeta('sourceLang');
+    'target_text',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 5000,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceLangMeta = const VerificationMeta(
+    'sourceLang',
+  );
   @override
   late final GeneratedColumn<String> sourceLang = GeneratedColumn<String>(
-      'source_lang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 2),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _targetLangMeta =
-      const VerificationMeta('targetLang');
+    'source_lang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 2,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetLangMeta = const VerificationMeta(
+    'targetLang',
+  );
   @override
   late final GeneratedColumn<String> targetLang = GeneratedColumn<String>(
-      'target_lang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 2),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _timestampMeta =
-      const VerificationMeta('timestamp');
+    'target_lang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 2,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
   @override
   late final GeneratedColumn<int> timestamp = GeneratedColumn<int>(
-      'timestamp', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 20),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _isStarredMeta =
-      const VerificationMeta('isStarred');
+    'type',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 20,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isStarredMeta = const VerificationMeta(
+    'isStarred',
+  );
   @override
   late final GeneratedColumn<bool> isStarred = GeneratedColumn<bool>(
-      'is_starred', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_starred" IN (0, 1))'),
-      defaultValue: const Constant(false));
-  static const VerificationMeta _contextMeta =
-      const VerificationMeta('context');
+    'is_starred',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_starred" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _contextMeta = const VerificationMeta(
+    'context',
+  );
   @override
   late final GeneratedColumn<String> context = GeneratedColumn<String>(
-      'context', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'context',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
   @override
   late final GeneratedColumn<String> tags = GeneratedColumn<String>(
-      'tags', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'tags',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
-        id,
-        sourceText,
-        targetText,
-        sourceLang,
-        targetLang,
-        timestamp,
-        type,
-        isStarred,
-        context,
-        tags
-      ];
+    id,
+    sourceText,
+    targetText,
+    sourceLang,
+    targetLang,
+    timestamp,
+    type,
+    isStarred,
+    context,
+    tags,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'history_entries';
   @override
-  VerificationContext validateIntegrity(Insertable<HistoryEntry> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<HistoryEntry> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
@@ -117,59 +171,69 @@ class $HistoryEntriesTable extends HistoryEntries
     }
     if (data.containsKey('source_text')) {
       context.handle(
-          _sourceTextMeta,
-          sourceText.isAcceptableOrUnknown(
-              data['source_text']!, _sourceTextMeta));
+        _sourceTextMeta,
+        sourceText.isAcceptableOrUnknown(data['source_text']!, _sourceTextMeta),
+      );
     } else if (isInserting) {
       context.missing(_sourceTextMeta);
     }
     if (data.containsKey('target_text')) {
       context.handle(
-          _targetTextMeta,
-          targetText.isAcceptableOrUnknown(
-              data['target_text']!, _targetTextMeta));
+        _targetTextMeta,
+        targetText.isAcceptableOrUnknown(data['target_text']!, _targetTextMeta),
+      );
     } else if (isInserting) {
       context.missing(_targetTextMeta);
     }
     if (data.containsKey('source_lang')) {
       context.handle(
-          _sourceLangMeta,
-          sourceLang.isAcceptableOrUnknown(
-              data['source_lang']!, _sourceLangMeta));
+        _sourceLangMeta,
+        sourceLang.isAcceptableOrUnknown(data['source_lang']!, _sourceLangMeta),
+      );
     } else if (isInserting) {
       context.missing(_sourceLangMeta);
     }
     if (data.containsKey('target_lang')) {
       context.handle(
-          _targetLangMeta,
-          targetLang.isAcceptableOrUnknown(
-              data['target_lang']!, _targetLangMeta));
+        _targetLangMeta,
+        targetLang.isAcceptableOrUnknown(data['target_lang']!, _targetLangMeta),
+      );
     } else if (isInserting) {
       context.missing(_targetLangMeta);
     }
     if (data.containsKey('timestamp')) {
-      context.handle(_timestampMeta,
-          timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta));
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
     } else if (isInserting) {
       context.missing(_timestampMeta);
     }
     if (data.containsKey('type')) {
       context.handle(
-          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
     } else if (isInserting) {
       context.missing(_typeMeta);
     }
     if (data.containsKey('is_starred')) {
-      context.handle(_isStarredMeta,
-          isStarred.isAcceptableOrUnknown(data['is_starred']!, _isStarredMeta));
+      context.handle(
+        _isStarredMeta,
+        isStarred.isAcceptableOrUnknown(data['is_starred']!, _isStarredMeta),
+      );
     }
     if (data.containsKey('context')) {
-      context.handle(_contextMeta,
-          this.context.isAcceptableOrUnknown(data['context']!, _contextMeta));
+      context.handle(
+        _contextMeta,
+        this.context.isAcceptableOrUnknown(data['context']!, _contextMeta),
+      );
     }
     if (data.containsKey('tags')) {
       context.handle(
-          _tagsMeta, tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta));
+        _tagsMeta,
+        tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta),
+      );
     }
     return context;
   }
@@ -180,26 +244,46 @@ class $HistoryEntriesTable extends HistoryEntries
   HistoryEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return HistoryEntry(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      sourceText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}source_text'])!,
-      targetText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}target_text'])!,
-      sourceLang: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}source_lang'])!,
-      targetLang: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}target_lang'])!,
-      timestamp: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}timestamp'])!,
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
-      isStarred: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_starred'])!,
-      context: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}context']),
-      tags: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}tags']),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      sourceText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_text'],
+      )!,
+      targetText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_text'],
+      )!,
+      sourceLang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_lang'],
+      )!,
+      targetLang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_lang'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}timestamp'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      isStarred: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_starred'],
+      )!,
+      context: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}context'],
+      ),
+      tags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tags'],
+      ),
     );
   }
 
@@ -220,17 +304,18 @@ class HistoryEntry extends DataClass implements Insertable<HistoryEntry> {
   final bool isStarred;
   final String? context;
   final String? tags;
-  const HistoryEntry(
-      {required this.id,
-      required this.sourceText,
-      required this.targetText,
-      required this.sourceLang,
-      required this.targetLang,
-      required this.timestamp,
-      required this.type,
-      required this.isStarred,
-      this.context,
-      this.tags});
+  const HistoryEntry({
+    required this.id,
+    required this.sourceText,
+    required this.targetText,
+    required this.sourceLang,
+    required this.targetLang,
+    required this.timestamp,
+    required this.type,
+    required this.isStarred,
+    this.context,
+    this.tags,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -268,8 +353,10 @@ class HistoryEntry extends DataClass implements Insertable<HistoryEntry> {
     );
   }
 
-  factory HistoryEntry.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory HistoryEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return HistoryEntry(
       id: serializer.fromJson<int>(json['id']),
@@ -301,40 +388,44 @@ class HistoryEntry extends DataClass implements Insertable<HistoryEntry> {
     };
   }
 
-  HistoryEntry copyWith(
-          {int? id,
-          String? sourceText,
-          String? targetText,
-          String? sourceLang,
-          String? targetLang,
-          int? timestamp,
-          String? type,
-          bool? isStarred,
-          Value<String?> context = const Value.absent(),
-          Value<String?> tags = const Value.absent()}) =>
-      HistoryEntry(
-        id: id ?? this.id,
-        sourceText: sourceText ?? this.sourceText,
-        targetText: targetText ?? this.targetText,
-        sourceLang: sourceLang ?? this.sourceLang,
-        targetLang: targetLang ?? this.targetLang,
-        timestamp: timestamp ?? this.timestamp,
-        type: type ?? this.type,
-        isStarred: isStarred ?? this.isStarred,
-        context: context.present ? context.value : this.context,
-        tags: tags.present ? tags.value : this.tags,
-      );
+  HistoryEntry copyWith({
+    int? id,
+    String? sourceText,
+    String? targetText,
+    String? sourceLang,
+    String? targetLang,
+    int? timestamp,
+    String? type,
+    bool? isStarred,
+    Value<String?> context = const Value.absent(),
+    Value<String?> tags = const Value.absent(),
+  }) => HistoryEntry(
+    id: id ?? this.id,
+    sourceText: sourceText ?? this.sourceText,
+    targetText: targetText ?? this.targetText,
+    sourceLang: sourceLang ?? this.sourceLang,
+    targetLang: targetLang ?? this.targetLang,
+    timestamp: timestamp ?? this.timestamp,
+    type: type ?? this.type,
+    isStarred: isStarred ?? this.isStarred,
+    context: context.present ? context.value : this.context,
+    tags: tags.present ? tags.value : this.tags,
+  );
   HistoryEntry copyWithCompanion(HistoryEntriesCompanion data) {
     return HistoryEntry(
       id: data.id.present ? data.id.value : this.id,
-      sourceText:
-          data.sourceText.present ? data.sourceText.value : this.sourceText,
-      targetText:
-          data.targetText.present ? data.targetText.value : this.targetText,
-      sourceLang:
-          data.sourceLang.present ? data.sourceLang.value : this.sourceLang,
-      targetLang:
-          data.targetLang.present ? data.targetLang.value : this.targetLang,
+      sourceText: data.sourceText.present
+          ? data.sourceText.value
+          : this.sourceText,
+      targetText: data.targetText.present
+          ? data.targetText.value
+          : this.targetText,
+      sourceLang: data.sourceLang.present
+          ? data.sourceLang.value
+          : this.sourceLang,
+      targetLang: data.targetLang.present
+          ? data.targetLang.value
+          : this.targetLang,
       timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
       type: data.type.present ? data.type.value : this.type,
       isStarred: data.isStarred.present ? data.isStarred.value : this.isStarred,
@@ -361,8 +452,18 @@ class HistoryEntry extends DataClass implements Insertable<HistoryEntry> {
   }
 
   @override
-  int get hashCode => Object.hash(id, sourceText, targetText, sourceLang,
-      targetLang, timestamp, type, isStarred, context, tags);
+  int get hashCode => Object.hash(
+    id,
+    sourceText,
+    targetText,
+    sourceLang,
+    targetLang,
+    timestamp,
+    type,
+    isStarred,
+    context,
+    tags,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -413,12 +514,12 @@ class HistoryEntriesCompanion extends UpdateCompanion<HistoryEntry> {
     this.isStarred = const Value.absent(),
     this.context = const Value.absent(),
     this.tags = const Value.absent(),
-  })  : sourceText = Value(sourceText),
-        targetText = Value(targetText),
-        sourceLang = Value(sourceLang),
-        targetLang = Value(targetLang),
-        timestamp = Value(timestamp),
-        type = Value(type);
+  }) : sourceText = Value(sourceText),
+       targetText = Value(targetText),
+       sourceLang = Value(sourceLang),
+       targetLang = Value(targetLang),
+       timestamp = Value(timestamp),
+       type = Value(type);
   static Insertable<HistoryEntry> custom({
     Expression<int>? id,
     Expression<String>? sourceText,
@@ -445,17 +546,18 @@ class HistoryEntriesCompanion extends UpdateCompanion<HistoryEntry> {
     });
   }
 
-  HistoryEntriesCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? sourceText,
-      Value<String>? targetText,
-      Value<String>? sourceLang,
-      Value<String>? targetLang,
-      Value<int>? timestamp,
-      Value<String>? type,
-      Value<bool>? isStarred,
-      Value<String?>? context,
-      Value<String?>? tags}) {
+  HistoryEntriesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? sourceText,
+    Value<String>? targetText,
+    Value<String>? sourceLang,
+    Value<String>? targetLang,
+    Value<int>? timestamp,
+    Value<String>? type,
+    Value<bool>? isStarred,
+    Value<String?>? context,
+    Value<String?>? tags,
+  }) {
     return HistoryEntriesCompanion(
       id: id ?? this.id,
       sourceText: sourceText ?? this.sourceText,
@@ -533,91 +635,140 @@ class $StarredWordsTable extends StarredWords
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _sourceTextMeta =
-      const VerificationMeta('sourceText');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _sourceTextMeta = const VerificationMeta(
+    'sourceText',
+  );
   @override
   late final GeneratedColumn<String> sourceText = GeneratedColumn<String>(
-      'source_text', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 200),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _targetTextMeta =
-      const VerificationMeta('targetText');
+    'source_text',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 200,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetTextMeta = const VerificationMeta(
+    'targetText',
+  );
   @override
   late final GeneratedColumn<String> targetText = GeneratedColumn<String>(
-      'target_text', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 200),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _sourceLangMeta =
-      const VerificationMeta('sourceLang');
+    'target_text',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 200,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceLangMeta = const VerificationMeta(
+    'sourceLang',
+  );
   @override
   late final GeneratedColumn<String> sourceLang = GeneratedColumn<String>(
-      'source_lang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 2),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _targetLangMeta =
-      const VerificationMeta('targetLang');
+    'source_lang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 2,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetLangMeta = const VerificationMeta(
+    'targetLang',
+  );
   @override
   late final GeneratedColumn<String> targetLang = GeneratedColumn<String>(
-      'target_lang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 2),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _contextMeta =
-      const VerificationMeta('context');
+    'target_lang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 2,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _contextMeta = const VerificationMeta(
+    'context',
+  );
   @override
   late final GeneratedColumn<String> context = GeneratedColumn<String>(
-      'context', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'context',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
   @override
   late final GeneratedColumn<String> tags = GeneratedColumn<String>(
-      'tags', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+    'tags',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
-        id,
-        sourceText,
-        targetText,
-        sourceLang,
-        targetLang,
-        context,
-        tags,
-        createdAt,
-        updatedAt
-      ];
+    id,
+    sourceText,
+    targetText,
+    sourceLang,
+    targetLang,
+    context,
+    tags,
+    createdAt,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'starred_words';
   @override
-  VerificationContext validateIntegrity(Insertable<StarredWord> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<StarredWord> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
@@ -625,53 +776,61 @@ class $StarredWordsTable extends StarredWords
     }
     if (data.containsKey('source_text')) {
       context.handle(
-          _sourceTextMeta,
-          sourceText.isAcceptableOrUnknown(
-              data['source_text']!, _sourceTextMeta));
+        _sourceTextMeta,
+        sourceText.isAcceptableOrUnknown(data['source_text']!, _sourceTextMeta),
+      );
     } else if (isInserting) {
       context.missing(_sourceTextMeta);
     }
     if (data.containsKey('target_text')) {
       context.handle(
-          _targetTextMeta,
-          targetText.isAcceptableOrUnknown(
-              data['target_text']!, _targetTextMeta));
+        _targetTextMeta,
+        targetText.isAcceptableOrUnknown(data['target_text']!, _targetTextMeta),
+      );
     } else if (isInserting) {
       context.missing(_targetTextMeta);
     }
     if (data.containsKey('source_lang')) {
       context.handle(
-          _sourceLangMeta,
-          sourceLang.isAcceptableOrUnknown(
-              data['source_lang']!, _sourceLangMeta));
+        _sourceLangMeta,
+        sourceLang.isAcceptableOrUnknown(data['source_lang']!, _sourceLangMeta),
+      );
     } else if (isInserting) {
       context.missing(_sourceLangMeta);
     }
     if (data.containsKey('target_lang')) {
       context.handle(
-          _targetLangMeta,
-          targetLang.isAcceptableOrUnknown(
-              data['target_lang']!, _targetLangMeta));
+        _targetLangMeta,
+        targetLang.isAcceptableOrUnknown(data['target_lang']!, _targetLangMeta),
+      );
     } else if (isInserting) {
       context.missing(_targetLangMeta);
     }
     if (data.containsKey('context')) {
-      context.handle(_contextMeta,
-          this.context.isAcceptableOrUnknown(data['context']!, _contextMeta));
+      context.handle(
+        _contextMeta,
+        this.context.isAcceptableOrUnknown(data['context']!, _contextMeta),
+      );
     }
     if (data.containsKey('tags')) {
       context.handle(
-          _tagsMeta, tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta));
+        _tagsMeta,
+        tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta),
+      );
     }
     if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
     if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
@@ -684,24 +843,42 @@ class $StarredWordsTable extends StarredWords
   StarredWord map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return StarredWord(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      sourceText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}source_text'])!,
-      targetText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}target_text'])!,
-      sourceLang: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}source_lang'])!,
-      targetLang: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}target_lang'])!,
-      context: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}context']),
-      tags: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}tags']),
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      sourceText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_text'],
+      )!,
+      targetText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_text'],
+      )!,
+      sourceLang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_lang'],
+      )!,
+      targetLang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_lang'],
+      )!,
+      context: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}context'],
+      ),
+      tags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tags'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -721,16 +898,17 @@ class StarredWord extends DataClass implements Insertable<StarredWord> {
   final String? tags;
   final int createdAt;
   final int updatedAt;
-  const StarredWord(
-      {required this.id,
-      required this.sourceText,
-      required this.targetText,
-      required this.sourceLang,
-      required this.targetLang,
-      this.context,
-      this.tags,
-      required this.createdAt,
-      required this.updatedAt});
+  const StarredWord({
+    required this.id,
+    required this.sourceText,
+    required this.targetText,
+    required this.sourceLang,
+    required this.targetLang,
+    this.context,
+    this.tags,
+    required this.createdAt,
+    required this.updatedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -766,8 +944,10 @@ class StarredWord extends DataClass implements Insertable<StarredWord> {
     );
   }
 
-  factory StarredWord.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory StarredWord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return StarredWord(
       id: serializer.fromJson<int>(json['id']),
@@ -797,38 +977,42 @@ class StarredWord extends DataClass implements Insertable<StarredWord> {
     };
   }
 
-  StarredWord copyWith(
-          {int? id,
-          String? sourceText,
-          String? targetText,
-          String? sourceLang,
-          String? targetLang,
-          Value<String?> context = const Value.absent(),
-          Value<String?> tags = const Value.absent(),
-          int? createdAt,
-          int? updatedAt}) =>
-      StarredWord(
-        id: id ?? this.id,
-        sourceText: sourceText ?? this.sourceText,
-        targetText: targetText ?? this.targetText,
-        sourceLang: sourceLang ?? this.sourceLang,
-        targetLang: targetLang ?? this.targetLang,
-        context: context.present ? context.value : this.context,
-        tags: tags.present ? tags.value : this.tags,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  StarredWord copyWith({
+    int? id,
+    String? sourceText,
+    String? targetText,
+    String? sourceLang,
+    String? targetLang,
+    Value<String?> context = const Value.absent(),
+    Value<String?> tags = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+  }) => StarredWord(
+    id: id ?? this.id,
+    sourceText: sourceText ?? this.sourceText,
+    targetText: targetText ?? this.targetText,
+    sourceLang: sourceLang ?? this.sourceLang,
+    targetLang: targetLang ?? this.targetLang,
+    context: context.present ? context.value : this.context,
+    tags: tags.present ? tags.value : this.tags,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
   StarredWord copyWithCompanion(StarredWordsCompanion data) {
     return StarredWord(
       id: data.id.present ? data.id.value : this.id,
-      sourceText:
-          data.sourceText.present ? data.sourceText.value : this.sourceText,
-      targetText:
-          data.targetText.present ? data.targetText.value : this.targetText,
-      sourceLang:
-          data.sourceLang.present ? data.sourceLang.value : this.sourceLang,
-      targetLang:
-          data.targetLang.present ? data.targetLang.value : this.targetLang,
+      sourceText: data.sourceText.present
+          ? data.sourceText.value
+          : this.sourceText,
+      targetText: data.targetText.present
+          ? data.targetText.value
+          : this.targetText,
+      sourceLang: data.sourceLang.present
+          ? data.sourceLang.value
+          : this.sourceLang,
+      targetLang: data.targetLang.present
+          ? data.targetLang.value
+          : this.targetLang,
       context: data.context.present ? data.context.value : this.context,
       tags: data.tags.present ? data.tags.value : this.tags,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -853,8 +1037,17 @@ class StarredWord extends DataClass implements Insertable<StarredWord> {
   }
 
   @override
-  int get hashCode => Object.hash(id, sourceText, targetText, sourceLang,
-      targetLang, context, tags, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    sourceText,
+    targetText,
+    sourceLang,
+    targetLang,
+    context,
+    tags,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -901,12 +1094,12 @@ class StarredWordsCompanion extends UpdateCompanion<StarredWord> {
     this.tags = const Value.absent(),
     required int createdAt,
     required int updatedAt,
-  })  : sourceText = Value(sourceText),
-        targetText = Value(targetText),
-        sourceLang = Value(sourceLang),
-        targetLang = Value(targetLang),
-        createdAt = Value(createdAt),
-        updatedAt = Value(updatedAt);
+  }) : sourceText = Value(sourceText),
+       targetText = Value(targetText),
+       sourceLang = Value(sourceLang),
+       targetLang = Value(targetLang),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
   static Insertable<StarredWord> custom({
     Expression<int>? id,
     Expression<String>? sourceText,
@@ -931,16 +1124,17 @@ class StarredWordsCompanion extends UpdateCompanion<StarredWord> {
     });
   }
 
-  StarredWordsCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? sourceText,
-      Value<String>? targetText,
-      Value<String>? sourceLang,
-      Value<String>? targetLang,
-      Value<String?>? context,
-      Value<String?>? tags,
-      Value<int>? createdAt,
-      Value<int>? updatedAt}) {
+  StarredWordsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? sourceText,
+    Value<String>? targetText,
+    Value<String>? sourceLang,
+    Value<String>? targetLang,
+    Value<String?>? context,
+    Value<String?>? tags,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+  }) {
     return StarredWordsCompanion(
       id: id ?? this.id,
       sourceText: sourceText ?? this.sourceText,
@@ -1013,162 +1207,287 @@ class $PhrasebookEntriesTable extends PhrasebookEntries
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _categoryMeta =
-      const VerificationMeta('category');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
   @override
   late final GeneratedColumn<String> category = GeneratedColumn<String>(
-      'category', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _sourceTextMeta =
-      const VerificationMeta('sourceText');
+    'category',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 50,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceTextMeta = const VerificationMeta(
+    'sourceText',
+  );
   @override
   late final GeneratedColumn<String> sourceText = GeneratedColumn<String>(
-      'source_text', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 500),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _targetTextFormalMeta =
-      const VerificationMeta('targetTextFormal');
+    'source_text',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 500,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetTextFormalMeta = const VerificationMeta(
+    'targetTextFormal',
+  );
   @override
   late final GeneratedColumn<String> targetTextFormal = GeneratedColumn<String>(
-      'target_text_formal', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 500),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _targetTextSlangMeta =
-      const VerificationMeta('targetTextSlang');
+    'target_text_formal',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 500,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetTextSlangMeta = const VerificationMeta(
+    'targetTextSlang',
+  );
   @override
   late final GeneratedColumn<String> targetTextSlang = GeneratedColumn<String>(
-      'target_text_slang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 500),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _sourceLangMeta =
-      const VerificationMeta('sourceLang');
+    'target_text_slang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 500,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceLangMeta = const VerificationMeta(
+    'sourceLang',
+  );
   @override
   late final GeneratedColumn<String> sourceLang = GeneratedColumn<String>(
-      'source_lang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 2),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _targetLangMeta =
-      const VerificationMeta('targetLang');
+    'source_lang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 2,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetLangMeta = const VerificationMeta(
+    'targetLang',
+  );
   @override
   late final GeneratedColumn<String> targetLang = GeneratedColumn<String>(
-      'target_lang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 2),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _sortOrderMeta =
-      const VerificationMeta('sortOrder');
+    'target_lang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 2,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
   @override
   late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
-      'sort_order', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
-  static const VerificationMeta _isCustomMeta =
-      const VerificationMeta('isCustom');
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _isCustomMeta = const VerificationMeta(
+    'isCustom',
+  );
   @override
   late final GeneratedColumn<bool> isCustom = GeneratedColumn<bool>(
-      'is_custom', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_custom" IN (0, 1))'),
-      defaultValue: const Constant(false));
+    'is_custom',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_custom" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isFavoriteMeta = const VerificationMeta(
+    'isFavorite',
+  );
+  @override
+  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
+    'is_favorite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_favorite" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
-        id,
-        category,
-        sourceText,
-        targetTextFormal,
-        targetTextSlang,
-        sourceLang,
-        targetLang,
-        sortOrder,
-        isCustom
-      ];
+    id,
+    category,
+    sourceText,
+    targetTextFormal,
+    targetTextSlang,
+    sourceLang,
+    targetLang,
+    sortOrder,
+    isCustom,
+    isFavorite,
+    createdAt,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'phrasebook_entries';
   @override
-  VerificationContext validateIntegrity(Insertable<PhrasebookEntry> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<PhrasebookEntry> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('category')) {
-      context.handle(_categoryMeta,
-          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
     } else if (isInserting) {
       context.missing(_categoryMeta);
     }
     if (data.containsKey('source_text')) {
       context.handle(
-          _sourceTextMeta,
-          sourceText.isAcceptableOrUnknown(
-              data['source_text']!, _sourceTextMeta));
+        _sourceTextMeta,
+        sourceText.isAcceptableOrUnknown(data['source_text']!, _sourceTextMeta),
+      );
     } else if (isInserting) {
       context.missing(_sourceTextMeta);
     }
     if (data.containsKey('target_text_formal')) {
       context.handle(
+        _targetTextFormalMeta,
+        targetTextFormal.isAcceptableOrUnknown(
+          data['target_text_formal']!,
           _targetTextFormalMeta,
-          targetTextFormal.isAcceptableOrUnknown(
-              data['target_text_formal']!, _targetTextFormalMeta));
+        ),
+      );
     } else if (isInserting) {
       context.missing(_targetTextFormalMeta);
     }
     if (data.containsKey('target_text_slang')) {
       context.handle(
+        _targetTextSlangMeta,
+        targetTextSlang.isAcceptableOrUnknown(
+          data['target_text_slang']!,
           _targetTextSlangMeta,
-          targetTextSlang.isAcceptableOrUnknown(
-              data['target_text_slang']!, _targetTextSlangMeta));
+        ),
+      );
     } else if (isInserting) {
       context.missing(_targetTextSlangMeta);
     }
     if (data.containsKey('source_lang')) {
       context.handle(
-          _sourceLangMeta,
-          sourceLang.isAcceptableOrUnknown(
-              data['source_lang']!, _sourceLangMeta));
+        _sourceLangMeta,
+        sourceLang.isAcceptableOrUnknown(data['source_lang']!, _sourceLangMeta),
+      );
     } else if (isInserting) {
       context.missing(_sourceLangMeta);
     }
     if (data.containsKey('target_lang')) {
       context.handle(
-          _targetLangMeta,
-          targetLang.isAcceptableOrUnknown(
-              data['target_lang']!, _targetLangMeta));
+        _targetLangMeta,
+        targetLang.isAcceptableOrUnknown(data['target_lang']!, _targetLangMeta),
+      );
     } else if (isInserting) {
       context.missing(_targetLangMeta);
     }
     if (data.containsKey('sort_order')) {
-      context.handle(_sortOrderMeta,
-          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
     }
     if (data.containsKey('is_custom')) {
-      context.handle(_isCustomMeta,
-          isCustom.isAcceptableOrUnknown(data['is_custom']!, _isCustomMeta));
+      context.handle(
+        _isCustomMeta,
+        isCustom.isAcceptableOrUnknown(data['is_custom']!, _isCustomMeta),
+      );
+    }
+    if (data.containsKey('is_favorite')) {
+      context.handle(
+        _isFavoriteMeta,
+        isFavorite.isAcceptableOrUnknown(data['is_favorite']!, _isFavoriteMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
     }
     return context;
   }
@@ -1179,24 +1498,54 @@ class $PhrasebookEntriesTable extends PhrasebookEntries
   PhrasebookEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return PhrasebookEntry(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      category: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
-      sourceText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}source_text'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      sourceText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_text'],
+      )!,
       targetTextFormal: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}target_text_formal'])!,
+        DriftSqlType.string,
+        data['${effectivePrefix}target_text_formal'],
+      )!,
       targetTextSlang: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}target_text_slang'])!,
-      sourceLang: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}source_lang'])!,
-      targetLang: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}target_lang'])!,
-      sortOrder: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}sort_order'])!,
-      isCustom: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_custom'])!,
+        DriftSqlType.string,
+        data['${effectivePrefix}target_text_slang'],
+      )!,
+      sourceLang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_lang'],
+      )!,
+      targetLang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_lang'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      isCustom: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_custom'],
+      )!,
+      isFavorite: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_favorite'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -1216,16 +1565,23 @@ class PhrasebookEntry extends DataClass implements Insertable<PhrasebookEntry> {
   final String targetLang;
   final int sortOrder;
   final bool isCustom;
-  const PhrasebookEntry(
-      {required this.id,
-      required this.category,
-      required this.sourceText,
-      required this.targetTextFormal,
-      required this.targetTextSlang,
-      required this.sourceLang,
-      required this.targetLang,
-      required this.sortOrder,
-      required this.isCustom});
+  final bool isFavorite;
+  final int createdAt;
+  final int updatedAt;
+  const PhrasebookEntry({
+    required this.id,
+    required this.category,
+    required this.sourceText,
+    required this.targetTextFormal,
+    required this.targetTextSlang,
+    required this.sourceLang,
+    required this.targetLang,
+    required this.sortOrder,
+    required this.isCustom,
+    required this.isFavorite,
+    required this.createdAt,
+    required this.updatedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1238,6 +1594,9 @@ class PhrasebookEntry extends DataClass implements Insertable<PhrasebookEntry> {
     map['target_lang'] = Variable<String>(targetLang);
     map['sort_order'] = Variable<int>(sortOrder);
     map['is_custom'] = Variable<bool>(isCustom);
+    map['is_favorite'] = Variable<bool>(isFavorite);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     return map;
   }
 
@@ -1252,11 +1611,16 @@ class PhrasebookEntry extends DataClass implements Insertable<PhrasebookEntry> {
       targetLang: Value(targetLang),
       sortOrder: Value(sortOrder),
       isCustom: Value(isCustom),
+      isFavorite: Value(isFavorite),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
-  factory PhrasebookEntry.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory PhrasebookEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PhrasebookEntry(
       id: serializer.fromJson<int>(json['id']),
@@ -1268,6 +1632,9 @@ class PhrasebookEntry extends DataClass implements Insertable<PhrasebookEntry> {
       targetLang: serializer.fromJson<String>(json['targetLang']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       isCustom: serializer.fromJson<bool>(json['isCustom']),
+      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
     );
   }
   @override
@@ -1283,48 +1650,65 @@ class PhrasebookEntry extends DataClass implements Insertable<PhrasebookEntry> {
       'targetLang': serializer.toJson<String>(targetLang),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'isCustom': serializer.toJson<bool>(isCustom),
+      'isFavorite': serializer.toJson<bool>(isFavorite),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
     };
   }
 
-  PhrasebookEntry copyWith(
-          {int? id,
-          String? category,
-          String? sourceText,
-          String? targetTextFormal,
-          String? targetTextSlang,
-          String? sourceLang,
-          String? targetLang,
-          int? sortOrder,
-          bool? isCustom}) =>
-      PhrasebookEntry(
-        id: id ?? this.id,
-        category: category ?? this.category,
-        sourceText: sourceText ?? this.sourceText,
-        targetTextFormal: targetTextFormal ?? this.targetTextFormal,
-        targetTextSlang: targetTextSlang ?? this.targetTextSlang,
-        sourceLang: sourceLang ?? this.sourceLang,
-        targetLang: targetLang ?? this.targetLang,
-        sortOrder: sortOrder ?? this.sortOrder,
-        isCustom: isCustom ?? this.isCustom,
-      );
+  PhrasebookEntry copyWith({
+    int? id,
+    String? category,
+    String? sourceText,
+    String? targetTextFormal,
+    String? targetTextSlang,
+    String? sourceLang,
+    String? targetLang,
+    int? sortOrder,
+    bool? isCustom,
+    bool? isFavorite,
+    int? createdAt,
+    int? updatedAt,
+  }) => PhrasebookEntry(
+    id: id ?? this.id,
+    category: category ?? this.category,
+    sourceText: sourceText ?? this.sourceText,
+    targetTextFormal: targetTextFormal ?? this.targetTextFormal,
+    targetTextSlang: targetTextSlang ?? this.targetTextSlang,
+    sourceLang: sourceLang ?? this.sourceLang,
+    targetLang: targetLang ?? this.targetLang,
+    sortOrder: sortOrder ?? this.sortOrder,
+    isCustom: isCustom ?? this.isCustom,
+    isFavorite: isFavorite ?? this.isFavorite,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
   PhrasebookEntry copyWithCompanion(PhrasebookEntriesCompanion data) {
     return PhrasebookEntry(
       id: data.id.present ? data.id.value : this.id,
       category: data.category.present ? data.category.value : this.category,
-      sourceText:
-          data.sourceText.present ? data.sourceText.value : this.sourceText,
+      sourceText: data.sourceText.present
+          ? data.sourceText.value
+          : this.sourceText,
       targetTextFormal: data.targetTextFormal.present
           ? data.targetTextFormal.value
           : this.targetTextFormal,
       targetTextSlang: data.targetTextSlang.present
           ? data.targetTextSlang.value
           : this.targetTextSlang,
-      sourceLang:
-          data.sourceLang.present ? data.sourceLang.value : this.sourceLang,
-      targetLang:
-          data.targetLang.present ? data.targetLang.value : this.targetLang,
+      sourceLang: data.sourceLang.present
+          ? data.sourceLang.value
+          : this.sourceLang,
+      targetLang: data.targetLang.present
+          ? data.targetLang.value
+          : this.targetLang,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
+      isFavorite: data.isFavorite.present
+          ? data.isFavorite.value
+          : this.isFavorite,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -1339,14 +1723,29 @@ class PhrasebookEntry extends DataClass implements Insertable<PhrasebookEntry> {
           ..write('sourceLang: $sourceLang, ')
           ..write('targetLang: $targetLang, ')
           ..write('sortOrder: $sortOrder, ')
-          ..write('isCustom: $isCustom')
+          ..write('isCustom: $isCustom, ')
+          ..write('isFavorite: $isFavorite, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, category, sourceText, targetTextFormal,
-      targetTextSlang, sourceLang, targetLang, sortOrder, isCustom);
+  int get hashCode => Object.hash(
+    id,
+    category,
+    sourceText,
+    targetTextFormal,
+    targetTextSlang,
+    sourceLang,
+    targetLang,
+    sortOrder,
+    isCustom,
+    isFavorite,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1359,7 +1758,10 @@ class PhrasebookEntry extends DataClass implements Insertable<PhrasebookEntry> {
           other.sourceLang == this.sourceLang &&
           other.targetLang == this.targetLang &&
           other.sortOrder == this.sortOrder &&
-          other.isCustom == this.isCustom);
+          other.isCustom == this.isCustom &&
+          other.isFavorite == this.isFavorite &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
@@ -1372,6 +1774,9 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
   final Value<String> targetLang;
   final Value<int> sortOrder;
   final Value<bool> isCustom;
+  final Value<bool> isFavorite;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
   const PhrasebookEntriesCompanion({
     this.id = const Value.absent(),
     this.category = const Value.absent(),
@@ -1382,6 +1787,9 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
     this.targetLang = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.isCustom = const Value.absent(),
+    this.isFavorite = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
   });
   PhrasebookEntriesCompanion.insert({
     this.id = const Value.absent(),
@@ -1393,12 +1801,17 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
     required String targetLang,
     this.sortOrder = const Value.absent(),
     this.isCustom = const Value.absent(),
-  })  : category = Value(category),
-        sourceText = Value(sourceText),
-        targetTextFormal = Value(targetTextFormal),
-        targetTextSlang = Value(targetTextSlang),
-        sourceLang = Value(sourceLang),
-        targetLang = Value(targetLang);
+    this.isFavorite = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+  }) : category = Value(category),
+       sourceText = Value(sourceText),
+       targetTextFormal = Value(targetTextFormal),
+       targetTextSlang = Value(targetTextSlang),
+       sourceLang = Value(sourceLang),
+       targetLang = Value(targetLang),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
   static Insertable<PhrasebookEntry> custom({
     Expression<int>? id,
     Expression<String>? category,
@@ -1409,6 +1822,9 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
     Expression<String>? targetLang,
     Expression<int>? sortOrder,
     Expression<bool>? isCustom,
+    Expression<bool>? isFavorite,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1420,19 +1836,26 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
       if (targetLang != null) 'target_lang': targetLang,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (isCustom != null) 'is_custom': isCustom,
+      if (isFavorite != null) 'is_favorite': isFavorite,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
 
-  PhrasebookEntriesCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? category,
-      Value<String>? sourceText,
-      Value<String>? targetTextFormal,
-      Value<String>? targetTextSlang,
-      Value<String>? sourceLang,
-      Value<String>? targetLang,
-      Value<int>? sortOrder,
-      Value<bool>? isCustom}) {
+  PhrasebookEntriesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? category,
+    Value<String>? sourceText,
+    Value<String>? targetTextFormal,
+    Value<String>? targetTextSlang,
+    Value<String>? sourceLang,
+    Value<String>? targetLang,
+    Value<int>? sortOrder,
+    Value<bool>? isCustom,
+    Value<bool>? isFavorite,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+  }) {
     return PhrasebookEntriesCompanion(
       id: id ?? this.id,
       category: category ?? this.category,
@@ -1443,6 +1866,9 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
       targetLang: targetLang ?? this.targetLang,
       sortOrder: sortOrder ?? this.sortOrder,
       isCustom: isCustom ?? this.isCustom,
+      isFavorite: isFavorite ?? this.isFavorite,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -1476,6 +1902,15 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
     if (isCustom.present) {
       map['is_custom'] = Variable<bool>(isCustom.value);
     }
+    if (isFavorite.present) {
+      map['is_favorite'] = Variable<bool>(isFavorite.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
     return map;
   }
 
@@ -1490,7 +1925,10 @@ class PhrasebookEntriesCompanion extends UpdateCompanion<PhrasebookEntry> {
           ..write('sourceLang: $sourceLang, ')
           ..write('targetLang: $targetLang, ')
           ..write('sortOrder: $sortOrder, ')
-          ..write('isCustom: $isCustom')
+          ..write('isCustom: $isCustom, ')
+          ..write('isFavorite: $isFavorite, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -1505,115 +1943,178 @@ class $ModelsTable extends Models
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 100),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
+    'id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 200),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 200,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 30),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _languageMeta =
-      const VerificationMeta('language');
+    'type',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 30,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _languageMeta = const VerificationMeta(
+    'language',
+  );
   @override
   late final GeneratedColumn<String> language = GeneratedColumn<String>(
-      'language', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 10),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _versionMeta =
-      const VerificationMeta('version');
+    'language',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 10,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
   @override
   late final GeneratedColumn<String> version = GeneratedColumn<String>(
-      'version', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _sizeBytesMeta =
-      const VerificationMeta('sizeBytes');
+    'version',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sizeBytesMeta = const VerificationMeta(
+    'sizeBytes',
+  );
   @override
   late final GeneratedColumn<int> sizeBytes = GeneratedColumn<int>(
-      'size_bytes', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _checksumMeta =
-      const VerificationMeta('checksum');
+    'size_bytes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _checksumMeta = const VerificationMeta(
+    'checksum',
+  );
   @override
   late final GeneratedColumn<String> checksum = GeneratedColumn<String>(
-      'checksum', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _localPathMeta =
-      const VerificationMeta('localPath');
+    'checksum',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _localPathMeta = const VerificationMeta(
+    'localPath',
+  );
   @override
   late final GeneratedColumn<String> localPath = GeneratedColumn<String>(
-      'local_path', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _isDownloadedMeta =
-      const VerificationMeta('isDownloaded');
+    'local_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isDownloadedMeta = const VerificationMeta(
+    'isDownloaded',
+  );
   @override
   late final GeneratedColumn<bool> isDownloaded = GeneratedColumn<bool>(
-      'is_downloaded', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("is_downloaded" IN (0, 1))'),
-      defaultValue: const Constant(false));
-  static const VerificationMeta _isActiveMeta =
-      const VerificationMeta('isActive');
+    'is_downloaded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_downloaded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
   @override
   late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-      'is_active', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
-      defaultValue: const Constant(false));
-  static const VerificationMeta _downloadedAtMeta =
-      const VerificationMeta('downloadedAt');
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _downloadedAtMeta = const VerificationMeta(
+    'downloadedAt',
+  );
   @override
   late final GeneratedColumn<int> downloadedAt = GeneratedColumn<int>(
-      'downloaded_at', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+    'downloaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
-      'updated_at', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
-        id,
-        name,
-        type,
-        language,
-        version,
-        sizeBytes,
-        checksum,
-        localPath,
-        isDownloaded,
-        isActive,
-        downloadedAt,
-        updatedAt
-      ];
+    id,
+    name,
+    type,
+    language,
+    version,
+    sizeBytes,
+    checksum,
+    localPath,
+    isDownloaded,
+    isActive,
+    downloadedAt,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'models';
   @override
-  VerificationContext validateIntegrity(Insertable<ModelInfoEntity> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<ModelInfoEntity> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
@@ -1623,93 +2124,141 @@ class $ModelsTable extends Models
     }
     if (data.containsKey('name')) {
       context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
     if (data.containsKey('type')) {
       context.handle(
-          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
     } else if (isInserting) {
       context.missing(_typeMeta);
     }
     if (data.containsKey('language')) {
-      context.handle(_languageMeta,
-          language.isAcceptableOrUnknown(data['language']!, _languageMeta));
+      context.handle(
+        _languageMeta,
+        language.isAcceptableOrUnknown(data['language']!, _languageMeta),
+      );
     } else if (isInserting) {
       context.missing(_languageMeta);
     }
     if (data.containsKey('version')) {
-      context.handle(_versionMeta,
-          version.isAcceptableOrUnknown(data['version']!, _versionMeta));
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
     }
     if (data.containsKey('size_bytes')) {
-      context.handle(_sizeBytesMeta,
-          sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta));
+      context.handle(
+        _sizeBytesMeta,
+        sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta),
+      );
     } else if (isInserting) {
       context.missing(_sizeBytesMeta);
     }
     if (data.containsKey('checksum')) {
-      context.handle(_checksumMeta,
-          checksum.isAcceptableOrUnknown(data['checksum']!, _checksumMeta));
+      context.handle(
+        _checksumMeta,
+        checksum.isAcceptableOrUnknown(data['checksum']!, _checksumMeta),
+      );
     }
     if (data.containsKey('local_path')) {
-      context.handle(_localPathMeta,
-          localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta));
+      context.handle(
+        _localPathMeta,
+        localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta),
+      );
     }
     if (data.containsKey('is_downloaded')) {
       context.handle(
+        _isDownloadedMeta,
+        isDownloaded.isAcceptableOrUnknown(
+          data['is_downloaded']!,
           _isDownloadedMeta,
-          isDownloaded.isAcceptableOrUnknown(
-              data['is_downloaded']!, _isDownloadedMeta));
+        ),
+      );
     }
     if (data.containsKey('is_active')) {
-      context.handle(_isActiveMeta,
-          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
     }
     if (data.containsKey('downloaded_at')) {
       context.handle(
+        _downloadedAtMeta,
+        downloadedAt.isAcceptableOrUnknown(
+          data['downloaded_at']!,
           _downloadedAtMeta,
-          downloadedAt.isAcceptableOrUnknown(
-              data['downloaded_at']!, _downloadedAtMeta));
+        ),
+      );
     }
     if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
     }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   ModelInfoEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ModelInfoEntity(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
-      language: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}language'])!,
-      version: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}version']),
-      sizeBytes: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}size_bytes'])!,
-      checksum: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}checksum']),
-      localPath: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}local_path']),
-      isDownloaded: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_downloaded'])!,
-      isActive: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
-      downloadedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}downloaded_at']),
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}updated_at']),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      language: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}version'],
+      ),
+      sizeBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}size_bytes'],
+      )!,
+      checksum: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}checksum'],
+      ),
+      localPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_path'],
+      ),
+      isDownloaded: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_downloaded'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      downloadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}downloaded_at'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      ),
     );
   }
 
@@ -1732,19 +2281,20 @@ class ModelInfoEntity extends DataClass implements Insertable<ModelInfoEntity> {
   final bool isActive;
   final int? downloadedAt;
   final int? updatedAt;
-  const ModelInfoEntity(
-      {required this.id,
-      required this.name,
-      required this.type,
-      required this.language,
-      this.version,
-      required this.sizeBytes,
-      this.checksum,
-      this.localPath,
-      required this.isDownloaded,
-      required this.isActive,
-      this.downloadedAt,
-      this.updatedAt});
+  const ModelInfoEntity({
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.language,
+    this.version,
+    required this.sizeBytes,
+    this.checksum,
+    this.localPath,
+    required this.isDownloaded,
+    required this.isActive,
+    this.downloadedAt,
+    this.updatedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1800,8 +2350,10 @@ class ModelInfoEntity extends DataClass implements Insertable<ModelInfoEntity> {
     );
   }
 
-  factory ModelInfoEntity.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory ModelInfoEntity.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ModelInfoEntity(
       id: serializer.fromJson<String>(json['id']),
@@ -1837,34 +2389,33 @@ class ModelInfoEntity extends DataClass implements Insertable<ModelInfoEntity> {
     };
   }
 
-  ModelInfoEntity copyWith(
-          {String? id,
-          String? name,
-          String? type,
-          String? language,
-          Value<String?> version = const Value.absent(),
-          int? sizeBytes,
-          Value<String?> checksum = const Value.absent(),
-          Value<String?> localPath = const Value.absent(),
-          bool? isDownloaded,
-          bool? isActive,
-          Value<int?> downloadedAt = const Value.absent(),
-          Value<int?> updatedAt = const Value.absent()}) =>
-      ModelInfoEntity(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        type: type ?? this.type,
-        language: language ?? this.language,
-        version: version.present ? version.value : this.version,
-        sizeBytes: sizeBytes ?? this.sizeBytes,
-        checksum: checksum.present ? checksum.value : this.checksum,
-        localPath: localPath.present ? localPath.value : this.localPath,
-        isDownloaded: isDownloaded ?? this.isDownloaded,
-        isActive: isActive ?? this.isActive,
-        downloadedAt:
-            downloadedAt.present ? downloadedAt.value : this.downloadedAt,
-        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
-      );
+  ModelInfoEntity copyWith({
+    String? id,
+    String? name,
+    String? type,
+    String? language,
+    Value<String?> version = const Value.absent(),
+    int? sizeBytes,
+    Value<String?> checksum = const Value.absent(),
+    Value<String?> localPath = const Value.absent(),
+    bool? isDownloaded,
+    bool? isActive,
+    Value<int?> downloadedAt = const Value.absent(),
+    Value<int?> updatedAt = const Value.absent(),
+  }) => ModelInfoEntity(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    type: type ?? this.type,
+    language: language ?? this.language,
+    version: version.present ? version.value : this.version,
+    sizeBytes: sizeBytes ?? this.sizeBytes,
+    checksum: checksum.present ? checksum.value : this.checksum,
+    localPath: localPath.present ? localPath.value : this.localPath,
+    isDownloaded: isDownloaded ?? this.isDownloaded,
+    isActive: isActive ?? this.isActive,
+    downloadedAt: downloadedAt.present ? downloadedAt.value : this.downloadedAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
   ModelInfoEntity copyWithCompanion(ModelsCompanion data) {
     return ModelInfoEntity(
       id: data.id.present ? data.id.value : this.id,
@@ -1906,8 +2457,20 @@ class ModelInfoEntity extends DataClass implements Insertable<ModelInfoEntity> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, type, language, version, sizeBytes,
-      checksum, localPath, isDownloaded, isActive, downloadedAt, updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    type,
+    language,
+    version,
+    sizeBytes,
+    checksum,
+    localPath,
+    isDownloaded,
+    isActive,
+    downloadedAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1969,11 +2532,11 @@ class ModelsCompanion extends UpdateCompanion<ModelInfoEntity> {
     this.downloadedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
-  })  : id = Value(id),
-        name = Value(name),
-        type = Value(type),
-        language = Value(language),
-        sizeBytes = Value(sizeBytes);
+  }) : id = Value(id),
+       name = Value(name),
+       type = Value(type),
+       language = Value(language),
+       sizeBytes = Value(sizeBytes);
   static Insertable<ModelInfoEntity> custom({
     Expression<String>? id,
     Expression<String>? name,
@@ -2006,20 +2569,21 @@ class ModelsCompanion extends UpdateCompanion<ModelInfoEntity> {
     });
   }
 
-  ModelsCompanion copyWith(
-      {Value<String>? id,
-      Value<String>? name,
-      Value<String>? type,
-      Value<String>? language,
-      Value<String?>? version,
-      Value<int>? sizeBytes,
-      Value<String?>? checksum,
-      Value<String?>? localPath,
-      Value<bool>? isDownloaded,
-      Value<bool>? isActive,
-      Value<int?>? downloadedAt,
-      Value<int?>? updatedAt,
-      Value<int>? rowid}) {
+  ModelsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? type,
+    Value<String>? language,
+    Value<String?>? version,
+    Value<int>? sizeBytes,
+    Value<String?>? checksum,
+    Value<String?>? localPath,
+    Value<bool>? isDownloaded,
+    Value<bool>? isActive,
+    Value<int?>? downloadedAt,
+    Value<int?>? updatedAt,
+    Value<int>? rowid,
+  }) {
     return ModelsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -2112,26 +2676,41 @@ class $UserPreferencesTable extends UserPreferences
   static const VerificationMeta _keyMeta = const VerificationMeta('key');
   @override
   late final GeneratedColumn<String> key = GeneratedColumn<String>(
-      'key', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 100),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
+    'key',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _valueMeta = const VerificationMeta('value');
   @override
   late final GeneratedColumn<String> value = GeneratedColumn<String>(
-      'value', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _valueTypeMeta =
-      const VerificationMeta('valueType');
+    'value',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _valueTypeMeta = const VerificationMeta(
+    'valueType',
+  );
   @override
   late final GeneratedColumn<String> valueType = GeneratedColumn<String>(
-      'value_type', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 20),
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('string'));
+    'value_type',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 20,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('string'),
+  );
   @override
   List<GeneratedColumn> get $columns => [key, value, valueType];
   @override
@@ -2140,23 +2719,31 @@ class $UserPreferencesTable extends UserPreferences
   String get actualTableName => $name;
   static const String $name = 'user_preferences';
   @override
-  VerificationContext validateIntegrity(Insertable<UserPreference> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<UserPreference> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('key')) {
       context.handle(
-          _keyMeta, key.isAcceptableOrUnknown(data['key']!, _keyMeta));
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
     } else if (isInserting) {
       context.missing(_keyMeta);
     }
     if (data.containsKey('value')) {
       context.handle(
-          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
     }
     if (data.containsKey('value_type')) {
-      context.handle(_valueTypeMeta,
-          valueType.isAcceptableOrUnknown(data['value_type']!, _valueTypeMeta));
+      context.handle(
+        _valueTypeMeta,
+        valueType.isAcceptableOrUnknown(data['value_type']!, _valueTypeMeta),
+      );
     }
     return context;
   }
@@ -2167,12 +2754,18 @@ class $UserPreferencesTable extends UserPreferences
   UserPreference map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return UserPreference(
-      key: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}key'])!,
-      value: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}value']),
-      valueType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}value_type'])!,
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      ),
+      valueType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value_type'],
+      )!,
     );
   }
 
@@ -2186,8 +2779,11 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
   final String key;
   final String? value;
   final String valueType;
-  const UserPreference(
-      {required this.key, this.value, required this.valueType});
+  const UserPreference({
+    required this.key,
+    this.value,
+    required this.valueType,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2202,14 +2798,17 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
   UserPreferencesCompanion toCompanion(bool nullToAbsent) {
     return UserPreferencesCompanion(
       key: Value(key),
-      value:
-          value == null && nullToAbsent ? const Value.absent() : Value(value),
+      value: value == null && nullToAbsent
+          ? const Value.absent()
+          : Value(value),
       valueType: Value(valueType),
     );
   }
 
-  factory UserPreference.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory UserPreference.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return UserPreference(
       key: serializer.fromJson<String>(json['key']),
@@ -2227,15 +2826,15 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
     };
   }
 
-  UserPreference copyWith(
-          {String? key,
-          Value<String?> value = const Value.absent(),
-          String? valueType}) =>
-      UserPreference(
-        key: key ?? this.key,
-        value: value.present ? value.value : this.value,
-        valueType: valueType ?? this.valueType,
-      );
+  UserPreference copyWith({
+    String? key,
+    Value<String?> value = const Value.absent(),
+    String? valueType,
+  }) => UserPreference(
+    key: key ?? this.key,
+    value: value.present ? value.value : this.value,
+    valueType: valueType ?? this.valueType,
+  );
   UserPreference copyWithCompanion(UserPreferencesCompanion data) {
     return UserPreference(
       key: data.key.present ? data.key.value : this.key,
@@ -2296,11 +2895,12 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     });
   }
 
-  UserPreferencesCompanion copyWith(
-      {Value<String>? key,
-      Value<String?>? value,
-      Value<String>? valueType,
-      Value<int>? rowid}) {
+  UserPreferencesCompanion copyWith({
+    Value<String>? key,
+    Value<String?>? value,
+    Value<String>? valueType,
+    Value<int>? rowid,
+  }) {
     return UserPreferencesCompanion(
       key: key ?? this.key,
       value: value ?? this.value,
@@ -2348,209 +2948,300 @@ class $DocumentJobsTable extends DocumentJobs
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _fileNameMeta =
-      const VerificationMeta('fileName');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _fileNameMeta = const VerificationMeta(
+    'fileName',
+  );
   @override
   late final GeneratedColumn<String> fileName = GeneratedColumn<String>(
-      'file_name', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 500),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _filePathMeta =
-      const VerificationMeta('filePath');
+    'file_name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 500,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _filePathMeta = const VerificationMeta(
+    'filePath',
+  );
   @override
   late final GeneratedColumn<String> filePath = GeneratedColumn<String>(
-      'file_path', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(
-          minTextLength: 1, maxTextLength: 1000),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _fileTypeMeta =
-      const VerificationMeta('fileType');
+    'file_path',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 1000,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fileTypeMeta = const VerificationMeta(
+    'fileType',
+  );
   @override
   late final GeneratedColumn<String> fileType = GeneratedColumn<String>(
-      'file_type', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 20),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _sourceLangMeta =
-      const VerificationMeta('sourceLang');
+    'file_type',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 20,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceLangMeta = const VerificationMeta(
+    'sourceLang',
+  );
   @override
   late final GeneratedColumn<String> sourceLang = GeneratedColumn<String>(
-      'source_lang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 2),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _targetLangMeta =
-      const VerificationMeta('targetLang');
+    'source_lang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 2,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetLangMeta = const VerificationMeta(
+    'targetLang',
+  );
   @override
   late final GeneratedColumn<String> targetLang = GeneratedColumn<String>(
-      'target_lang', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 2),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
+    'target_lang',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 2,
+      maxTextLength: 2,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
-      'status', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 20),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _totalSegmentsMeta =
-      const VerificationMeta('totalSegments');
+    'status',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 20,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalSegmentsMeta = const VerificationMeta(
+    'totalSegments',
+  );
   @override
   late final GeneratedColumn<int> totalSegments = GeneratedColumn<int>(
-      'total_segments', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
-  static const VerificationMeta _completedSegmentsMeta =
-      const VerificationMeta('completedSegments');
+    'total_segments',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _completedSegmentsMeta = const VerificationMeta(
+    'completedSegments',
+  );
   @override
   late final GeneratedColumn<int> completedSegments = GeneratedColumn<int>(
-      'completed_segments', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
-  static const VerificationMeta _outputPathMeta =
-      const VerificationMeta('outputPath');
+    'completed_segments',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _outputPathMeta = const VerificationMeta(
+    'outputPath',
+  );
   @override
   late final GeneratedColumn<String> outputPath = GeneratedColumn<String>(
-      'output_path', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _errorMessageMeta =
-      const VerificationMeta('errorMessage');
+    'output_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _errorMessageMeta = const VerificationMeta(
+    'errorMessage',
+  );
   @override
   late final GeneratedColumn<String> errorMessage = GeneratedColumn<String>(
-      'error_message', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+    'error_message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _completedAtMeta =
-      const VerificationMeta('completedAt');
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
   @override
   late final GeneratedColumn<int> completedAt = GeneratedColumn<int>(
-      'completed_at', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
-        id,
-        fileName,
-        filePath,
-        fileType,
-        sourceLang,
-        targetLang,
-        status,
-        totalSegments,
-        completedSegments,
-        outputPath,
-        errorMessage,
-        createdAt,
-        completedAt
-      ];
+    id,
+    fileName,
+    filePath,
+    fileType,
+    sourceLang,
+    targetLang,
+    status,
+    totalSegments,
+    completedSegments,
+    outputPath,
+    errorMessage,
+    createdAt,
+    completedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'document_jobs';
   @override
-  VerificationContext validateIntegrity(Insertable<DocumentJob> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<DocumentJob> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('file_name')) {
-      context.handle(_fileNameMeta,
-          fileName.isAcceptableOrUnknown(data['file_name']!, _fileNameMeta));
+      context.handle(
+        _fileNameMeta,
+        fileName.isAcceptableOrUnknown(data['file_name']!, _fileNameMeta),
+      );
     } else if (isInserting) {
       context.missing(_fileNameMeta);
     }
     if (data.containsKey('file_path')) {
-      context.handle(_filePathMeta,
-          filePath.isAcceptableOrUnknown(data['file_path']!, _filePathMeta));
+      context.handle(
+        _filePathMeta,
+        filePath.isAcceptableOrUnknown(data['file_path']!, _filePathMeta),
+      );
     } else if (isInserting) {
       context.missing(_filePathMeta);
     }
     if (data.containsKey('file_type')) {
-      context.handle(_fileTypeMeta,
-          fileType.isAcceptableOrUnknown(data['file_type']!, _fileTypeMeta));
+      context.handle(
+        _fileTypeMeta,
+        fileType.isAcceptableOrUnknown(data['file_type']!, _fileTypeMeta),
+      );
     } else if (isInserting) {
       context.missing(_fileTypeMeta);
     }
     if (data.containsKey('source_lang')) {
       context.handle(
-          _sourceLangMeta,
-          sourceLang.isAcceptableOrUnknown(
-              data['source_lang']!, _sourceLangMeta));
+        _sourceLangMeta,
+        sourceLang.isAcceptableOrUnknown(data['source_lang']!, _sourceLangMeta),
+      );
     } else if (isInserting) {
       context.missing(_sourceLangMeta);
     }
     if (data.containsKey('target_lang')) {
       context.handle(
-          _targetLangMeta,
-          targetLang.isAcceptableOrUnknown(
-              data['target_lang']!, _targetLangMeta));
+        _targetLangMeta,
+        targetLang.isAcceptableOrUnknown(data['target_lang']!, _targetLangMeta),
+      );
     } else if (isInserting) {
       context.missing(_targetLangMeta);
     }
     if (data.containsKey('status')) {
-      context.handle(_statusMeta,
-          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
     } else if (isInserting) {
       context.missing(_statusMeta);
     }
     if (data.containsKey('total_segments')) {
       context.handle(
+        _totalSegmentsMeta,
+        totalSegments.isAcceptableOrUnknown(
+          data['total_segments']!,
           _totalSegmentsMeta,
-          totalSegments.isAcceptableOrUnknown(
-              data['total_segments']!, _totalSegmentsMeta));
+        ),
+      );
     }
     if (data.containsKey('completed_segments')) {
       context.handle(
+        _completedSegmentsMeta,
+        completedSegments.isAcceptableOrUnknown(
+          data['completed_segments']!,
           _completedSegmentsMeta,
-          completedSegments.isAcceptableOrUnknown(
-              data['completed_segments']!, _completedSegmentsMeta));
+        ),
+      );
     }
     if (data.containsKey('output_path')) {
       context.handle(
-          _outputPathMeta,
-          outputPath.isAcceptableOrUnknown(
-              data['output_path']!, _outputPathMeta));
+        _outputPathMeta,
+        outputPath.isAcceptableOrUnknown(data['output_path']!, _outputPathMeta),
+      );
     }
     if (data.containsKey('error_message')) {
       context.handle(
+        _errorMessageMeta,
+        errorMessage.isAcceptableOrUnknown(
+          data['error_message']!,
           _errorMessageMeta,
-          errorMessage.isAcceptableOrUnknown(
-              data['error_message']!, _errorMessageMeta));
+        ),
+      );
     }
     if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
     if (data.containsKey('completed_at')) {
       context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
           _completedAtMeta,
-          completedAt.isAcceptableOrUnknown(
-              data['completed_at']!, _completedAtMeta));
+        ),
+      );
     }
     return context;
   }
@@ -2561,32 +3252,58 @@ class $DocumentJobsTable extends DocumentJobs
   DocumentJob map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DocumentJob(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      fileName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}file_name'])!,
-      filePath: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}file_path'])!,
-      fileType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}file_type'])!,
-      sourceLang: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}source_lang'])!,
-      targetLang: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}target_lang'])!,
-      status: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      totalSegments: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}total_segments'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      fileName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_name'],
+      )!,
+      filePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_path'],
+      )!,
+      fileType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_type'],
+      )!,
+      sourceLang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_lang'],
+      )!,
+      targetLang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_lang'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      totalSegments: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_segments'],
+      )!,
       completedSegments: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}completed_segments'])!,
-      outputPath: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}output_path']),
-      errorMessage: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}error_message']),
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
-      completedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}completed_at']),
+        DriftSqlType.int,
+        data['${effectivePrefix}completed_segments'],
+      )!,
+      outputPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}output_path'],
+      ),
+      errorMessage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error_message'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}completed_at'],
+      ),
     );
   }
 
@@ -2610,20 +3327,21 @@ class DocumentJob extends DataClass implements Insertable<DocumentJob> {
   final String? errorMessage;
   final int createdAt;
   final int? completedAt;
-  const DocumentJob(
-      {required this.id,
-      required this.fileName,
-      required this.filePath,
-      required this.fileType,
-      required this.sourceLang,
-      required this.targetLang,
-      required this.status,
-      required this.totalSegments,
-      required this.completedSegments,
-      this.outputPath,
-      this.errorMessage,
-      required this.createdAt,
-      this.completedAt});
+  const DocumentJob({
+    required this.id,
+    required this.fileName,
+    required this.filePath,
+    required this.fileType,
+    required this.sourceLang,
+    required this.targetLang,
+    required this.status,
+    required this.totalSegments,
+    required this.completedSegments,
+    this.outputPath,
+    this.errorMessage,
+    required this.createdAt,
+    this.completedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2673,8 +3391,10 @@ class DocumentJob extends DataClass implements Insertable<DocumentJob> {
     );
   }
 
-  factory DocumentJob.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory DocumentJob.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DocumentJob(
       id: serializer.fromJson<int>(json['id']),
@@ -2712,46 +3432,47 @@ class DocumentJob extends DataClass implements Insertable<DocumentJob> {
     };
   }
 
-  DocumentJob copyWith(
-          {int? id,
-          String? fileName,
-          String? filePath,
-          String? fileType,
-          String? sourceLang,
-          String? targetLang,
-          String? status,
-          int? totalSegments,
-          int? completedSegments,
-          Value<String?> outputPath = const Value.absent(),
-          Value<String?> errorMessage = const Value.absent(),
-          int? createdAt,
-          Value<int?> completedAt = const Value.absent()}) =>
-      DocumentJob(
-        id: id ?? this.id,
-        fileName: fileName ?? this.fileName,
-        filePath: filePath ?? this.filePath,
-        fileType: fileType ?? this.fileType,
-        sourceLang: sourceLang ?? this.sourceLang,
-        targetLang: targetLang ?? this.targetLang,
-        status: status ?? this.status,
-        totalSegments: totalSegments ?? this.totalSegments,
-        completedSegments: completedSegments ?? this.completedSegments,
-        outputPath: outputPath.present ? outputPath.value : this.outputPath,
-        errorMessage:
-            errorMessage.present ? errorMessage.value : this.errorMessage,
-        createdAt: createdAt ?? this.createdAt,
-        completedAt: completedAt.present ? completedAt.value : this.completedAt,
-      );
+  DocumentJob copyWith({
+    int? id,
+    String? fileName,
+    String? filePath,
+    String? fileType,
+    String? sourceLang,
+    String? targetLang,
+    String? status,
+    int? totalSegments,
+    int? completedSegments,
+    Value<String?> outputPath = const Value.absent(),
+    Value<String?> errorMessage = const Value.absent(),
+    int? createdAt,
+    Value<int?> completedAt = const Value.absent(),
+  }) => DocumentJob(
+    id: id ?? this.id,
+    fileName: fileName ?? this.fileName,
+    filePath: filePath ?? this.filePath,
+    fileType: fileType ?? this.fileType,
+    sourceLang: sourceLang ?? this.sourceLang,
+    targetLang: targetLang ?? this.targetLang,
+    status: status ?? this.status,
+    totalSegments: totalSegments ?? this.totalSegments,
+    completedSegments: completedSegments ?? this.completedSegments,
+    outputPath: outputPath.present ? outputPath.value : this.outputPath,
+    errorMessage: errorMessage.present ? errorMessage.value : this.errorMessage,
+    createdAt: createdAt ?? this.createdAt,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
+  );
   DocumentJob copyWithCompanion(DocumentJobsCompanion data) {
     return DocumentJob(
       id: data.id.present ? data.id.value : this.id,
       fileName: data.fileName.present ? data.fileName.value : this.fileName,
       filePath: data.filePath.present ? data.filePath.value : this.filePath,
       fileType: data.fileType.present ? data.fileType.value : this.fileType,
-      sourceLang:
-          data.sourceLang.present ? data.sourceLang.value : this.sourceLang,
-      targetLang:
-          data.targetLang.present ? data.targetLang.value : this.targetLang,
+      sourceLang: data.sourceLang.present
+          ? data.sourceLang.value
+          : this.sourceLang,
+      targetLang: data.targetLang.present
+          ? data.targetLang.value
+          : this.targetLang,
       status: data.status.present ? data.status.value : this.status,
       totalSegments: data.totalSegments.present
           ? data.totalSegments.value
@@ -2759,14 +3480,16 @@ class DocumentJob extends DataClass implements Insertable<DocumentJob> {
       completedSegments: data.completedSegments.present
           ? data.completedSegments.value
           : this.completedSegments,
-      outputPath:
-          data.outputPath.present ? data.outputPath.value : this.outputPath,
+      outputPath: data.outputPath.present
+          ? data.outputPath.value
+          : this.outputPath,
       errorMessage: data.errorMessage.present
           ? data.errorMessage.value
           : this.errorMessage,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      completedAt:
-          data.completedAt.present ? data.completedAt.value : this.completedAt,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
     );
   }
 
@@ -2792,19 +3515,20 @@ class DocumentJob extends DataClass implements Insertable<DocumentJob> {
 
   @override
   int get hashCode => Object.hash(
-      id,
-      fileName,
-      filePath,
-      fileType,
-      sourceLang,
-      targetLang,
-      status,
-      totalSegments,
-      completedSegments,
-      outputPath,
-      errorMessage,
-      createdAt,
-      completedAt);
+    id,
+    fileName,
+    filePath,
+    fileType,
+    sourceLang,
+    targetLang,
+    status,
+    totalSegments,
+    completedSegments,
+    outputPath,
+    errorMessage,
+    createdAt,
+    completedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2867,13 +3591,13 @@ class DocumentJobsCompanion extends UpdateCompanion<DocumentJob> {
     this.errorMessage = const Value.absent(),
     required int createdAt,
     this.completedAt = const Value.absent(),
-  })  : fileName = Value(fileName),
-        filePath = Value(filePath),
-        fileType = Value(fileType),
-        sourceLang = Value(sourceLang),
-        targetLang = Value(targetLang),
-        status = Value(status),
-        createdAt = Value(createdAt);
+  }) : fileName = Value(fileName),
+       filePath = Value(filePath),
+       fileType = Value(fileType),
+       sourceLang = Value(sourceLang),
+       targetLang = Value(targetLang),
+       status = Value(status),
+       createdAt = Value(createdAt);
   static Insertable<DocumentJob> custom({
     Expression<int>? id,
     Expression<String>? fileName,
@@ -2906,20 +3630,21 @@ class DocumentJobsCompanion extends UpdateCompanion<DocumentJob> {
     });
   }
 
-  DocumentJobsCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? fileName,
-      Value<String>? filePath,
-      Value<String>? fileType,
-      Value<String>? sourceLang,
-      Value<String>? targetLang,
-      Value<String>? status,
-      Value<int>? totalSegments,
-      Value<int>? completedSegments,
-      Value<String?>? outputPath,
-      Value<String?>? errorMessage,
-      Value<int>? createdAt,
-      Value<int?>? completedAt}) {
+  DocumentJobsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? fileName,
+    Value<String>? filePath,
+    Value<String>? fileType,
+    Value<String>? sourceLang,
+    Value<String>? targetLang,
+    Value<String>? status,
+    Value<int>? totalSegments,
+    Value<int>? completedSegments,
+    Value<String?>? outputPath,
+    Value<String?>? errorMessage,
+    Value<int>? createdAt,
+    Value<int?>? completedAt,
+  }) {
     return DocumentJobsCompanion(
       id: id ?? this.id,
       fileName: fileName ?? this.fileName,
@@ -3011,49 +3736,50 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PhrasebookEntriesTable phrasebookEntries =
       $PhrasebookEntriesTable(this);
   late final $ModelsTable models = $ModelsTable(this);
-  late final $UserPreferencesTable userPreferences =
-      $UserPreferencesTable(this);
+  late final $UserPreferencesTable userPreferences = $UserPreferencesTable(
+    this,
+  );
   late final $DocumentJobsTable documentJobs = $DocumentJobsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-        historyEntries,
-        starredWords,
-        phrasebookEntries,
-        models,
-        userPreferences,
-        documentJobs
-      ];
+    historyEntries,
+    starredWords,
+    phrasebookEntries,
+    models,
+    userPreferences,
+    documentJobs,
+  ];
 }
 
-typedef $$HistoryEntriesTableCreateCompanionBuilder = HistoryEntriesCompanion
-    Function({
-  Value<int> id,
-  required String sourceText,
-  required String targetText,
-  required String sourceLang,
-  required String targetLang,
-  required int timestamp,
-  required String type,
-  Value<bool> isStarred,
-  Value<String?> context,
-  Value<String?> tags,
-});
-typedef $$HistoryEntriesTableUpdateCompanionBuilder = HistoryEntriesCompanion
-    Function({
-  Value<int> id,
-  Value<String> sourceText,
-  Value<String> targetText,
-  Value<String> sourceLang,
-  Value<String> targetLang,
-  Value<int> timestamp,
-  Value<String> type,
-  Value<bool> isStarred,
-  Value<String?> context,
-  Value<String?> tags,
-});
+typedef $$HistoryEntriesTableCreateCompanionBuilder =
+    HistoryEntriesCompanion Function({
+      Value<int> id,
+      required String sourceText,
+      required String targetText,
+      required String sourceLang,
+      required String targetLang,
+      required int timestamp,
+      required String type,
+      Value<bool> isStarred,
+      Value<String?> context,
+      Value<String?> tags,
+    });
+typedef $$HistoryEntriesTableUpdateCompanionBuilder =
+    HistoryEntriesCompanion Function({
+      Value<int> id,
+      Value<String> sourceText,
+      Value<String> targetText,
+      Value<String> sourceLang,
+      Value<String> targetLang,
+      Value<int> timestamp,
+      Value<String> type,
+      Value<bool> isStarred,
+      Value<String?> context,
+      Value<String?> tags,
+    });
 
 class $$HistoryEntriesTableFilterComposer
     extends Composer<_$AppDatabase, $HistoryEntriesTable> {
@@ -3065,34 +3791,54 @@ class $$HistoryEntriesTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => ColumnFilters(column));
+    column: $table.sourceText,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get targetText => $composableBuilder(
-      column: $table.targetText, builder: (column) => ColumnFilters(column));
+    column: $table.targetText,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => ColumnFilters(column));
+    column: $table.sourceLang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => ColumnFilters(column));
+    column: $table.targetLang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get timestamp => $composableBuilder(
-      column: $table.timestamp, builder: (column) => ColumnFilters(column));
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get type => $composableBuilder(
-      column: $table.type, builder: (column) => ColumnFilters(column));
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<bool> get isStarred => $composableBuilder(
-      column: $table.isStarred, builder: (column) => ColumnFilters(column));
+    column: $table.isStarred,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get context => $composableBuilder(
-      column: $table.context, builder: (column) => ColumnFilters(column));
+    column: $table.context,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnFilters(column));
+    column: $table.tags,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$HistoryEntriesTableOrderingComposer
@@ -3105,34 +3851,54 @@ class $$HistoryEntriesTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => ColumnOrderings(column));
+    column: $table.sourceText,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get targetText => $composableBuilder(
-      column: $table.targetText, builder: (column) => ColumnOrderings(column));
+    column: $table.targetText,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => ColumnOrderings(column));
+    column: $table.sourceLang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => ColumnOrderings(column));
+    column: $table.targetLang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get timestamp => $composableBuilder(
-      column: $table.timestamp, builder: (column) => ColumnOrderings(column));
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get type => $composableBuilder(
-      column: $table.type, builder: (column) => ColumnOrderings(column));
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<bool> get isStarred => $composableBuilder(
-      column: $table.isStarred, builder: (column) => ColumnOrderings(column));
+    column: $table.isStarred,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get context => $composableBuilder(
-      column: $table.context, builder: (column) => ColumnOrderings(column));
+    column: $table.context,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnOrderings(column));
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$HistoryEntriesTableAnnotationComposer
@@ -3148,16 +3914,24 @@ class $$HistoryEntriesTableAnnotationComposer
       $composableBuilder(column: $table.id, builder: (column) => column);
 
   GeneratedColumn<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => column);
+    column: $table.sourceText,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get targetText => $composableBuilder(
-      column: $table.targetText, builder: (column) => column);
+    column: $table.targetText,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => column);
+    column: $table.sourceLang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => column);
+    column: $table.targetLang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get timestamp =>
       $composableBuilder(column: $table.timestamp, builder: (column) => column);
@@ -3175,24 +3949,29 @@ class $$HistoryEntriesTableAnnotationComposer
       $composableBuilder(column: $table.tags, builder: (column) => column);
 }
 
-class $$HistoryEntriesTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $HistoryEntriesTable,
-    HistoryEntry,
-    $$HistoryEntriesTableFilterComposer,
-    $$HistoryEntriesTableOrderingComposer,
-    $$HistoryEntriesTableAnnotationComposer,
-    $$HistoryEntriesTableCreateCompanionBuilder,
-    $$HistoryEntriesTableUpdateCompanionBuilder,
-    (
-      HistoryEntry,
-      BaseReferences<_$AppDatabase, $HistoryEntriesTable, HistoryEntry>
-    ),
-    HistoryEntry,
-    PrefetchHooks Function()> {
+class $$HistoryEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HistoryEntriesTable,
+          HistoryEntry,
+          $$HistoryEntriesTableFilterComposer,
+          $$HistoryEntriesTableOrderingComposer,
+          $$HistoryEntriesTableAnnotationComposer,
+          $$HistoryEntriesTableCreateCompanionBuilder,
+          $$HistoryEntriesTableUpdateCompanionBuilder,
+          (
+            HistoryEntry,
+            BaseReferences<_$AppDatabase, $HistoryEntriesTable, HistoryEntry>,
+          ),
+          HistoryEntry,
+          PrefetchHooks Function()
+        > {
   $$HistoryEntriesTableTableManager(
-      _$AppDatabase db, $HistoryEntriesTable table)
-      : super(TableManagerState(
+    _$AppDatabase db,
+    $HistoryEntriesTable table,
+  ) : super(
+        TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -3201,104 +3980,112 @@ class $$HistoryEntriesTableTableManager extends RootTableManager<
               $$HistoryEntriesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$HistoryEntriesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> sourceText = const Value.absent(),
-            Value<String> targetText = const Value.absent(),
-            Value<String> sourceLang = const Value.absent(),
-            Value<String> targetLang = const Value.absent(),
-            Value<int> timestamp = const Value.absent(),
-            Value<String> type = const Value.absent(),
-            Value<bool> isStarred = const Value.absent(),
-            Value<String?> context = const Value.absent(),
-            Value<String?> tags = const Value.absent(),
-          }) =>
-              HistoryEntriesCompanion(
-            id: id,
-            sourceText: sourceText,
-            targetText: targetText,
-            sourceLang: sourceLang,
-            targetLang: targetLang,
-            timestamp: timestamp,
-            type: type,
-            isStarred: isStarred,
-            context: context,
-            tags: tags,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String sourceText,
-            required String targetText,
-            required String sourceLang,
-            required String targetLang,
-            required int timestamp,
-            required String type,
-            Value<bool> isStarred = const Value.absent(),
-            Value<String?> context = const Value.absent(),
-            Value<String?> tags = const Value.absent(),
-          }) =>
-              HistoryEntriesCompanion.insert(
-            id: id,
-            sourceText: sourceText,
-            targetText: targetText,
-            sourceLang: sourceLang,
-            targetLang: targetLang,
-            timestamp: timestamp,
-            type: type,
-            isStarred: isStarred,
-            context: context,
-            tags: tags,
-          ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> sourceText = const Value.absent(),
+                Value<String> targetText = const Value.absent(),
+                Value<String> sourceLang = const Value.absent(),
+                Value<String> targetLang = const Value.absent(),
+                Value<int> timestamp = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<bool> isStarred = const Value.absent(),
+                Value<String?> context = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+              }) => HistoryEntriesCompanion(
+                id: id,
+                sourceText: sourceText,
+                targetText: targetText,
+                sourceLang: sourceLang,
+                targetLang: targetLang,
+                timestamp: timestamp,
+                type: type,
+                isStarred: isStarred,
+                context: context,
+                tags: tags,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String sourceText,
+                required String targetText,
+                required String sourceLang,
+                required String targetLang,
+                required int timestamp,
+                required String type,
+                Value<bool> isStarred = const Value.absent(),
+                Value<String?> context = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+              }) => HistoryEntriesCompanion.insert(
+                id: id,
+                sourceText: sourceText,
+                targetText: targetText,
+                sourceLang: sourceLang,
+                targetLang: targetLang,
+                timestamp: timestamp,
+                type: type,
+                isStarred: isStarred,
+                context: context,
+                tags: tags,
+              ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (
-                    e.readTable<$HistoryEntriesTable, HistoryEntry>(table),
-                    BaseReferences<_$AppDatabase, $HistoryEntriesTable,
-                        HistoryEntry>(db, table, e)
-                  ))
+              .map(
+                (e) => (
+                  e.readTable<$HistoryEntriesTable, HistoryEntry>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $HistoryEntriesTable,
+                    HistoryEntry
+                  >(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$HistoryEntriesTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $HistoryEntriesTable,
-    HistoryEntry,
-    $$HistoryEntriesTableFilterComposer,
-    $$HistoryEntriesTableOrderingComposer,
-    $$HistoryEntriesTableAnnotationComposer,
-    $$HistoryEntriesTableCreateCompanionBuilder,
-    $$HistoryEntriesTableUpdateCompanionBuilder,
-    (
+typedef $$HistoryEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HistoryEntriesTable,
       HistoryEntry,
-      BaseReferences<_$AppDatabase, $HistoryEntriesTable, HistoryEntry>
-    ),
-    HistoryEntry,
-    PrefetchHooks Function()>;
-typedef $$StarredWordsTableCreateCompanionBuilder = StarredWordsCompanion
-    Function({
-  Value<int> id,
-  required String sourceText,
-  required String targetText,
-  required String sourceLang,
-  required String targetLang,
-  Value<String?> context,
-  Value<String?> tags,
-  required int createdAt,
-  required int updatedAt,
-});
-typedef $$StarredWordsTableUpdateCompanionBuilder = StarredWordsCompanion
-    Function({
-  Value<int> id,
-  Value<String> sourceText,
-  Value<String> targetText,
-  Value<String> sourceLang,
-  Value<String> targetLang,
-  Value<String?> context,
-  Value<String?> tags,
-  Value<int> createdAt,
-  Value<int> updatedAt,
-});
+      $$HistoryEntriesTableFilterComposer,
+      $$HistoryEntriesTableOrderingComposer,
+      $$HistoryEntriesTableAnnotationComposer,
+      $$HistoryEntriesTableCreateCompanionBuilder,
+      $$HistoryEntriesTableUpdateCompanionBuilder,
+      (
+        HistoryEntry,
+        BaseReferences<_$AppDatabase, $HistoryEntriesTable, HistoryEntry>,
+      ),
+      HistoryEntry,
+      PrefetchHooks Function()
+    >;
+typedef $$StarredWordsTableCreateCompanionBuilder =
+    StarredWordsCompanion Function({
+      Value<int> id,
+      required String sourceText,
+      required String targetText,
+      required String sourceLang,
+      required String targetLang,
+      Value<String?> context,
+      Value<String?> tags,
+      required int createdAt,
+      required int updatedAt,
+    });
+typedef $$StarredWordsTableUpdateCompanionBuilder =
+    StarredWordsCompanion Function({
+      Value<int> id,
+      Value<String> sourceText,
+      Value<String> targetText,
+      Value<String> sourceLang,
+      Value<String> targetLang,
+      Value<String?> context,
+      Value<String?> tags,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+    });
 
 class $$StarredWordsTableFilterComposer
     extends Composer<_$AppDatabase, $StarredWordsTable> {
@@ -3310,31 +4097,49 @@ class $$StarredWordsTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => ColumnFilters(column));
+    column: $table.sourceText,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get targetText => $composableBuilder(
-      column: $table.targetText, builder: (column) => ColumnFilters(column));
+    column: $table.targetText,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => ColumnFilters(column));
+    column: $table.sourceLang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => ColumnFilters(column));
+    column: $table.targetLang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get context => $composableBuilder(
-      column: $table.context, builder: (column) => ColumnFilters(column));
+    column: $table.context,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnFilters(column));
+    column: $table.tags,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$StarredWordsTableOrderingComposer
@@ -3347,31 +4152,49 @@ class $$StarredWordsTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => ColumnOrderings(column));
+    column: $table.sourceText,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get targetText => $composableBuilder(
-      column: $table.targetText, builder: (column) => ColumnOrderings(column));
+    column: $table.targetText,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => ColumnOrderings(column));
+    column: $table.sourceLang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => ColumnOrderings(column));
+    column: $table.targetLang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get context => $composableBuilder(
-      column: $table.context, builder: (column) => ColumnOrderings(column));
+    column: $table.context,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnOrderings(column));
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$StarredWordsTableAnnotationComposer
@@ -3387,16 +4210,24 @@ class $$StarredWordsTableAnnotationComposer
       $composableBuilder(column: $table.id, builder: (column) => column);
 
   GeneratedColumn<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => column);
+    column: $table.sourceText,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get targetText => $composableBuilder(
-      column: $table.targetText, builder: (column) => column);
+    column: $table.targetText,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => column);
+    column: $table.sourceLang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => column);
+    column: $table.targetLang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get context =>
       $composableBuilder(column: $table.context, builder: (column) => column);
@@ -3411,23 +4242,27 @@ class $$StarredWordsTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$StarredWordsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $StarredWordsTable,
-    StarredWord,
-    $$StarredWordsTableFilterComposer,
-    $$StarredWordsTableOrderingComposer,
-    $$StarredWordsTableAnnotationComposer,
-    $$StarredWordsTableCreateCompanionBuilder,
-    $$StarredWordsTableUpdateCompanionBuilder,
-    (
-      StarredWord,
-      BaseReferences<_$AppDatabase, $StarredWordsTable, StarredWord>
-    ),
-    StarredWord,
-    PrefetchHooks Function()> {
+class $$StarredWordsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $StarredWordsTable,
+          StarredWord,
+          $$StarredWordsTableFilterComposer,
+          $$StarredWordsTableOrderingComposer,
+          $$StarredWordsTableAnnotationComposer,
+          $$StarredWordsTableCreateCompanionBuilder,
+          $$StarredWordsTableUpdateCompanionBuilder,
+          (
+            StarredWord,
+            BaseReferences<_$AppDatabase, $StarredWordsTable, StarredWord>,
+          ),
+          StarredWord,
+          PrefetchHooks Function()
+        > {
   $$StarredWordsTableTableManager(_$AppDatabase db, $StarredWordsTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -3436,100 +4271,114 @@ class $$StarredWordsTableTableManager extends RootTableManager<
               $$StarredWordsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$StarredWordsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> sourceText = const Value.absent(),
-            Value<String> targetText = const Value.absent(),
-            Value<String> sourceLang = const Value.absent(),
-            Value<String> targetLang = const Value.absent(),
-            Value<String?> context = const Value.absent(),
-            Value<String?> tags = const Value.absent(),
-            Value<int> createdAt = const Value.absent(),
-            Value<int> updatedAt = const Value.absent(),
-          }) =>
-              StarredWordsCompanion(
-            id: id,
-            sourceText: sourceText,
-            targetText: targetText,
-            sourceLang: sourceLang,
-            targetLang: targetLang,
-            context: context,
-            tags: tags,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String sourceText,
-            required String targetText,
-            required String sourceLang,
-            required String targetLang,
-            Value<String?> context = const Value.absent(),
-            Value<String?> tags = const Value.absent(),
-            required int createdAt,
-            required int updatedAt,
-          }) =>
-              StarredWordsCompanion.insert(
-            id: id,
-            sourceText: sourceText,
-            targetText: targetText,
-            sourceLang: sourceLang,
-            targetLang: targetLang,
-            context: context,
-            tags: tags,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> sourceText = const Value.absent(),
+                Value<String> targetText = const Value.absent(),
+                Value<String> sourceLang = const Value.absent(),
+                Value<String> targetLang = const Value.absent(),
+                Value<String?> context = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+              }) => StarredWordsCompanion(
+                id: id,
+                sourceText: sourceText,
+                targetText: targetText,
+                sourceLang: sourceLang,
+                targetLang: targetLang,
+                context: context,
+                tags: tags,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String sourceText,
+                required String targetText,
+                required String sourceLang,
+                required String targetLang,
+                Value<String?> context = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+              }) => StarredWordsCompanion.insert(
+                id: id,
+                sourceText: sourceText,
+                targetText: targetText,
+                sourceLang: sourceLang,
+                targetLang: targetLang,
+                context: context,
+                tags: tags,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (
-                    e.readTable<$StarredWordsTable, StarredWord>(table),
-                    BaseReferences<_$AppDatabase, $StarredWordsTable,
-                        StarredWord>(db, table, e)
-                  ))
+              .map(
+                (e) => (
+                  e.readTable<$StarredWordsTable, StarredWord>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $StarredWordsTable,
+                    StarredWord
+                  >(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$StarredWordsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $StarredWordsTable,
-    StarredWord,
-    $$StarredWordsTableFilterComposer,
-    $$StarredWordsTableOrderingComposer,
-    $$StarredWordsTableAnnotationComposer,
-    $$StarredWordsTableCreateCompanionBuilder,
-    $$StarredWordsTableUpdateCompanionBuilder,
-    (
+typedef $$StarredWordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $StarredWordsTable,
       StarredWord,
-      BaseReferences<_$AppDatabase, $StarredWordsTable, StarredWord>
-    ),
-    StarredWord,
-    PrefetchHooks Function()>;
-typedef $$PhrasebookEntriesTableCreateCompanionBuilder
-    = PhrasebookEntriesCompanion Function({
-  Value<int> id,
-  required String category,
-  required String sourceText,
-  required String targetTextFormal,
-  required String targetTextSlang,
-  required String sourceLang,
-  required String targetLang,
-  Value<int> sortOrder,
-  Value<bool> isCustom,
-});
-typedef $$PhrasebookEntriesTableUpdateCompanionBuilder
-    = PhrasebookEntriesCompanion Function({
-  Value<int> id,
-  Value<String> category,
-  Value<String> sourceText,
-  Value<String> targetTextFormal,
-  Value<String> targetTextSlang,
-  Value<String> sourceLang,
-  Value<String> targetLang,
-  Value<int> sortOrder,
-  Value<bool> isCustom,
-});
+      $$StarredWordsTableFilterComposer,
+      $$StarredWordsTableOrderingComposer,
+      $$StarredWordsTableAnnotationComposer,
+      $$StarredWordsTableCreateCompanionBuilder,
+      $$StarredWordsTableUpdateCompanionBuilder,
+      (
+        StarredWord,
+        BaseReferences<_$AppDatabase, $StarredWordsTable, StarredWord>,
+      ),
+      StarredWord,
+      PrefetchHooks Function()
+    >;
+typedef $$PhrasebookEntriesTableCreateCompanionBuilder =
+    PhrasebookEntriesCompanion Function({
+      Value<int> id,
+      required String category,
+      required String sourceText,
+      required String targetTextFormal,
+      required String targetTextSlang,
+      required String sourceLang,
+      required String targetLang,
+      Value<int> sortOrder,
+      Value<bool> isCustom,
+      Value<bool> isFavorite,
+      required int createdAt,
+      required int updatedAt,
+    });
+typedef $$PhrasebookEntriesTableUpdateCompanionBuilder =
+    PhrasebookEntriesCompanion Function({
+      Value<int> id,
+      Value<String> category,
+      Value<String> sourceText,
+      Value<String> targetTextFormal,
+      Value<String> targetTextSlang,
+      Value<String> sourceLang,
+      Value<String> targetLang,
+      Value<int> sortOrder,
+      Value<bool> isCustom,
+      Value<bool> isFavorite,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+    });
 
 class $$PhrasebookEntriesTableFilterComposer
     extends Composer<_$AppDatabase, $PhrasebookEntriesTable> {
@@ -3541,33 +4390,64 @@ class $$PhrasebookEntriesTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get category => $composableBuilder(
-      column: $table.category, builder: (column) => ColumnFilters(column));
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => ColumnFilters(column));
+    column: $table.sourceText,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get targetTextFormal => $composableBuilder(
-      column: $table.targetTextFormal,
-      builder: (column) => ColumnFilters(column));
+    column: $table.targetTextFormal,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get targetTextSlang => $composableBuilder(
-      column: $table.targetTextSlang,
-      builder: (column) => ColumnFilters(column));
+    column: $table.targetTextSlang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => ColumnFilters(column));
+    column: $table.sourceLang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => ColumnFilters(column));
+    column: $table.targetLang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get sortOrder => $composableBuilder(
-      column: $table.sortOrder, builder: (column) => ColumnFilters(column));
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<bool> get isCustom => $composableBuilder(
-      column: $table.isCustom, builder: (column) => ColumnFilters(column));
+    column: $table.isCustom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$PhrasebookEntriesTableOrderingComposer
@@ -3580,33 +4460,64 @@ class $$PhrasebookEntriesTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get category => $composableBuilder(
-      column: $table.category, builder: (column) => ColumnOrderings(column));
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => ColumnOrderings(column));
+    column: $table.sourceText,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get targetTextFormal => $composableBuilder(
-      column: $table.targetTextFormal,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.targetTextFormal,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get targetTextSlang => $composableBuilder(
-      column: $table.targetTextSlang,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.targetTextSlang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => ColumnOrderings(column));
+    column: $table.sourceLang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => ColumnOrderings(column));
+    column: $table.targetLang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get sortOrder => $composableBuilder(
-      column: $table.sortOrder, builder: (column) => ColumnOrderings(column));
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<bool> get isCustom => $composableBuilder(
-      column: $table.isCustom, builder: (column) => ColumnOrderings(column));
+    column: $table.isCustom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PhrasebookEntriesTableAnnotationComposer
@@ -3625,45 +4536,75 @@ class $$PhrasebookEntriesTableAnnotationComposer
       $composableBuilder(column: $table.category, builder: (column) => column);
 
   GeneratedColumn<String> get sourceText => $composableBuilder(
-      column: $table.sourceText, builder: (column) => column);
+    column: $table.sourceText,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get targetTextFormal => $composableBuilder(
-      column: $table.targetTextFormal, builder: (column) => column);
+    column: $table.targetTextFormal,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get targetTextSlang => $composableBuilder(
-      column: $table.targetTextSlang, builder: (column) => column);
+    column: $table.targetTextSlang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => column);
+    column: $table.sourceLang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => column);
+    column: $table.targetLang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
 
   GeneratedColumn<bool> get isCustom =>
       $composableBuilder(column: $table.isCustom, builder: (column) => column);
+
+  GeneratedColumn<bool> get isFavorite => $composableBuilder(
+    column: $table.isFavorite,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$PhrasebookEntriesTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $PhrasebookEntriesTable,
-    PhrasebookEntry,
-    $$PhrasebookEntriesTableFilterComposer,
-    $$PhrasebookEntriesTableOrderingComposer,
-    $$PhrasebookEntriesTableAnnotationComposer,
-    $$PhrasebookEntriesTableCreateCompanionBuilder,
-    $$PhrasebookEntriesTableUpdateCompanionBuilder,
-    (
-      PhrasebookEntry,
-      BaseReferences<_$AppDatabase, $PhrasebookEntriesTable, PhrasebookEntry>
-    ),
-    PhrasebookEntry,
-    PrefetchHooks Function()> {
+class $$PhrasebookEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PhrasebookEntriesTable,
+          PhrasebookEntry,
+          $$PhrasebookEntriesTableFilterComposer,
+          $$PhrasebookEntriesTableOrderingComposer,
+          $$PhrasebookEntriesTableAnnotationComposer,
+          $$PhrasebookEntriesTableCreateCompanionBuilder,
+          $$PhrasebookEntriesTableUpdateCompanionBuilder,
+          (
+            PhrasebookEntry,
+            BaseReferences<
+              _$AppDatabase,
+              $PhrasebookEntriesTable,
+              PhrasebookEntry
+            >,
+          ),
+          PhrasebookEntry,
+          PrefetchHooks Function()
+        > {
   $$PhrasebookEntriesTableTableManager(
-      _$AppDatabase db, $PhrasebookEntriesTable table)
-      : super(TableManagerState(
+    _$AppDatabase db,
+    $PhrasebookEntriesTable table,
+  ) : super(
+        TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -3672,108 +4613,131 @@ class $$PhrasebookEntriesTableTableManager extends RootTableManager<
               $$PhrasebookEntriesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$PhrasebookEntriesTableAnnotationComposer(
-                  $db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> category = const Value.absent(),
-            Value<String> sourceText = const Value.absent(),
-            Value<String> targetTextFormal = const Value.absent(),
-            Value<String> targetTextSlang = const Value.absent(),
-            Value<String> sourceLang = const Value.absent(),
-            Value<String> targetLang = const Value.absent(),
-            Value<int> sortOrder = const Value.absent(),
-            Value<bool> isCustom = const Value.absent(),
-          }) =>
-              PhrasebookEntriesCompanion(
-            id: id,
-            category: category,
-            sourceText: sourceText,
-            targetTextFormal: targetTextFormal,
-            targetTextSlang: targetTextSlang,
-            sourceLang: sourceLang,
-            targetLang: targetLang,
-            sortOrder: sortOrder,
-            isCustom: isCustom,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String category,
-            required String sourceText,
-            required String targetTextFormal,
-            required String targetTextSlang,
-            required String sourceLang,
-            required String targetLang,
-            Value<int> sortOrder = const Value.absent(),
-            Value<bool> isCustom = const Value.absent(),
-          }) =>
-              PhrasebookEntriesCompanion.insert(
-            id: id,
-            category: category,
-            sourceText: sourceText,
-            targetTextFormal: targetTextFormal,
-            targetTextSlang: targetTextSlang,
-            sourceLang: sourceLang,
-            targetLang: targetLang,
-            sortOrder: sortOrder,
-            isCustom: isCustom,
-          ),
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String> sourceText = const Value.absent(),
+                Value<String> targetTextFormal = const Value.absent(),
+                Value<String> targetTextSlang = const Value.absent(),
+                Value<String> sourceLang = const Value.absent(),
+                Value<String> targetLang = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<bool> isCustom = const Value.absent(),
+                Value<bool> isFavorite = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+              }) => PhrasebookEntriesCompanion(
+                id: id,
+                category: category,
+                sourceText: sourceText,
+                targetTextFormal: targetTextFormal,
+                targetTextSlang: targetTextSlang,
+                sourceLang: sourceLang,
+                targetLang: targetLang,
+                sortOrder: sortOrder,
+                isCustom: isCustom,
+                isFavorite: isFavorite,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String category,
+                required String sourceText,
+                required String targetTextFormal,
+                required String targetTextSlang,
+                required String sourceLang,
+                required String targetLang,
+                Value<int> sortOrder = const Value.absent(),
+                Value<bool> isCustom = const Value.absent(),
+                Value<bool> isFavorite = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+              }) => PhrasebookEntriesCompanion.insert(
+                id: id,
+                category: category,
+                sourceText: sourceText,
+                targetTextFormal: targetTextFormal,
+                targetTextSlang: targetTextSlang,
+                sourceLang: sourceLang,
+                targetLang: targetLang,
+                sortOrder: sortOrder,
+                isCustom: isCustom,
+                isFavorite: isFavorite,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (
-                    e.readTable<$PhrasebookEntriesTable, PhrasebookEntry>(
-                        table),
-                    BaseReferences<_$AppDatabase, $PhrasebookEntriesTable,
-                        PhrasebookEntry>(db, table, e)
-                  ))
+              .map(
+                (e) => (
+                  e.readTable<$PhrasebookEntriesTable, PhrasebookEntry>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $PhrasebookEntriesTable,
+                    PhrasebookEntry
+                  >(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$PhrasebookEntriesTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $PhrasebookEntriesTable,
-    PhrasebookEntry,
-    $$PhrasebookEntriesTableFilterComposer,
-    $$PhrasebookEntriesTableOrderingComposer,
-    $$PhrasebookEntriesTableAnnotationComposer,
-    $$PhrasebookEntriesTableCreateCompanionBuilder,
-    $$PhrasebookEntriesTableUpdateCompanionBuilder,
-    (
+typedef $$PhrasebookEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PhrasebookEntriesTable,
       PhrasebookEntry,
-      BaseReferences<_$AppDatabase, $PhrasebookEntriesTable, PhrasebookEntry>
-    ),
-    PhrasebookEntry,
-    PrefetchHooks Function()>;
-typedef $$ModelsTableCreateCompanionBuilder = ModelsCompanion Function({
-  required String id,
-  required String name,
-  required String type,
-  required String language,
-  Value<String?> version,
-  required int sizeBytes,
-  Value<String?> checksum,
-  Value<String?> localPath,
-  Value<bool> isDownloaded,
-  Value<bool> isActive,
-  Value<int?> downloadedAt,
-  Value<int?> updatedAt,
-  Value<int> rowid,
-});
-typedef $$ModelsTableUpdateCompanionBuilder = ModelsCompanion Function({
-  Value<String> id,
-  Value<String> name,
-  Value<String> type,
-  Value<String> language,
-  Value<String?> version,
-  Value<int> sizeBytes,
-  Value<String?> checksum,
-  Value<String?> localPath,
-  Value<bool> isDownloaded,
-  Value<bool> isActive,
-  Value<int?> downloadedAt,
-  Value<int?> updatedAt,
-  Value<int> rowid,
-});
+      $$PhrasebookEntriesTableFilterComposer,
+      $$PhrasebookEntriesTableOrderingComposer,
+      $$PhrasebookEntriesTableAnnotationComposer,
+      $$PhrasebookEntriesTableCreateCompanionBuilder,
+      $$PhrasebookEntriesTableUpdateCompanionBuilder,
+      (
+        PhrasebookEntry,
+        BaseReferences<_$AppDatabase, $PhrasebookEntriesTable, PhrasebookEntry>,
+      ),
+      PhrasebookEntry,
+      PrefetchHooks Function()
+    >;
+typedef $$ModelsTableCreateCompanionBuilder =
+    ModelsCompanion Function({
+      required String id,
+      required String name,
+      required String type,
+      required String language,
+      Value<String?> version,
+      required int sizeBytes,
+      Value<String?> checksum,
+      Value<String?> localPath,
+      Value<bool> isDownloaded,
+      Value<bool> isActive,
+      Value<int?> downloadedAt,
+      Value<int?> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ModelsTableUpdateCompanionBuilder =
+    ModelsCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> type,
+      Value<String> language,
+      Value<String?> version,
+      Value<int> sizeBytes,
+      Value<String?> checksum,
+      Value<String?> localPath,
+      Value<bool> isDownloaded,
+      Value<bool> isActive,
+      Value<int?> downloadedAt,
+      Value<int?> updatedAt,
+      Value<int> rowid,
+    });
 
 class $$ModelsTableFilterComposer
     extends Composer<_$AppDatabase, $ModelsTable> {
@@ -3785,40 +4749,64 @@ class $$ModelsTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnFilters(column));
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get type => $composableBuilder(
-      column: $table.type, builder: (column) => ColumnFilters(column));
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get language => $composableBuilder(
-      column: $table.language, builder: (column) => ColumnFilters(column));
+    column: $table.language,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get version => $composableBuilder(
-      column: $table.version, builder: (column) => ColumnFilters(column));
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get sizeBytes => $composableBuilder(
-      column: $table.sizeBytes, builder: (column) => ColumnFilters(column));
+    column: $table.sizeBytes,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get checksum => $composableBuilder(
-      column: $table.checksum, builder: (column) => ColumnFilters(column));
+    column: $table.checksum,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get localPath => $composableBuilder(
-      column: $table.localPath, builder: (column) => ColumnFilters(column));
+    column: $table.localPath,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<bool> get isDownloaded => $composableBuilder(
-      column: $table.isDownloaded, builder: (column) => ColumnFilters(column));
+    column: $table.isDownloaded,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<bool> get isActive => $composableBuilder(
-      column: $table.isActive, builder: (column) => ColumnFilters(column));
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get downloadedAt => $composableBuilder(
-      column: $table.downloadedAt, builder: (column) => ColumnFilters(column));
+    column: $table.downloadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$ModelsTableOrderingComposer
@@ -3831,42 +4819,64 @@ class $$ModelsTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnOrderings(column));
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get type => $composableBuilder(
-      column: $table.type, builder: (column) => ColumnOrderings(column));
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get language => $composableBuilder(
-      column: $table.language, builder: (column) => ColumnOrderings(column));
+    column: $table.language,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get version => $composableBuilder(
-      column: $table.version, builder: (column) => ColumnOrderings(column));
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get sizeBytes => $composableBuilder(
-      column: $table.sizeBytes, builder: (column) => ColumnOrderings(column));
+    column: $table.sizeBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get checksum => $composableBuilder(
-      column: $table.checksum, builder: (column) => ColumnOrderings(column));
+    column: $table.checksum,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get localPath => $composableBuilder(
-      column: $table.localPath, builder: (column) => ColumnOrderings(column));
+    column: $table.localPath,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<bool> get isDownloaded => $composableBuilder(
-      column: $table.isDownloaded,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.isDownloaded,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<bool> get isActive => $composableBuilder(
-      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get downloadedAt => $composableBuilder(
-      column: $table.downloadedAt,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.downloadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ModelsTableAnnotationComposer
@@ -3903,35 +4913,43 @@ class $$ModelsTableAnnotationComposer
       $composableBuilder(column: $table.localPath, builder: (column) => column);
 
   GeneratedColumn<bool> get isDownloaded => $composableBuilder(
-      column: $table.isDownloaded, builder: (column) => column);
+    column: $table.isDownloaded,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<bool> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
 
   GeneratedColumn<int> get downloadedAt => $composableBuilder(
-      column: $table.downloadedAt, builder: (column) => column);
+    column: $table.downloadedAt,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$ModelsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $ModelsTable,
-    ModelInfoEntity,
-    $$ModelsTableFilterComposer,
-    $$ModelsTableOrderingComposer,
-    $$ModelsTableAnnotationComposer,
-    $$ModelsTableCreateCompanionBuilder,
-    $$ModelsTableUpdateCompanionBuilder,
-    (
-      ModelInfoEntity,
-      BaseReferences<_$AppDatabase, $ModelsTable, ModelInfoEntity>
-    ),
-    ModelInfoEntity,
-    PrefetchHooks Function()> {
+class $$ModelsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ModelsTable,
+          ModelInfoEntity,
+          $$ModelsTableFilterComposer,
+          $$ModelsTableOrderingComposer,
+          $$ModelsTableAnnotationComposer,
+          $$ModelsTableCreateCompanionBuilder,
+          $$ModelsTableUpdateCompanionBuilder,
+          (
+            ModelInfoEntity,
+            BaseReferences<_$AppDatabase, $ModelsTable, ModelInfoEntity>,
+          ),
+          ModelInfoEntity,
+          PrefetchHooks Function()
+        > {
   $$ModelsTableTableManager(_$AppDatabase db, $ModelsTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -3940,106 +4958,114 @@ class $$ModelsTableTableManager extends RootTableManager<
               $$ModelsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$ModelsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<String> id = const Value.absent(),
-            Value<String> name = const Value.absent(),
-            Value<String> type = const Value.absent(),
-            Value<String> language = const Value.absent(),
-            Value<String?> version = const Value.absent(),
-            Value<int> sizeBytes = const Value.absent(),
-            Value<String?> checksum = const Value.absent(),
-            Value<String?> localPath = const Value.absent(),
-            Value<bool> isDownloaded = const Value.absent(),
-            Value<bool> isActive = const Value.absent(),
-            Value<int?> downloadedAt = const Value.absent(),
-            Value<int?> updatedAt = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              ModelsCompanion(
-            id: id,
-            name: name,
-            type: type,
-            language: language,
-            version: version,
-            sizeBytes: sizeBytes,
-            checksum: checksum,
-            localPath: localPath,
-            isDownloaded: isDownloaded,
-            isActive: isActive,
-            downloadedAt: downloadedAt,
-            updatedAt: updatedAt,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String id,
-            required String name,
-            required String type,
-            required String language,
-            Value<String?> version = const Value.absent(),
-            required int sizeBytes,
-            Value<String?> checksum = const Value.absent(),
-            Value<String?> localPath = const Value.absent(),
-            Value<bool> isDownloaded = const Value.absent(),
-            Value<bool> isActive = const Value.absent(),
-            Value<int?> downloadedAt = const Value.absent(),
-            Value<int?> updatedAt = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              ModelsCompanion.insert(
-            id: id,
-            name: name,
-            type: type,
-            language: language,
-            version: version,
-            sizeBytes: sizeBytes,
-            checksum: checksum,
-            localPath: localPath,
-            isDownloaded: isDownloaded,
-            isActive: isActive,
-            downloadedAt: downloadedAt,
-            updatedAt: updatedAt,
-            rowid: rowid,
-          ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> language = const Value.absent(),
+                Value<String?> version = const Value.absent(),
+                Value<int> sizeBytes = const Value.absent(),
+                Value<String?> checksum = const Value.absent(),
+                Value<String?> localPath = const Value.absent(),
+                Value<bool> isDownloaded = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int?> downloadedAt = const Value.absent(),
+                Value<int?> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ModelsCompanion(
+                id: id,
+                name: name,
+                type: type,
+                language: language,
+                version: version,
+                sizeBytes: sizeBytes,
+                checksum: checksum,
+                localPath: localPath,
+                isDownloaded: isDownloaded,
+                isActive: isActive,
+                downloadedAt: downloadedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String type,
+                required String language,
+                Value<String?> version = const Value.absent(),
+                required int sizeBytes,
+                Value<String?> checksum = const Value.absent(),
+                Value<String?> localPath = const Value.absent(),
+                Value<bool> isDownloaded = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int?> downloadedAt = const Value.absent(),
+                Value<int?> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ModelsCompanion.insert(
+                id: id,
+                name: name,
+                type: type,
+                language: language,
+                version: version,
+                sizeBytes: sizeBytes,
+                checksum: checksum,
+                localPath: localPath,
+                isDownloaded: isDownloaded,
+                isActive: isActive,
+                downloadedAt: downloadedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (
-                    e.readTable<$ModelsTable, ModelInfoEntity>(table),
-                    BaseReferences<_$AppDatabase, $ModelsTable,
-                        ModelInfoEntity>(db, table, e)
-                  ))
+              .map(
+                (e) => (
+                  e.readTable<$ModelsTable, ModelInfoEntity>(table),
+                  BaseReferences<_$AppDatabase, $ModelsTable, ModelInfoEntity>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$ModelsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $ModelsTable,
-    ModelInfoEntity,
-    $$ModelsTableFilterComposer,
-    $$ModelsTableOrderingComposer,
-    $$ModelsTableAnnotationComposer,
-    $$ModelsTableCreateCompanionBuilder,
-    $$ModelsTableUpdateCompanionBuilder,
-    (
+typedef $$ModelsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ModelsTable,
       ModelInfoEntity,
-      BaseReferences<_$AppDatabase, $ModelsTable, ModelInfoEntity>
-    ),
-    ModelInfoEntity,
-    PrefetchHooks Function()>;
-typedef $$UserPreferencesTableCreateCompanionBuilder = UserPreferencesCompanion
-    Function({
-  required String key,
-  Value<String?> value,
-  Value<String> valueType,
-  Value<int> rowid,
-});
-typedef $$UserPreferencesTableUpdateCompanionBuilder = UserPreferencesCompanion
-    Function({
-  Value<String> key,
-  Value<String?> value,
-  Value<String> valueType,
-  Value<int> rowid,
-});
+      $$ModelsTableFilterComposer,
+      $$ModelsTableOrderingComposer,
+      $$ModelsTableAnnotationComposer,
+      $$ModelsTableCreateCompanionBuilder,
+      $$ModelsTableUpdateCompanionBuilder,
+      (
+        ModelInfoEntity,
+        BaseReferences<_$AppDatabase, $ModelsTable, ModelInfoEntity>,
+      ),
+      ModelInfoEntity,
+      PrefetchHooks Function()
+    >;
+typedef $$UserPreferencesTableCreateCompanionBuilder =
+    UserPreferencesCompanion Function({
+      required String key,
+      Value<String?> value,
+      Value<String> valueType,
+      Value<int> rowid,
+    });
+typedef $$UserPreferencesTableUpdateCompanionBuilder =
+    UserPreferencesCompanion Function({
+      Value<String> key,
+      Value<String?> value,
+      Value<String> valueType,
+      Value<int> rowid,
+    });
 
 class $$UserPreferencesTableFilterComposer
     extends Composer<_$AppDatabase, $UserPreferencesTable> {
@@ -4051,13 +5077,19 @@ class $$UserPreferencesTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<String> get key => $composableBuilder(
-      column: $table.key, builder: (column) => ColumnFilters(column));
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get value => $composableBuilder(
-      column: $table.value, builder: (column) => ColumnFilters(column));
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get valueType => $composableBuilder(
-      column: $table.valueType, builder: (column) => ColumnFilters(column));
+    column: $table.valueType,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$UserPreferencesTableOrderingComposer
@@ -4070,13 +5102,19 @@ class $$UserPreferencesTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<String> get key => $composableBuilder(
-      column: $table.key, builder: (column) => ColumnOrderings(column));
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get value => $composableBuilder(
-      column: $table.value, builder: (column) => ColumnOrderings(column));
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get valueType => $composableBuilder(
-      column: $table.valueType, builder: (column) => ColumnOrderings(column));
+    column: $table.valueType,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserPreferencesTableAnnotationComposer
@@ -4098,24 +5136,33 @@ class $$UserPreferencesTableAnnotationComposer
       $composableBuilder(column: $table.valueType, builder: (column) => column);
 }
 
-class $$UserPreferencesTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $UserPreferencesTable,
-    UserPreference,
-    $$UserPreferencesTableFilterComposer,
-    $$UserPreferencesTableOrderingComposer,
-    $$UserPreferencesTableAnnotationComposer,
-    $$UserPreferencesTableCreateCompanionBuilder,
-    $$UserPreferencesTableUpdateCompanionBuilder,
-    (
-      UserPreference,
-      BaseReferences<_$AppDatabase, $UserPreferencesTable, UserPreference>
-    ),
-    UserPreference,
-    PrefetchHooks Function()> {
+class $$UserPreferencesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserPreferencesTable,
+          UserPreference,
+          $$UserPreferencesTableFilterComposer,
+          $$UserPreferencesTableOrderingComposer,
+          $$UserPreferencesTableAnnotationComposer,
+          $$UserPreferencesTableCreateCompanionBuilder,
+          $$UserPreferencesTableUpdateCompanionBuilder,
+          (
+            UserPreference,
+            BaseReferences<
+              _$AppDatabase,
+              $UserPreferencesTable,
+              UserPreference
+            >,
+          ),
+          UserPreference,
+          PrefetchHooks Function()
+        > {
   $$UserPreferencesTableTableManager(
-      _$AppDatabase db, $UserPreferencesTable table)
-      : super(TableManagerState(
+    _$AppDatabase db,
+    $UserPreferencesTable table,
+  ) : super(
+        TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -4124,88 +5171,96 @@ class $$UserPreferencesTableTableManager extends RootTableManager<
               $$UserPreferencesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$UserPreferencesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<String> key = const Value.absent(),
-            Value<String?> value = const Value.absent(),
-            Value<String> valueType = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              UserPreferencesCompanion(
-            key: key,
-            value: value,
-            valueType: valueType,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String key,
-            Value<String?> value = const Value.absent(),
-            Value<String> valueType = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              UserPreferencesCompanion.insert(
-            key: key,
-            value: value,
-            valueType: valueType,
-            rowid: rowid,
-          ),
+          updateCompanionCallback:
+              ({
+                Value<String> key = const Value.absent(),
+                Value<String?> value = const Value.absent(),
+                Value<String> valueType = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserPreferencesCompanion(
+                key: key,
+                value: value,
+                valueType: valueType,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String key,
+                Value<String?> value = const Value.absent(),
+                Value<String> valueType = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserPreferencesCompanion.insert(
+                key: key,
+                value: value,
+                valueType: valueType,
+                rowid: rowid,
+              ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (
-                    e.readTable<$UserPreferencesTable, UserPreference>(table),
-                    BaseReferences<_$AppDatabase, $UserPreferencesTable,
-                        UserPreference>(db, table, e)
-                  ))
+              .map(
+                (e) => (
+                  e.readTable<$UserPreferencesTable, UserPreference>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $UserPreferencesTable,
+                    UserPreference
+                  >(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$UserPreferencesTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $UserPreferencesTable,
-    UserPreference,
-    $$UserPreferencesTableFilterComposer,
-    $$UserPreferencesTableOrderingComposer,
-    $$UserPreferencesTableAnnotationComposer,
-    $$UserPreferencesTableCreateCompanionBuilder,
-    $$UserPreferencesTableUpdateCompanionBuilder,
-    (
+typedef $$UserPreferencesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserPreferencesTable,
       UserPreference,
-      BaseReferences<_$AppDatabase, $UserPreferencesTable, UserPreference>
-    ),
-    UserPreference,
-    PrefetchHooks Function()>;
-typedef $$DocumentJobsTableCreateCompanionBuilder = DocumentJobsCompanion
-    Function({
-  Value<int> id,
-  required String fileName,
-  required String filePath,
-  required String fileType,
-  required String sourceLang,
-  required String targetLang,
-  required String status,
-  Value<int> totalSegments,
-  Value<int> completedSegments,
-  Value<String?> outputPath,
-  Value<String?> errorMessage,
-  required int createdAt,
-  Value<int?> completedAt,
-});
-typedef $$DocumentJobsTableUpdateCompanionBuilder = DocumentJobsCompanion
-    Function({
-  Value<int> id,
-  Value<String> fileName,
-  Value<String> filePath,
-  Value<String> fileType,
-  Value<String> sourceLang,
-  Value<String> targetLang,
-  Value<String> status,
-  Value<int> totalSegments,
-  Value<int> completedSegments,
-  Value<String?> outputPath,
-  Value<String?> errorMessage,
-  Value<int> createdAt,
-  Value<int?> completedAt,
-});
+      $$UserPreferencesTableFilterComposer,
+      $$UserPreferencesTableOrderingComposer,
+      $$UserPreferencesTableAnnotationComposer,
+      $$UserPreferencesTableCreateCompanionBuilder,
+      $$UserPreferencesTableUpdateCompanionBuilder,
+      (
+        UserPreference,
+        BaseReferences<_$AppDatabase, $UserPreferencesTable, UserPreference>,
+      ),
+      UserPreference,
+      PrefetchHooks Function()
+    >;
+typedef $$DocumentJobsTableCreateCompanionBuilder =
+    DocumentJobsCompanion Function({
+      Value<int> id,
+      required String fileName,
+      required String filePath,
+      required String fileType,
+      required String sourceLang,
+      required String targetLang,
+      required String status,
+      Value<int> totalSegments,
+      Value<int> completedSegments,
+      Value<String?> outputPath,
+      Value<String?> errorMessage,
+      required int createdAt,
+      Value<int?> completedAt,
+    });
+typedef $$DocumentJobsTableUpdateCompanionBuilder =
+    DocumentJobsCompanion Function({
+      Value<int> id,
+      Value<String> fileName,
+      Value<String> filePath,
+      Value<String> fileType,
+      Value<String> sourceLang,
+      Value<String> targetLang,
+      Value<String> status,
+      Value<int> totalSegments,
+      Value<int> completedSegments,
+      Value<String?> outputPath,
+      Value<String?> errorMessage,
+      Value<int> createdAt,
+      Value<int?> completedAt,
+    });
 
 class $$DocumentJobsTableFilterComposer
     extends Composer<_$AppDatabase, $DocumentJobsTable> {
@@ -4217,44 +5272,69 @@ class $$DocumentJobsTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get fileName => $composableBuilder(
-      column: $table.fileName, builder: (column) => ColumnFilters(column));
+    column: $table.fileName,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get filePath => $composableBuilder(
-      column: $table.filePath, builder: (column) => ColumnFilters(column));
+    column: $table.filePath,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get fileType => $composableBuilder(
-      column: $table.fileType, builder: (column) => ColumnFilters(column));
+    column: $table.fileType,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => ColumnFilters(column));
+    column: $table.sourceLang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => ColumnFilters(column));
+    column: $table.targetLang,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get status => $composableBuilder(
-      column: $table.status, builder: (column) => ColumnFilters(column));
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get totalSegments => $composableBuilder(
-      column: $table.totalSegments, builder: (column) => ColumnFilters(column));
+    column: $table.totalSegments,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get completedSegments => $composableBuilder(
-      column: $table.completedSegments,
-      builder: (column) => ColumnFilters(column));
+    column: $table.completedSegments,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get outputPath => $composableBuilder(
-      column: $table.outputPath, builder: (column) => ColumnFilters(column));
+    column: $table.outputPath,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get errorMessage => $composableBuilder(
-      column: $table.errorMessage, builder: (column) => ColumnFilters(column));
+    column: $table.errorMessage,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => ColumnFilters(column));
+    column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$DocumentJobsTableOrderingComposer
@@ -4267,46 +5347,69 @@ class $$DocumentJobsTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get fileName => $composableBuilder(
-      column: $table.fileName, builder: (column) => ColumnOrderings(column));
+    column: $table.fileName,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get filePath => $composableBuilder(
-      column: $table.filePath, builder: (column) => ColumnOrderings(column));
+    column: $table.filePath,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get fileType => $composableBuilder(
-      column: $table.fileType, builder: (column) => ColumnOrderings(column));
+    column: $table.fileType,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => ColumnOrderings(column));
+    column: $table.sourceLang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => ColumnOrderings(column));
+    column: $table.targetLang,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get status => $composableBuilder(
-      column: $table.status, builder: (column) => ColumnOrderings(column));
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get totalSegments => $composableBuilder(
-      column: $table.totalSegments,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.totalSegments,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get completedSegments => $composableBuilder(
-      column: $table.completedSegments,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.completedSegments,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get outputPath => $composableBuilder(
-      column: $table.outputPath, builder: (column) => ColumnOrderings(column));
+    column: $table.outputPath,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get errorMessage => $composableBuilder(
-      column: $table.errorMessage,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.errorMessage,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => ColumnOrderings(column));
+    column: $table.completedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DocumentJobsTableAnnotationComposer
@@ -4331,50 +5434,68 @@ class $$DocumentJobsTableAnnotationComposer
       $composableBuilder(column: $table.fileType, builder: (column) => column);
 
   GeneratedColumn<String> get sourceLang => $composableBuilder(
-      column: $table.sourceLang, builder: (column) => column);
+    column: $table.sourceLang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get targetLang => $composableBuilder(
-      column: $table.targetLang, builder: (column) => column);
+    column: $table.targetLang,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
   GeneratedColumn<int> get totalSegments => $composableBuilder(
-      column: $table.totalSegments, builder: (column) => column);
+    column: $table.totalSegments,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get completedSegments => $composableBuilder(
-      column: $table.completedSegments, builder: (column) => column);
+    column: $table.completedSegments,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get outputPath => $composableBuilder(
-      column: $table.outputPath, builder: (column) => column);
+    column: $table.outputPath,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get errorMessage => $composableBuilder(
-      column: $table.errorMessage, builder: (column) => column);
+    column: $table.errorMessage,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   GeneratedColumn<int> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => column);
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
 }
 
-class $$DocumentJobsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DocumentJobsTable,
-    DocumentJob,
-    $$DocumentJobsTableFilterComposer,
-    $$DocumentJobsTableOrderingComposer,
-    $$DocumentJobsTableAnnotationComposer,
-    $$DocumentJobsTableCreateCompanionBuilder,
-    $$DocumentJobsTableUpdateCompanionBuilder,
-    (
-      DocumentJob,
-      BaseReferences<_$AppDatabase, $DocumentJobsTable, DocumentJob>
-    ),
-    DocumentJob,
-    PrefetchHooks Function()> {
+class $$DocumentJobsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DocumentJobsTable,
+          DocumentJob,
+          $$DocumentJobsTableFilterComposer,
+          $$DocumentJobsTableOrderingComposer,
+          $$DocumentJobsTableAnnotationComposer,
+          $$DocumentJobsTableCreateCompanionBuilder,
+          $$DocumentJobsTableUpdateCompanionBuilder,
+          (
+            DocumentJob,
+            BaseReferences<_$AppDatabase, $DocumentJobsTable, DocumentJob>,
+          ),
+          DocumentJob,
+          PrefetchHooks Function()
+        > {
   $$DocumentJobsTableTableManager(_$AppDatabase db, $DocumentJobsTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -4383,92 +5504,100 @@ class $$DocumentJobsTableTableManager extends RootTableManager<
               $$DocumentJobsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$DocumentJobsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> fileName = const Value.absent(),
-            Value<String> filePath = const Value.absent(),
-            Value<String> fileType = const Value.absent(),
-            Value<String> sourceLang = const Value.absent(),
-            Value<String> targetLang = const Value.absent(),
-            Value<String> status = const Value.absent(),
-            Value<int> totalSegments = const Value.absent(),
-            Value<int> completedSegments = const Value.absent(),
-            Value<String?> outputPath = const Value.absent(),
-            Value<String?> errorMessage = const Value.absent(),
-            Value<int> createdAt = const Value.absent(),
-            Value<int?> completedAt = const Value.absent(),
-          }) =>
-              DocumentJobsCompanion(
-            id: id,
-            fileName: fileName,
-            filePath: filePath,
-            fileType: fileType,
-            sourceLang: sourceLang,
-            targetLang: targetLang,
-            status: status,
-            totalSegments: totalSegments,
-            completedSegments: completedSegments,
-            outputPath: outputPath,
-            errorMessage: errorMessage,
-            createdAt: createdAt,
-            completedAt: completedAt,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String fileName,
-            required String filePath,
-            required String fileType,
-            required String sourceLang,
-            required String targetLang,
-            required String status,
-            Value<int> totalSegments = const Value.absent(),
-            Value<int> completedSegments = const Value.absent(),
-            Value<String?> outputPath = const Value.absent(),
-            Value<String?> errorMessage = const Value.absent(),
-            required int createdAt,
-            Value<int?> completedAt = const Value.absent(),
-          }) =>
-              DocumentJobsCompanion.insert(
-            id: id,
-            fileName: fileName,
-            filePath: filePath,
-            fileType: fileType,
-            sourceLang: sourceLang,
-            targetLang: targetLang,
-            status: status,
-            totalSegments: totalSegments,
-            completedSegments: completedSegments,
-            outputPath: outputPath,
-            errorMessage: errorMessage,
-            createdAt: createdAt,
-            completedAt: completedAt,
-          ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> fileName = const Value.absent(),
+                Value<String> filePath = const Value.absent(),
+                Value<String> fileType = const Value.absent(),
+                Value<String> sourceLang = const Value.absent(),
+                Value<String> targetLang = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> totalSegments = const Value.absent(),
+                Value<int> completedSegments = const Value.absent(),
+                Value<String?> outputPath = const Value.absent(),
+                Value<String?> errorMessage = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int?> completedAt = const Value.absent(),
+              }) => DocumentJobsCompanion(
+                id: id,
+                fileName: fileName,
+                filePath: filePath,
+                fileType: fileType,
+                sourceLang: sourceLang,
+                targetLang: targetLang,
+                status: status,
+                totalSegments: totalSegments,
+                completedSegments: completedSegments,
+                outputPath: outputPath,
+                errorMessage: errorMessage,
+                createdAt: createdAt,
+                completedAt: completedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String fileName,
+                required String filePath,
+                required String fileType,
+                required String sourceLang,
+                required String targetLang,
+                required String status,
+                Value<int> totalSegments = const Value.absent(),
+                Value<int> completedSegments = const Value.absent(),
+                Value<String?> outputPath = const Value.absent(),
+                Value<String?> errorMessage = const Value.absent(),
+                required int createdAt,
+                Value<int?> completedAt = const Value.absent(),
+              }) => DocumentJobsCompanion.insert(
+                id: id,
+                fileName: fileName,
+                filePath: filePath,
+                fileType: fileType,
+                sourceLang: sourceLang,
+                targetLang: targetLang,
+                status: status,
+                totalSegments: totalSegments,
+                completedSegments: completedSegments,
+                outputPath: outputPath,
+                errorMessage: errorMessage,
+                createdAt: createdAt,
+                completedAt: completedAt,
+              ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (
-                    e.readTable<$DocumentJobsTable, DocumentJob>(table),
-                    BaseReferences<_$AppDatabase, $DocumentJobsTable,
-                        DocumentJob>(db, table, e)
-                  ))
+              .map(
+                (e) => (
+                  e.readTable<$DocumentJobsTable, DocumentJob>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $DocumentJobsTable,
+                    DocumentJob
+                  >(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$DocumentJobsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $DocumentJobsTable,
-    DocumentJob,
-    $$DocumentJobsTableFilterComposer,
-    $$DocumentJobsTableOrderingComposer,
-    $$DocumentJobsTableAnnotationComposer,
-    $$DocumentJobsTableCreateCompanionBuilder,
-    $$DocumentJobsTableUpdateCompanionBuilder,
-    (
+typedef $$DocumentJobsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DocumentJobsTable,
       DocumentJob,
-      BaseReferences<_$AppDatabase, $DocumentJobsTable, DocumentJob>
-    ),
-    DocumentJob,
-    PrefetchHooks Function()>;
+      $$DocumentJobsTableFilterComposer,
+      $$DocumentJobsTableOrderingComposer,
+      $$DocumentJobsTableAnnotationComposer,
+      $$DocumentJobsTableCreateCompanionBuilder,
+      $$DocumentJobsTableUpdateCompanionBuilder,
+      (
+        DocumentJob,
+        BaseReferences<_$AppDatabase, $DocumentJobsTable, DocumentJob>,
+      ),
+      DocumentJob,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

@@ -52,13 +52,12 @@ Flutter (Dart)                    Kotlin (Native)
 
 | Component | Model | Size |
 |-----------|-------|------|
-| STT (ID) | sherpa-onnx-streaming-zipformer2-id | ~120MB |
-| STT (EN) | sherpa-onnx-streaming-zipformer-en | ~130MB |
-| TTS (ID) | sherpa-onnx-supertonic-3-id (10 speakers) | ~100MB |
-| TTS (EN) | sherpa-onnx-supertonic-3-en | ~100MB |
+| STT (EN/ID) | sherpa-onnx-streaming-zipformer-ctc-small-2024-03-18 | ~120MB |
+| TTS (ID) | sherpa-onnx-vits-piper-id_ID-news_tts-medium (10 speakers) | ~100MB |
+| TTS (EN) | sherpa-onnx-vits-piper-en_US-lessac-medium | ~100MB |
 | VAD + LangID | silero_vad + whisper-tiny | ~40MB |
-| Translate (EN→ID) | CTranslate2 + Opus-MT INT8 | ~75MB |
-| Translate (ID→EN) | CTranslate2 + Opus-MT INT8 | ~75MB |
+| Translate (EN→ID) | ONNX Runtime + opus-mt-en-id-onnx-int8 | ~75MB |
+| Translate (ID→EN) | ONNX Runtime + opus-mt-id-en-onnx-int8 | ~75MB |
 
 ---
 
@@ -184,7 +183,7 @@ The app uses **5 MethodChannels** for native functionality:
 
 Models are downloaded from:
 - **Sherpa-ONNX**: `https://github.com/k2-fsa/sherpa-onnx/releases/download/...`
-- **CTranslate2**: `https://huggingface.co/ctranslate2/opus-mt-*-int8/resolve/main/...`
+- **ONNX Runtime / Opus-MT**: `https://huggingface.co/ctranslate2/opus-mt-*-onnx-int8/resolve/main/...`
 
 First launch downloads ~640MB to external storage (user selectable).
 
@@ -237,10 +236,10 @@ Third-party licenses:
 
 ## Roadmap
 
-- [ ] Complete Sherpa-ONNX native bridge
-- [ ] Complete CTranslate2 native bridge
-- [ ] AccessibilityService for live translate
-- [ ] Model download with resume
+- [x] Complete Sherpa-ONNX native bridge
+- [x] Complete ONNX Runtime native bridge
+- [x] AccessibilityService for live translate
+- [x] Model download with resume
 - [ ] Widgets (3 sizes)
 - [ ] Keyboard extension (IME)
 - [ ] Document translate (PDF/TXT/DOCX)
