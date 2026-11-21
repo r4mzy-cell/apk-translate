@@ -1,27 +1,27 @@
 package com.translateid.native
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.util.Log
+import com.k2fsa.sherpa.onnx.*
 
 /**
  * Sherpa-ONNX JNI Wrapper for Android
  *
- * This class provides Kotlin bindings to the Sherpa-ONNX C++ API via JNI.
- * Requires libsherpa-onnx-jni.so in jniLibs/{arm64-v8a,armeabi-v7a}
- *
- * Prebuilt binaries: https://github.com/k2-fsa/sherpa-onnx/releases
- * Models: https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models
- *         https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models
+ * Delegates to official sherpa-onnx Kotlin API (com.k2fsa.sherpa.onnx.*)
+ * Requires libsherpa-onnx-jni.so + dependencies in jniLibs/{arm64-v8a,armeabi-v7a}
  */
-class SherpaOnnxWrapper {
+class SherpaOnnxWrapper(private val context: Context) {
+
     companion object {
         private const val TAG = "SherpaOnnxWrapper"
         private var _isLoaded = false
 
-        /** Load the native library */
+        /** Load the native library (delegated to official classes) */
         fun loadLibrary(): Boolean {
             if (_isLoaded) return true
             return try {
+                // Trigger loading via any official class companion
                 System.loadLibrary("sherpa-onnx-jni")
                 _isLoaded = true
                 Log.i(TAG, "Sherpa-ONNX library loaded successfully")
@@ -33,121 +33,206 @@ class SherpaOnnxWrapper {
         }
 
         fun isLoaded(): Boolean = _isLoaded
+    }
 
-        // ============ STT (Speech-to-Text) ============
+    // ============ STT (Streaming Speech-to-Text) ============
 
-        /** Create a streaming recognizer */
-        @JvmStatic
-        external fun sttCreate(
-            modelPath: String,
-            tokensPath: String,
-            numThreads: Int,
-            provider: String,
-            decodingMethod: String,
-            ruleFsts: String,
-            ruleFars: String,
-            hotwordsFile: String,
-            hotwordsScore: Float,
-            blankPenalty: Float,
-            ctcWeight: Float,
-            lmPath: String,
-            lmScale: Float,
-            enableEndpoint: Boolean,
-            endpointRule1: Float,
-            endpointRule2: Float,
-            endpointRule3: Float,
-            maxActivePaths: Int
-        ): Long
+    private var sttRecognizer: OnlineRecognizer? = null
+    private val sttStreams = mutableMapOf<String, OnlineStream>()
 
-        /** Accept waveform samples (float32, 16kHz) */
-        @JvmStatic
-        external fun sttAcceptWaveform(recognizerHandle: Long, samples: FloatArray): Int
+    fun createStt(id: String, config: SttConfig): Boolean {
+        if (!loadLibrary()) return false
+        if (sttRecognizer != null) return false // already created
 
-        /** Get current recognition result */
-        @JvmStatic
-        external fun sttGetResult(recognizerHandle: Long): String?
+        // Build OnlineRecognizerConfig from our simpler SttConfig
+        val modelConfig = OnlineModelConfig(
+            zipformer2Ctc = OnlineZipformer2CtcModelConfig(model = config.modelPath),
+            tokens = config.tokensPath,
+            numThreads = config.numThreads,
+            provider = config.provider,
+            modelType = "zipformer2",
+            debug = false
+        )
 
-        /** Check if endpoint detected */
-        @JvmStatic
-        external fun sttIsEndpoint(recognizerHandle: Long): Boolean
+        val recognizerConfig = OnlineRecognizerConfig(
+            modelConfig = modelConfig,
+            lmConfig = OnlineLMConfig(model = config.lmPath, scale = config.lmScale),
+            decodingMethod = config.decodingMethod,
+            maxActivePaths = config.maxActivePaths,
+            hotwordsFile = config.hotwordsFile,
+            hotwordsScore = config.hotwordsScore,
+            blankPenalty = config.blankPenalty,
+            enableEndpoint = config.enableEndpoint,
+            endpointConfig = EndpointConfig(
+                rule1 = EndpointRule(false, config.endpointRule1, 0f),
+                rule2 = EndpointRule(true, config.endpointRule2, 0f),
+                rule3 = EndpointRule(false, 0f, config.endpointRule3)
+            ),
+            ruleFsts = config.ruleFsts,
+            ruleFars = config.ruleFars
+        )
 
-        /** Reset recognizer for new utterance */
-        @JvmStatic
-        external fun sttReset(recognizerHandle: Long): Unit
+        sttRecognizer = OnlineRecognizer(null, recognizerConfig)
+        return sttRecognizer != null
+    }
 
-        /** Destroy recognizer */
-        @JvmStatic
-        external fun sttDestroy(recognizerHandle: Long): Unit
+    fun sttAccept(id: String, samples: FloatArray): Int {
+        val recognizer = sttRecognizer ?: return -1
+        val stream = sttStreams.getOrPut(id) { recognizer.createStream() }
+        stream.acceptWaveform(samples, 16000)
+        recognizer.decode(stream)
+        return if (recognizer.isReady(stream)) 1 else 0
+    }
 
-        // ============ TTS (Text-to-Speech) ============
+    fun sttGetResult(id: String): String? {
+        val stream = sttStreams[id] ?: return null
+        val recognizer = sttRecognizer ?: return null
+        return recognizer.getResult(stream).text
+    }
 
-        /** Create TTS engine */
-        @JvmStatic
-        external fun ttsCreate(
-            modelPath: String,
-            tokensPath: String,
-            dataDir: String,
-            numThreads: Int,
-            provider: String,
-            debug: Boolean
-        ): Long
+    fun sttIsEndpoint(id: String): Boolean {
+        val stream = sttStreams[id] ?: return false
+        val recognizer = sttRecognizer ?: return false
+        return recognizer.isEndpoint(stream)
+    }
 
-        /** Generate speech from text */
-        @JvmStatic
-        external fun ttsGenerate(
-            ttsHandle: Long,
-            text: String,
-            sid: Int,
-            speed: Float
-        ): FloatArray?
+    fun sttReset(id: String) {
+        val stream = sttStreams[id] ?: return
+        val recognizer = sttRecognizer ?: return
+        recognizer.reset(stream)
+    }
 
-        /** Get sample rate */
-        @JvmStatic
-        external fun ttsGetSampleRate(ttsHandle: Long): Int
+    fun sttCreateStream(id: String): Boolean {
+        val recognizer = sttRecognizer ?: return false
+        val stream = recognizer.createStream()
+        sttStreams[id] = stream
+        return true
+    }
 
-        /** Destroy TTS engine */
-        @JvmStatic
-        external fun ttsDestroy(ttsHandle: Long): Unit
+    fun destroyStt(id: String) {
+        sttStreams.remove(id)?.release()
+    }
 
-        // ============ VAD (Voice Activity Detection) ============
+    fun destroyAllStt() {
+        sttStreams.values.forEach { it.release() }
+        sttStreams.clear()
+        sttRecognizer?.release()
+        sttRecognizer = null
+    }
 
-        /** Create VAD detector */
-        @JvmStatic
-        external fun vadCreate(
-            modelPath: String,
-            threshold: Float,
-            minSilenceDuration: Float,
-            minSpeechDuration: Float,
-            windowSize: Int
-        ): Long
+    // ============ TTS (Text-to-Speech) ============
 
-        /** Process audio frame for VAD */
-        @JvmStatic
-        external fun vadProcess(vadHandle: Long, samples: FloatArray): Int
+    private val ttsEngines = mutableMapOf<String, OfflineTts>()
 
-        /** Destroy VAD */
-        @JvmStatic
-        external fun vadDestroy(vadHandle: Long): Unit
+    fun createTts(id: String, config: TtsConfig): Boolean {
+        if (!loadLibrary()) return false
 
-        // ============ Language Identification ============
+        // Build OfflineTtsConfig for VITS/Supertonic model
+        // Our TTS models are Piper VITS: sherpa-onnx-vits-piper-id_ID-news_tts-medium
+        val ttsConfig = OfflineTtsConfig(
+            model = OfflineTtsModelConfig(
+                vits = OfflineTtsVitsModelConfig(
+                    model = config.modelPath,
+                    lexicon = config.dataDir + "/lexicon.txt", // may not be needed for Piper
+                    tokens = config.tokensPath,
+                    dataDir = config.dataDir
+                ),
+                supertonic = OfflineTtsSupertonicModelConfig(),
+                numThreads = config.numThreads,
+                debug = config.debug,
+                provider = config.provider
+            ),
+            ruleFsts = "",
+            ruleFars = ""
+        )
 
-        /** Create LangID detector */
-        @JvmStatic
-        external fun langIdCreate(
-            encoderPath: String,
-            decoderPath: String,
-            tokensPath: String,
-            numThreads: Int,
-            provider: String
-        ): Long
+        val tts = OfflineTts(null, ttsConfig)
+        ttsEngines[id] = tts
+        return true
+    }
 
-        /** Identify language from audio */
-        @JvmStatic
-        external fun langIdCompute(langIdHandle: Long, samples: FloatArray): String?
+    fun ttsGenerate(id: String, text: String, speakerId: Int, speed: Float): FloatArray? {
+        val tts = ttsEngines[id] ?: return null
+        val audio = tts.generate(text = text, sid = speakerId, speed = speed)
+        return audio.samples
+    }
 
-        /** Destroy LangID */
-        @JvmStatic
-        external fun langIdDestroy(langIdHandle: Long): Unit
+    fun ttsGetSampleRate(id: String): Int {
+        val tts = ttsEngines[id] ?: return 0
+        return tts.sampleRate()
+    }
+
+    fun destroyTts(id: String) {
+        ttsEngines.remove(id)?.free()
+    }
+
+    // ============ VAD (Voice Activity Detection) ============
+
+    private var vad: Vad? = null
+
+    fun createVad(config: VadConfig): Boolean {
+        if (!loadLibrary()) return false
+
+        val vadConfig = VadModelConfig(
+            sileroVadModelConfig = SileroVadModelConfig(
+                model = config.modelPath,
+                threshold = config.threshold,
+                minSilenceDuration = config.minSilenceDuration,
+                minSpeechDuration = config.minSpeechDuration,
+                windowSize = config.windowSize
+            ),
+            sampleRate = 16000,
+            numThreads = 1,
+            provider = "cpu"
+        )
+
+        vad = Vad(null, vadConfig)
+        return vad != null
+    }
+
+    fun vadProcess(samples: FloatArray): Int {
+        val v = vad ?: return -1
+        v.acceptWaveform(samples)
+        return if (v.isSpeechDetected()) 1 else 0
+    }
+
+    fun destroyVad() {
+        vad?.release()
+        vad = null
+    }
+
+    // ============ Language Identification ============
+
+    private var langId: SpokenLanguageIdentification? = null
+
+    fun createLangId(config: LangIdConfig): Boolean {
+        if (!loadLibrary()) return false
+
+        val langIdConfig = SpokenLanguageIdentificationConfig(
+            whisper = SpokenLanguageIdentificationWhisperConfig(
+                encoder = config.encoderPath,
+                decoder = config.decoderPath
+            ),
+            numThreads = config.numThreads,
+            provider = config.provider
+        )
+
+        langId = SpokenLanguageIdentification(null, langIdConfig)
+        return langId != null
+    }
+
+    fun langIdCompute(samples: FloatArray): String? {
+        val l = langId ?: return null
+        val stream = l.createStream()
+        stream.acceptWaveform(samples, 16000)
+        val lang = l.compute(stream)
+        stream.release()
+        return lang
+    }
+
+    fun destroyLangId() {
+        langId?.release()
+        langId = null
     }
 
     // ============ Helper Classes ============
@@ -201,119 +286,4 @@ class SherpaOnnxWrapper {
         val numThreads: Int = 2,
         val provider: String = "cpu"
     )
-
-    // ============ Managed Instances ============
-
-    private val sttHandles = mutableMapOf<String, Long>()
-    private val ttsHandles = mutableMapOf<String, Long>()
-    private var vadHandle: Long? = null
-    private var langIdHandle: Long? = null
-
-    fun createStt(id: String, config: SttConfig): Boolean {
-        if (!loadLibrary()) return false
-        val handle = sttCreate(
-            config.modelPath, config.tokensPath, config.numThreads, config.provider,
-            config.decodingMethod, config.ruleFsts, config.ruleFars,
-            config.hotwordsFile, config.hotwordsScore, config.blankPenalty,
-            config.ctcWeight, config.lmPath, config.lmScale,
-            config.enableEndpoint, config.endpointRule1, config.endpointRule2,
-            config.endpointRule3, config.maxActivePaths
-        )
-        if (handle > 0) {
-            sttHandles[id] = handle
-            return true
-        }
-        return false
-    }
-
-    fun sttAccept(id: String, samples: FloatArray): Int {
-        val handle = sttHandles[id] ?: return -1
-        return sttAcceptWaveform(handle, samples)
-    }
-
-    fun sttGetResult(id: String): String? {
-        val handle = sttHandles[id] ?: return null
-        return sttGetResult(handle)
-    }
-
-    fun sttIsEndpoint(id: String): Boolean {
-        val handle = sttHandles[id] ?: return false
-        return sttIsEndpoint(handle)
-    }
-
-    fun sttReset(id: String) {
-        val handle = sttHandles[id] ?: return
-        sttReset(handle)
-    }
-
-    fun destroyStt(id: String) {
-        val handle = sttHandles.remove(id) ?: return
-        sttDestroy(handle)
-    }
-
-    fun createTts(id: String, config: TtsConfig): Boolean {
-        if (!loadLibrary()) return false
-        val handle = ttsCreate(
-            config.modelPath, config.tokensPath, config.dataDir,
-            config.numThreads, config.provider, config.debug
-        )
-        if (handle > 0) {
-            ttsHandles[id] = handle
-            return true
-        }
-        return false
-    }
-
-    fun ttsGenerate(id: String, text: String, speakerId: Int, speed: Float): FloatArray? {
-        val handle = ttsHandles[id] ?: return null
-        return ttsGenerate(handle, text, speakerId, speed)
-    }
-
-    fun ttsGetSampleRate(id: String): Int {
-        val handle = ttsHandles[id] ?: return 0
-        return ttsGetSampleRate(handle)
-    }
-
-    fun destroyTts(id: String) {
-        val handle = ttsHandles.remove(id) ?: return
-        ttsDestroy(handle)
-    }
-
-    fun createVad(config: VadConfig): Boolean {
-        if (!loadLibrary()) return false
-        vadHandle = vadCreate(
-            config.modelPath, config.threshold, config.minSilenceDuration,
-            config.minSpeechDuration, config.windowSize
-        )
-        return vadHandle != null && vadHandle!! > 0
-    }
-
-    fun vadProcess(samples: FloatArray): Int {
-        val handle = vadHandle ?: return -1
-        return vadProcess(handle, samples)
-    }
-
-    fun destroyVad() {
-        vadHandle?.let { vadDestroy(it) }
-        vadHandle = null
-    }
-
-    fun createLangId(config: LangIdConfig): Boolean {
-        if (!loadLibrary()) return false
-        langIdHandle = langIdCreate(
-            config.encoderPath, config.decoderPath, config.tokensPath,
-            config.numThreads, config.provider
-        )
-        return langIdHandle != null && langIdHandle!! > 0
-    }
-
-    fun langIdCompute(samples: FloatArray): String? {
-        val handle = langIdHandle ?: return null
-        return langIdCompute(handle, samples)
-    }
-
-    fun destroyLangId() {
-        langIdHandle?.let { langIdDestroy(it) }
-        langIdHandle = null
-    }
 }

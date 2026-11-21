@@ -86,7 +86,7 @@ class MainActivity : FlutterActivity() {
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(flutterEngine!!)
 
-        sherpa = SherpaOnnxWrapper()
+        sherpa = SherpaOnnxWrapper(this)
         translate = OnnxTranslateWrapper(this)
         ocr = MlKitOcrWrapper(this)
 
