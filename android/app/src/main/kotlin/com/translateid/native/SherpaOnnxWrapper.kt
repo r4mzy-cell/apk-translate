@@ -127,17 +127,17 @@ class SherpaOnnxWrapper(private val context: Context) {
     fun createTts(id: String, config: TtsConfig): Boolean {
         if (!loadLibrary()) return false
 
-        // Build OfflineTtsConfig for VITS/Supertonic model
-        // Our TTS models are Piper VITS: sherpa-onnx-vits-piper-id_ID-news_tts-medium
+        // Build OfflineTtsConfig for Piper VITS model
+        // If dataDir points to espeak-ng-data, it enables on-device phonemization
+        // Otherwise model expects pre-phonemized input (phonemeCodepoints)
         val ttsConfig = OfflineTtsConfig(
             model = OfflineTtsModelConfig(
                 vits = OfflineTtsVitsModelConfig(
                     model = config.modelPath,
-                    lexicon = config.dataDir + "/lexicon.txt", // may not be needed for Piper
                     tokens = config.tokensPath,
-                    dataDir = config.dataDir
+                    lexicon = "",
+                    dataDir = config.dataDir  // espeak-ng-data directory (optional)
                 ),
-                supertonic = OfflineTtsSupertonicModelConfig(),
                 numThreads = config.numThreads,
                 debug = config.debug,
                 provider = config.provider
