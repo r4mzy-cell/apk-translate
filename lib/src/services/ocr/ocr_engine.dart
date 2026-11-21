@@ -7,7 +7,7 @@ import 'package:translate_id/src/shared/utils/app_logger.dart';
 class OcrResult {
   final String text;
   final List<TextBlock> blocks;
-  final Size imageSize;
+  final ui.Size imageSize;
   final Duration latency;
 
   const OcrResult({
@@ -57,7 +57,7 @@ class OcrResult {
 /// Text block with bounding box
 class TextBlock {
   final String text;
-  final Rect boundingBox; // normalized 0-1
+  final ui.Rect boundingBox; // normalized 0-1
   final List<Offset> cornerPoints; // 4 corners
   final double confidence;
   final String language;
@@ -97,7 +97,7 @@ class OcrEngine {
   /// Recognize text from image bytes
   Future<OcrResult?> recognizeFromBytes(
     Uint8List imageBytes, {
-    Size? imageSize,
+    ui.Size? imageSize,
     int rotationDegrees = 0,
     String language = 'auto',
   }) async {
@@ -126,7 +126,7 @@ class OcrEngine {
   }
 
   /// Recognize text from camera frame (for real-time)
-  Future<OcrResult?> recognizeFromCamera(Uint8List frameBytes, Size frameSize) async {
+  Future<OcrResult?> recognizeFromCamera(Uint8List frameBytes, ui.Size frameSize) async {
     return recognizeFromBytes(frameBytes, imageSize: frameSize, language: 'auto');
   }
 

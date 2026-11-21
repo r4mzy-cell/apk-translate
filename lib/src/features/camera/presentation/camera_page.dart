@@ -399,12 +399,12 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
 
 class _OcrOverlayPainter extends CustomPainter {
   final List<TextBlock> blocks;
-  final Size? previewSize;
+  final ui.Size? previewSize;
 
   _OcrOverlayPainter({required this.blocks, this.previewSize});
 
   @override
-  void paint(Canvas canvas, Size size) {
+  void paint(Canvas canvas, ui.Size size) {
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
@@ -420,11 +420,11 @@ class _OcrOverlayPainter extends CustomPainter {
     );
 
     for (final block in blocks) {
-      Rect scaledRect = block.boundingBox;
+      ui.Rect scaledRect = block.boundingBox;
       if (previewSize != null) {
         final scaleX = size.width / previewSize!.width;
         final scaleY = size.height / previewSize!.height;
-        scaledRect = Rect.fromLTRB(
+        scaledRect = ui.Rect.fromLTRB(
           block.boundingBox.left * scaleX,
           block.boundingBox.top * scaleY,
           block.boundingBox.right * scaleX,
