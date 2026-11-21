@@ -258,7 +258,7 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
                 Expanded(
                   child: VoiceButton(
                     state: _isListeningA ? VoiceButtonState.listening : VoiceButtonState.idle,
-                    onTap: _voiceEngineReady ? () => _toggleListening('A') : null,
+                    onTap: _voiceEngineReady ? () => _toggleListening('A') : () {},
                     size: 56,
                   ),
                 ),
@@ -266,7 +266,7 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
                 Expanded(
                   child: VoiceButton(
                     state: _isListeningB ? VoiceButtonState.listening : VoiceButtonState.idle,
-                    onTap: _voiceEngineReady ? () => _toggleListening('B') : null,
+                    onTap: _voiceEngineReady ? () => _toggleListening('B') : () {},
                     size: 56,
                   ),
                 ),

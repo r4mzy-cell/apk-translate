@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
@@ -94,7 +95,7 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
 
       final result = await ocrEngine.recognizeFromCamera(
         bytes,
-        Size(image.width.toDouble(), image.height.toDouble()),
+        ui.Size(image.width.toDouble(), image.height.toDouble()),
       );
 
       if (mounted && result != null && result.blocks.isNotEmpty) {

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
 
@@ -23,7 +24,7 @@ class OcrResult {
       final corners = (m['corners'] as List<dynamic>?) ?? [];
       return TextBlock(
         text: m['text'] as String? ?? '',
-        boundingBox: Rect.fromLTRB(
+        boundingBox: ui.Rect.fromLTRB(
           (m['left'] as num?)?.toDouble() ?? 0,
           (m['top'] as num?)?.toDouble() ?? 0,
           (m['right'] as num?)?.toDouble() ?? 0,
@@ -31,9 +32,9 @@ class OcrResult {
         ),
         cornerPoints: corners.map((c) {
           final pair = c as List<dynamic>;
-          return Point(
-            x: (pair[0] as num).toDouble(),
-            y: (pair[1] as num).toDouble(),
+          return Offset(
+            (pair[0] as num).toDouble(),
+            (pair[1] as num).toDouble(),
           );
         }).toList(),
         confidence: (m['confidence'] as num?)?.toDouble() ?? 1.0,
@@ -44,7 +45,7 @@ class OcrResult {
     return OcrResult(
       text: map['text'] as String? ?? '',
       blocks: blocks,
-      imageSize: Size(
+      imageSize: ui.Size(
         width: (map['imageWidth'] as num?)?.toDouble() ?? 0,
         height: (map['imageHeight'] as num?)?.toDouble() ?? 0,
       ),
@@ -70,8 +71,8 @@ class TextBlock {
   });
 
   /// Convert normalized coordinates to pixel coordinates
-  Rect toPixelRect(Size imageSize) {
-    return Rect.fromLTRB(
+  ui.Rect toPixelRect(ui.Size imageSize) {
+    return ui.Rect.fromLTRB(
       boundingBox.left * imageSize.width,
       boundingBox.top * imageSize.height,
       boundingBox.right * imageSize.width,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -202,12 +203,9 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
           
           // Cleanup on dialog dispose
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            final navigator = Navigator.of(context);
-            navigator.pop().then((_) {
-              partialSub?.cancel();
-              finalSub?.cancel();
-              voiceEngine.resetRecognizer();
-            });
+            partialSub?.cancel();
+            finalSub?.cancel();
+            voiceEngine.resetRecognizer();
           });
           
           return AlertDialog(
