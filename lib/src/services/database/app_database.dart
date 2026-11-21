@@ -11,7 +11,6 @@ part 'app_database.g.dart';
 /// Translation history entry
 @DataClassName('HistoryEntry')
 class HistoryEntries extends Table {
-  @PrimaryKey()
   IntColumn get id => integer().autoIncrement()();
   TextColumn get sourceText => text().withLength(min: 1, max: 5000)();
   TextColumn get targetText => text().withLength(min: 1, max: 5000)();
@@ -27,7 +26,6 @@ class HistoryEntries extends Table {
 /// Starred/Favorite words
 @DataClassName('StarredWord')
 class StarredWords extends Table {
-  @PrimaryKey()
   IntColumn get id => integer().autoIncrement()();
   TextColumn get sourceText => text().withLength(min: 1, max: 200)();
   TextColumn get targetText => text().withLength(min: 1, max: 200)();
@@ -42,7 +40,6 @@ class StarredWords extends Table {
 /// Phrasebook entries
 @DataClassName('PhrasebookEntry')
 class PhrasebookEntries extends Table {
-  @PrimaryKey()
   IntColumn get id => integer().autoIncrement()();
   TextColumn get category => text().withLength(min: 1, max: 50)(); // 'emergency', 'transport', 'food', 'shopping', 'work', 'slang'
   TextColumn get sourceText => text().withLength(min: 1, max: 500)();
@@ -116,7 +113,6 @@ class UserPreferences extends Table {
 /// Document translation jobs
 @DataClassName('DocumentJob')
 class DocumentJobs extends Table {
-  @PrimaryKey()
   IntColumn get id => integer().autoIncrement()();
   TextColumn get fileName => text().withLength(min: 1, max: 500)();
   TextColumn get filePath => text().withLength(min: 1, max: 1000)();
