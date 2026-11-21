@@ -7,6 +7,8 @@ import 'package:translate_id/src/features/history/presentation/history_page.dart
 import 'package:translate_id/src/features/settings/presentation/settings_page.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
+import 'package:translate_id/src/services/model/model_manager.dart';
+import 'package:translate_id/src/core/di/service_locator.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -30,10 +32,19 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Initialize engines on app startup
-    ref.read(enginesInitializedProvider.future).then((_) {
-      if (mounted) {
-        debugPrint('All engines initialized');
+    // Initialize engines + auto-scan local models on app startup
+    ref.read(enginesInitializedProvider.future).then((_) async {
+      if (!mounted) return;
+      debugPrint('All engines initialized');
+      // Auto-scan for sideloaded models (first run or after install)
+      try {
+        final modelManager = getIt<ModelManager>();
+        final found = await modelManager.scanLocalModels();
+        if (found.isNotEmpty && mounted) {
+          debugPrint('Auto-scan found models: $found');
+        }
+      } catch (e) {
+        debugPrint('Auto-scan failed: $e');
       }
     }).catchError((e) {
       debugPrint('Engine initialization failed: $e');
