@@ -54,6 +54,7 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
   void dispose() {
     _inputController.dispose();
     _swapAnimationController.dispose();
+    _debounceCounter = -1; // Cancel any pending debounce
     super.dispose();
   }
 
@@ -168,6 +169,8 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
   Future<void> _showVoiceInputDialog(VoiceEngine voiceEngine) async {
     String partialText = '';
     String finalText = '';
+    StreamSubscription? partialSub;
+    StreamSubscription? finalSub;
     
     await showDialog(
       context: context,
@@ -175,8 +178,8 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           // Listen to partial results
-          voiceEngine.sttPartialStream.listen((result) {
-            if (mounted) {
+          partialSub = voiceEngine.sttPartialStream.listen((result) {
+            if (context.mounted) {
               setDialogState(() {
                 partialText = result.text;
               });
@@ -184,8 +187,8 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
           });
           
           // Listen to final results
-          voiceEngine.sttFinalStream.listen((result) {
-            if (mounted) {
+          finalSub = voiceEngine.sttFinalStream.listen((result) {
+            if (context.mounted) {
               setDialogState(() {
                 finalText = result.text;
                 partialText = '';
@@ -195,6 +198,16 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
                 if (context.mounted) Navigator.pop(context, finalText);
               });
             }
+          });
+          
+          // Cleanup on dialog dispose
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final navigator = Navigator.of(context);
+            navigator.pop().then((_) {
+              partialSub?.cancel();
+              finalSub?.cancel();
+              voiceEngine.resetRecognizer();
+            });
           });
           
           return AlertDialog(
@@ -227,14 +240,12 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
             actions: [
               TextButton(
                 onPressed: () {
-                  voiceEngine.resetRecognizer();
                   Navigator.pop(context);
                 },
                 child: const Text('Batal'),
               ),
               FilledButton(
                 onPressed: () async {
-                  voiceEngine.resetRecognizer();
                   final text = finalText.isNotEmpty ? finalText : partialText;
                   if (text.isNotEmpty) {
                     _inputController.text = text;
@@ -523,7 +534,7 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
   Future<void> _debounceTranslate(String text) async {
     final currentCount = ++_debounceCounter;
     await Future.delayed(const Duration(milliseconds: 500));
-    if (currentCount == _debounceCounter) {
+    if (currentCount == _debounceCounter && mounted) {
       await _translateText(text);
     }
   }

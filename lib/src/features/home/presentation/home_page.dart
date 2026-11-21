@@ -6,6 +6,7 @@ import 'package:translate_id/src/features/phrasebook/presentation/phrasebook_pag
 import 'package:translate_id/src/features/history/presentation/history_page.dart';
 import 'package:translate_id/src/features/settings/presentation/settings_page.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
+import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -25,6 +26,19 @@ class _HomePageState extends ConsumerState<HomePage> {
     HistoryPage(),
     SettingsPage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize engines on app startup
+    ref.read(enginesInitializedProvider.future).then((_) {
+      if (mounted) {
+        debugPrint('All engines initialized');
+      }
+    }).catchError((e) {
+      debugPrint('Engine initialization failed: $e');
+    });
+  }
 
   @override
   void dispose() {

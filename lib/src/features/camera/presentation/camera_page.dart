@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
 import 'package:gap/gap.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
-import 'package:translate_id/src/shared/widgets/voice_button.dart';
+import 'package:translate_id/src/services/ocr/ocr_engine.dart';
+import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
+import 'package:translate_id/src/services/voice/voice_engine.dart';
 
 class CameraPage extends ConsumerStatefulWidget {
   const CameraPage({super.key});
@@ -21,7 +24,7 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
   bool _isProcessing = false;
   bool _torchOn = false;
   bool _showOverlay = true;
-  List<OcrBlock> _detectedBlocks = [];
+  List<TextBlock> _detectedBlocks = [];
   String _translatedText = '';
 
   @override
@@ -84,34 +87,67 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
   Future<void> _processFrame(CameraImage image) async {
     _isProcessing = true;
     try {
-      // TODO: Send frame to OCR engine via platform channel
-      // For now, simulate detection
-      await Future.delayed(const Duration(milliseconds: 100));
-      if (mounted) {
+      final ocrEngine = ref.read(ocrEngineProvider);
+      
+      // Convert YUV420 to bytes for OCR
+      final bytes = _convertYUV420ToBytes(image);
+      if (bytes == null) return;
+
+      final result = await ocrEngine.recognizeFromCamera(
+        bytes,
+        Size(image.width.toDouble(), image.height.toDouble()),
+      );
+
+      if (mounted && result != null && result.blocks.isNotEmpty) {
         setState(() {
-          _detectedBlocks = _getMockBlocks(image.width, image.height);
+          _detectedBlocks = result.blocks;
         });
       }
+    } catch (e) {
+      debugPrint('OCR frame error: $e');
     } finally {
       _isProcessing = false;
     }
   }
 
-  List<OcrBlock> _getMockBlocks(int width, int height) {
-    return [
-      OcrBlock(
-        text: 'Hello World',
-        rect: Rect.fromLTRB(width * 0.2, height * 0.3, width * 0.8, height * 0.4),
-        confidence: 0.95,
-        language: 'en',
-      ),
-      OcrBlock(
-        text: 'Selamat Pagi',
-        rect: Rect.fromLTRB(width * 0.1, height * 0.6, width * 0.9, height * 0.7),
-        confidence: 0.92,
-        language: 'id',
-      ),
-    ];
+  Uint8List? _convertYUV420ToBytes(CameraImage image) {
+    try {
+      final int width = image.width;
+      final int height = image.height;
+      final int yRowStride = image.planes[0].bytesPerRow;
+      final int uvRowStride = image.planes[1].bytesPerRow;
+      final int uvPixelStride = image.planes[1].bytesPerPixel ?? 1;
+
+      final yBuffer = image.planes[0].bytes;
+      final uBuffer = image.planes[1].bytes;
+      final vBuffer = image.planes[2].bytes;
+
+      final nv21 = Uint8List(width * height * 3 ~/ 2);
+      int index = 0;
+
+      // Y plane
+      for (int i = 0; i < height; i++) {
+        nv21.setRange(index, index + width, yBuffer.buffer.asUint8List(yRowStride * i, width));
+        index += width;
+      }
+
+      // UV plane (interleaved VU for NV21)
+      for (int i = 0; i < height ~/ 2; i++) {
+        for (int j = 0; j < width ~/ 2; j++) {
+          final uIndex = uvRowStride * i + uvPixelStride * j;
+          final vIndex = uvRowStride * i + uvPixelStride * j;
+          if (uIndex < uBuffer.length && vIndex < vBuffer.length) {
+            nv21[index++] = vBuffer[vIndex];
+            nv21[index++] = uBuffer[uIndex];
+          }
+        }
+      }
+
+      return nv21;
+    } catch (e) {
+      debugPrint('YUV conversion error: $e');
+      return null;
+    }
   }
 
   Future<void> _captureAndTranslate() async {
@@ -120,34 +156,115 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
     setState(() => _isProcessing = true);
     try {
       final XFile photo = await _controller!.takePicture();
-      // TODO: Send to OCR + Translation
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (mounted) {
-        setState(() {
-          _translatedText = 'Halo Dunia\nSelamat Pagi';
-          _showResultBottomSheet();
-        });
+      
+      final ocrEngine = ref.read(ocrEngineProvider);
+      final result = await ocrEngine.recognizeFromFile(photo.path, language: 'auto');
+
+      if (result != null && result.text.isNotEmpty) {
+        // Translate the detected text
+        final engine = ref.read(translationEngineProvider);
+        final translation = await engine.translate(
+          text: result.text,
+          sourceLang: result.blocks.firstOrNull?.language ?? 'auto',
+          targetLang: 'id',
+        );
+
+        if (mounted) {
+          setState(() {
+            _translatedText = translation.text;
+            _showResultBottomSheet(result.text, translation.text);
+          });
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Tidak ada teks terdeteksi')),
+          );
+        }
       }
     } catch (e) {
       debugPrint('Capture error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal: $e')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
   }
 
-  void _showResultBottomSheet() {
+  void _showResultBottomSheet(String originalText, String translatedText) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _ResultSheet(
-        originalText: 'Hello World\nSelamat Pagi',
-        translatedText: _translatedText,
-        onCopy: () {},
-        onSpeak: () {},
-        onSave: () {},
+        originalText: originalText,
+        translatedText: translatedText,
+        onCopy: () {
+          Navigator.pop(context);
+          // Copy to clipboard
+        },
+        onSpeak: () {
+          Navigator.pop(context);
+          // TTS
+        },
+        onSave: () {
+          Navigator.pop(context);
+          // Save to phrasebook
+        },
       ),
     );
+  }
+
+  Future<void> _pickFromGallery() async {
+    try {
+      final picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+
+      if (image != null) {
+        setState(() => _isProcessing = true);
+        try {
+          final ocrEngine = ref.read(ocrEngineProvider);
+          final result = await ocrEngine.recognizeFromFile(image.path, language: 'auto');
+
+          if (result != null && result.text.isNotEmpty) {
+            final engine = ref.read(translationEngineProvider);
+            final translation = await engine.translate(
+              text: result.text,
+              sourceLang: result.blocks.firstOrNull?.language ?? 'auto',
+              targetLang: 'id',
+            );
+
+            if (mounted) {
+              setState(() {
+                _translatedText = translation.text;
+                _showResultBottomSheet(result.text, translation.text);
+              });
+            }
+          } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Tidak ada teks terdeteksi')),
+              );
+            }
+          }
+        } finally {
+          if (mounted) setState(() => _isProcessing = false);
+        }
+      }
+    } catch (e) {
+      debugPrint('Gallery picker error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memilih gambar: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _toggleTorch() async {
@@ -252,7 +369,7 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
                     children: [
                       _ControlButton(
                         icon: _torchOn ? Icons.flash_on : Icons.flash_off,
-                        label: _torchOn ? 'Lampu' : 'Lampu',
+                        label: 'Lampu',
                         onTap: _toggleTorch,
                         active: _torchOn,
                       ),
@@ -278,29 +395,10 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
       ),
     );
   }
-
-  void _pickFromGallery() {
-    // TODO: Implement gallery picker
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pilih dari galeri...')));
-  }
-}
-
-class OcrBlock {
-  final String text;
-  final Rect rect;
-  final double confidence;
-  final String language;
-
-  OcrBlock({
-    required this.text,
-    required this.rect,
-    required this.confidence,
-    required this.language,
-  });
 }
 
 class _OcrOverlayPainter extends CustomPainter {
-  final List<OcrBlock> blocks;
+  final List<TextBlock> blocks;
   final Size? previewSize;
 
   _OcrOverlayPainter({required this.blocks, this.previewSize});
@@ -322,15 +420,15 @@ class _OcrOverlayPainter extends CustomPainter {
     );
 
     for (final block in blocks) {
-      Rect scaledRect = block.rect;
+      Rect scaledRect = block.boundingBox;
       if (previewSize != null) {
         final scaleX = size.width / previewSize!.width;
         final scaleY = size.height / previewSize!.height;
         scaledRect = Rect.fromLTRB(
-          block.rect.left * scaleX,
-          block.rect.top * scaleY,
-          block.rect.right * scaleX,
-          block.rect.bottom * scaleY,
+          block.boundingBox.left * scaleX,
+          block.boundingBox.top * scaleY,
+          block.boundingBox.right * scaleX,
+          block.boundingBox.bottom * scaleY,
         );
       }
 
