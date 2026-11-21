@@ -264,8 +264,8 @@ class AppDatabase extends _$AppDatabase {
         targetTextSlang: targetTextSlang,
         sourceLang: sourceLang,
         targetLang: targetLang,
-        sortOrder: sortOrder,
-        isCustom: isCustom,
+        sortOrder: Value(sortOrder),
+        isCustom: Value(isCustom),
         createdAt: now,
         updatedAt: now,
       ),
@@ -353,8 +353,8 @@ class AppDatabase extends _$AppDatabase {
           targetTextSlang: p.$4,
           sourceLang: p.$5,
           targetLang: p.$6,
-          sortOrder: p.$7,
-          isCustom: false,
+          sortOrder: Value(p.$7),
+          isCustom: const Value(false),
           createdAt: now,
           updatedAt: now,
         ),
@@ -369,8 +369,10 @@ class AppDatabase extends _$AppDatabase {
 
   Stream<List<HistoryEntry>> watchHistory({HistoryFilter? filter}) {
     var query = select(historyEntries)
-      ..orderBy([(t) => OrderingTerm.desc(t.timestamp)])
-      ..where((t) => filter == null || filter == HistoryFilter.all || t.type.equals(filter.name));
+      ..orderBy([(t) => OrderingTerm.desc(t.timestamp)]);
+    if (filter != null && filter != HistoryFilter.all) {
+      query.where((t) => t.type.equals(filter.name));
+    }
     return query.watch();
   }
 
