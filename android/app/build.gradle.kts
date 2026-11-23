@@ -20,8 +20,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        // open_filex FileProvider authority placeholder
-        manifestPlaceholders["applicationId"] = applicationId.toString()
     }
 
     // Release keystore — create once: 
