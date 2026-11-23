@@ -511,7 +511,7 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun translatorStatus(result: MethodChannel.Result) {
-        result.success(mapOf("loaded" to true)) // ONNX Runtime loads lazily
+        result.success(mapOf("loaded" to translate.isLoaded()))
     }
 
     // ============ ML Kit OCR ============

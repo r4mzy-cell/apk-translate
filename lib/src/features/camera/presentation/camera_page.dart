@@ -2,12 +2,10 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
 import 'package:gap/gap.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:translate_id/src/core/theme/app_theme.dart';
-import 'package:translate_id/src/services/ocr/ocr_engine.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
 import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
@@ -23,13 +21,15 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
   CameraController? _controller;
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0;
-  bool _isProcessing = false;
+  bool _isProcessing = false; // for capture/translate
+  bool _isFrameProcessing = false; // for live OCR frame
   bool _torchOn = false;
   bool _showOverlay = true;
   List<TextBlock> _detectedBlocks = [];
   String _translatedText = '';
   String _targetLang = 'id';
   FormalityMode _formality = FormalityMode.formal;
+  int _frameRotation = 0;
 
   @override
   void initState() {
@@ -88,6 +88,30 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
   void _startOcrStream() {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
+    // Compute rotation to correct camera frame for ML Kit
+    final desc = _controller!.description;
+    final deviceOrientation = _controller!.value.deviceOrientation;
+    int deviceDeg = 0;
+    switch (deviceOrientation) {
+      case DeviceOrientation.portraitUp:
+        deviceDeg = 0;
+        break;
+      case DeviceOrientation.landscapeLeft:
+        deviceDeg = 90;
+        break;
+      case DeviceOrientation.portraitDown:
+        deviceDeg = 180;
+        break;
+      case DeviceOrientation.landscapeRight:
+        deviceDeg = 270;
+        break;
+    }
+    int sensor = desc.sensorOrientation;
+    // Back camera: (sensor - device + 360) % 360; Front: (sensor + device) % 360
+    _frameRotation = desc.lensDirection == CameraLensDirection.front
+        ? (sensor + deviceDeg) % 360
+        : (sensor - deviceDeg + 360) % 360;
+
     _controller!.startImageStream((CameraImage image) {
       if (_isProcessing || !_showOverlay) return;
       _processFrame(image);
@@ -95,7 +119,8 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
   }
 
   Future<void> _processFrame(CameraImage image) async {
-    _isProcessing = true;
+    if (_isFrameProcessing) return;
+    _isFrameProcessing = true;
     try {
       final ocrEngine = ref.read(ocrEngineProvider);
       
@@ -106,6 +131,7 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
       final result = await ocrEngine.recognizeFromCamera(
         bytes,
         ui.Size(image.width.toDouble(), image.height.toDouble()),
+        rotationDegrees: _frameRotation,
       );
 
       if (mounted && result != null && result.blocks.isNotEmpty) {
@@ -116,7 +142,7 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
     } catch (e) {
       debugPrint('OCR frame error: $e');
     } finally {
-      _isProcessing = false;
+      _isFrameProcessing = false;
     }
   }
 
@@ -125,31 +151,35 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
       final int width = image.width;
       final int height = image.height;
       final int yRowStride = image.planes[0].bytesPerRow;
-      final int uvRowStride = image.planes[1].bytesPerRow;
-      final int uvPixelStride = image.planes[1].bytesPerPixel ?? 1;
+      final int uRowStride = image.planes[1].bytesPerRow;
+      final int vRowStride = image.planes[2].bytesPerRow;
+      final int halfW = width ~/ 2;
 
-      final yBuffer = image.planes[0].bytes;
-      final uBuffer = image.planes[1].bytes;
-      final vBuffer = image.planes[2].bytes;
+      // NV21 line stride = 2*width (Y + V + U)
+      final int nv21RowStride = 2 * width;
+      final Uint8List nv21 = Uint8List(height * nv21RowStride);
 
-      final nv21 = Uint8List(width * height * 3 ~/ 2);
-      int index = 0;
+      final Uint8List yPlane = image.planes[0].bytes;
+      final Uint8List uPlane = image.planes[1].bytes;
+      final Uint8List vPlane = image.planes[2].bytes;
 
-      // Y plane
-      for (int i = 0; i < height; i++) {
-        nv21.setRange(index, index + width, yBuffer.buffer.asUint8List(yRowStride * i, width));
-        index += width;
-      }
+      for (int row = 0; row < height; row++) {
+        final int dstLine = row * nv21RowStride;
+        // Y plane
+        final int ySrc = row * yRowStride;
+        nv21.setRange(dstLine, dstLine + width, yPlane.buffer.asUint8List(ySrc, width));
 
-      // UV plane (interleaved VU for NV21)
-      for (int i = 0; i < height ~/ 2; i++) {
-        for (int j = 0; j < width ~/ 2; j++) {
-          final uIndex = uvRowStride * i + uvPixelStride * j;
-          final vIndex = uvRowStride * i + uvPixelStride * j;
-          if (uIndex < uBuffer.length && vIndex < vBuffer.length) {
-            nv21[index++] = vBuffer[vIndex];
-            nv21[index++] = uBuffer[uIndex];
-          }
+        // V and U (half-resolution planes)
+        final int srcRow = row ~/ 2;
+        final int vSrc = srcRow * vRowStride;
+        final int uSrc = srcRow * uRowStride;
+
+        // V at offset width, U at offset width + halfW
+        for (int col = 0; col < halfW; col++) {
+          final int vByte = vPlane[vSrc + col];
+          final int uByte = uPlane[uSrc + col];
+          nv21[dstLine + width + col] = vByte;
+          nv21[dstLine + width + halfW + col] = uByte;
         }
       }
 
@@ -163,9 +193,12 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
   Future<void> _captureAndTranslate() async {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
+    // Must stop the image stream before takePicture(), otherwise capture fails
+    final controller = _controller!;
+    if (controller.value.isStreaming) await controller.stopImageStream();
     setState(() => _isProcessing = true);
     try {
-      final XFile photo = await _controller!.takePicture();
+      final XFile photo = await controller.takePicture();
       
       final ocrEngine = ref.read(ocrEngineProvider);
       final result = await ocrEngine.recognizeFromFile(photo.path, language: 'auto');
@@ -219,6 +252,10 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
         );
       }
     } finally {
+      // Restart image stream after capture
+      if (mounted && _controller != null && _controller!.value.isInitialized) {
+        _startOcrStream();
+      }
       if (mounted) setState(() => _isProcessing = false);
     }
   }

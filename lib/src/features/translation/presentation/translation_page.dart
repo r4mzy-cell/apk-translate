@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,7 @@ import 'package:translate_id/src/features/history/presentation/history_page.dart
 import 'package:translate_id/src/features/camera/presentation/camera_page.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/core/di/service_locator.dart';
+import 'package:record/record.dart';
 
 class TranslationPage extends ConsumerStatefulWidget {
   const TranslationPage({super.key});
@@ -174,6 +176,19 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
     String finalText = '';
     StreamSubscription? partialSub;
     StreamSubscription? finalSub;
+    final AudioRecorder recorder = AudioRecorder();
+    bool isRecording = false;
+    
+    // Check if recorder has permission
+    final hasPermission = await recorder.hasPermission();
+    if (!hasPermission) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Izin mikrofon tidak diberikan')),
+        );
+      }
+      return;
+    }
     
     await showDialog(
       context: context,
@@ -203,12 +218,55 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
             }
           });
           
+          // Start recording and feed STT
+          Future<void> startRecording() async {
+            if (isRecording) return;
+            try {
+              final stream = await recorder.startStream(
+                const RecordConfig(
+                  encoder: AudioEncoder.pcm16bits,
+                  sampleRate: 16000,
+                  numChannels: 1,
+                ),
+              );
+              isRecording = true;
+              
+              await for (final chunk in stream) {
+                if (!isRecording) break;
+                // Convert int16 bytes to Float32List (-1.0..1.0)
+                final int16 = Int16List.fromList(chunk.buffer.asInt16List());
+                final float32 = Float32List(int16.length);
+                for (int i = 0; i < int16.length; i++) {
+                  float32[i] = int16[i] / 32768.0;
+                }
+                await voiceEngine.acceptWaveform(float32);
+              }
+            } catch (e) {
+              debugPrint('Recording error: $e');
+            }
+          }
+          
+          Future<void> stopRecording() async {
+            if (!isRecording) return;
+            try {
+              await recorder.stop();
+              isRecording = false;
+            } catch (e) {
+              debugPrint('Stop recording error: $e');
+            }
+          }
+          
           // Cleanup on dialog dispose
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await stopRecording();
             partialSub?.cancel();
             finalSub?.cancel();
-            voiceEngine.resetRecognizer();
+            await voiceEngine.resetRecognizer();
+            recorder.dispose();
           });
+          
+          // Start recording immediately
+          startRecording();
           
           return AlertDialog(
             title: const Text('Input Suara'),
@@ -218,9 +276,9 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
                 Icon(
                   Icons.mic,
                   size: 64,
-                  color: AppTheme.primaryTeal,
+                  color: isRecording ? Colors.red : AppTheme.primaryTeal,
                 ).animate(onPlay: (c) => c.repeat())
-                  .shimmer(duration: 1000.ms, color: AppTheme.primaryTeal.withOpacity(0.5)),
+                  .shimmer(duration: 1000.ms, color: (isRecording ? Colors.red : AppTheme.primaryTeal).withOpacity(0.5)),
                 const Gap(16),
                 Text(
                   partialText.isNotEmpty ? partialText : 'Mendengarkan...',
@@ -239,7 +297,8 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
             ),
             actions: [
               TextButton(
-                onPressed: () {
+                onPressed: () async {
+                  await stopRecording();
                   Navigator.pop(context);
                 },
                 child: const Text('Batal'),
@@ -247,11 +306,12 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
               FilledButton(
                 onPressed: () async {
                   final text = finalText.isNotEmpty ? finalText : partialText;
+                  await stopRecording();
                   if (text.isNotEmpty) {
                     _inputController.text = text;
                     await _translateText(text);
                   }
-                  Navigator.pop(context);
+                  if (context.mounted) Navigator.pop(context);
                 },
                 child: const Text('Gunakan'),
               ),
@@ -553,11 +613,8 @@ class _ModelStatusBanner extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final models = ref.watch(modelManagerProvider).value ?? [];
     final modelId = sourceLang == 'en' ? 'ctranslate-en-id' : 'ctranslate-id-en';
-    final model = models.firstWhere(
-      (m) => m.id == modelId,
-      orElse: () => throw Exception('Translation model not found: $modelId'),
-    );
-    final isReady = model.isDownloaded && model.localPath != null;
+    final model = models.where((m) => m.id == modelId).firstOrNull;
+    final isReady = model?.isDownloaded == true && model.localPath != null;
 
     if (isReady) return const SizedBox.shrink();
 

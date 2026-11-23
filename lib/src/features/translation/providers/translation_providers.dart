@@ -26,9 +26,11 @@ final enginesInitializedProvider = FutureProvider<void>((ref) async {
   final voiceEngine = ref.read(voiceEngineProvider);
   final ocrEngine = ref.read(ocrEngineProvider);
   
-  await Future.wait([
-    translationEngine.initialize(),
-    voiceEngine.initialize(),
-    ocrEngine.initialize(),
+  // Each engine is isolated: one failing must not skip model scan of the others
+  final results = await Future.wait([
+    translationEngine.initialize().catchError((e) => AppLogger.error('TranslationEngine init failed', e)),
+    voiceEngine.initialize().catchError((e) => AppLogger.error('VoiceEngine init failed', e)),
+    ocrEngine.initialize().catchError((e) => AppLogger.error('OcrEngine init failed', e)),
   ]);
+  return results;
 });

@@ -1,7 +1,11 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "skills": [
-    ".opencode/skills",
-    "~/.config/opencode/skills"
+    "modern-web-guidance",
+    "mega-claude-skills",
+    "mega-antislop",
+    "design-taste-frontend",
+    "grill-with-docs",
+    "auto-skill-detector"
   ]
 }

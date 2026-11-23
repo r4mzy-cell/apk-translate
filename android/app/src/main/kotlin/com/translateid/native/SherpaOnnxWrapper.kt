@@ -15,7 +15,7 @@ class SherpaOnnxWrapper(private val context: Context) {
 
     companion object {
         private const val TAG = "SherpaOnnxWrapper"
-        private var _isLoaded = false
+        @Volatile private var _isLoaded = false
 
         /** Load the native library (delegated to official classes) */
         fun loadLibrary(): Boolean {

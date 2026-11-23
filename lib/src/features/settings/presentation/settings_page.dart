@@ -9,6 +9,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/features/settings/presentation/model_manager_page.dart';
 import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
+import 'package:translate_id/src/features/settings/providers/update_providers.dart';
+import 'package:translate_id/src/services/update/update_service.dart';
 import 'package:translate_id/src/services/translation/translation_engine.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
@@ -237,6 +239,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
             _SettingsDivider(),
             _SettingsTile(
+              leading: Icon(Icons.system_update_outlined, color: AppTheme.primaryTeal),
+              title: 'Cek Pembaruan',
+              subtitle: _buildUpdateSubtitle(ref),
+              trailing: _buildUpdateTrailing(ref, context),
+              onTap: () => _handleUpdateTap(ref, context),
+            ),
+            _SettingsDivider(),
+            _SettingsTile(
               leading: Icon(Icons.code_outlined, color: AppTheme.primaryTeal),
               title: 'Open Source Licenses',
               subtitle: 'Lisensi dependensi yang digunakan',
@@ -271,6 +281,106 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         ],
       ),
     );
+  }
+
+  String _buildUpdateSubtitle(WidgetRef ref) {
+    final update = ref.watch(updateProgressProvider);
+    switch (update.status) {
+      case UpdateStatus.idle:
+        return 'Ketuk untuk memeriksa versi terbaru';
+      case UpdateStatus.checking:
+        return 'Memeriksa pembaruan...';
+      case UpdateStatus.upToDate:
+        return 'Aplikasi sudah versi terbaru';
+      case UpdateStatus.updateAvailable:
+        return 'Versi ${update.info!.version} tersedia (${update.info!.formattedSize})';
+      case UpdateStatus.downloading:
+        final pct = (update.progress * 100).toStringAsFixed(0);
+        return 'Mengunduh... $pct%';
+      case UpdateStatus.installing:
+        return 'Membuka installer...';
+      case UpdateStatus.error:
+        return update.message ?? 'Gagal';
+    }
+  }
+
+  Widget _buildUpdateTrailing(WidgetRef ref, BuildContext context) {
+    final update = ref.watch(updateProgressProvider);
+    switch (update.status) {
+      case UpdateStatus.checking:
+      case UpdateStatus.downloading:
+        return const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+      case UpdateStatus.updateAvailable:
+        return FilledButton(
+          onPressed: () => _handleUpdateTap(ref, context),
+          style: FilledButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            minimumSize: const Size(0, 32),
+          ),
+          child: const Text('Perbarui'),
+        );
+      case UpdateStatus.installing:
+        return const Icon(Icons.downloading, color: AppTheme.primaryTeal);
+      default:
+        return const Icon(Icons.chevron_right);
+    }
+  }
+
+  Future<void> _handleUpdateTap(WidgetRef ref, BuildContext context) async {
+    final notifier = ref.read(updateProgressProvider.notifier);
+    final current = ref.read(updateProgressProvider);
+
+    if (current.status == UpdateStatus.updateAvailable && current.info != null) {
+      final info = current.info!;
+      // Confirm before download
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Perbarui Aplikasi'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Versi ${info.version} (${info.formattedSize})'),
+              const Gap(8),
+              if (info.releaseNotes.isNotEmpty)
+                SizedBox(
+                  height: 200,
+                  child: SingleChildScrollView(
+                    child: Text(info.releaseNotes, style: Theme.of(ctx).textTheme.bodySmall),
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Nanti')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Unduh & Pasang')),
+          ],
+        ),
+      );
+      if (ok == true) {
+        await notifier.downloadAndInstall(info);
+      }
+      return;
+    }
+
+    await notifier.checkForUpdate();
+    final result = ref.read(updateProgressProvider);
+    if (result.status == UpdateStatus.upToDate && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aplikasi sudah versi terbaru')),
+      );
+    } else if (result.status == UpdateStatus.error && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.message ?? 'Gagal cek pembaruan')),
+      );
+    } else if (result.status == UpdateStatus.updateAvailable && context.mounted) {
+      await _handleUpdateTap(ref, context);
+    }
   }
 
   Future<void> _showStoragePicker(BuildContext context) async {

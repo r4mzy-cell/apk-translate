@@ -126,8 +126,17 @@ class OcrEngine {
   }
 
   /// Recognize text from camera frame (for real-time)
-  Future<OcrResult?> recognizeFromCamera(Uint8List frameBytes, ui.Size frameSize) async {
-    return recognizeFromBytes(frameBytes, imageSize: frameSize, language: 'auto');
+  Future<OcrResult?> recognizeFromCamera(
+    Uint8List frameBytes,
+    ui.Size frameSize, {
+    int rotationDegrees = 0,
+  }) async {
+    return recognizeFromBytes(
+      frameBytes,
+      imageSize: frameSize,
+      rotationDegrees: rotationDegrees,
+      language: 'auto',
+    );
   }
 
   /// Recognize text from file path

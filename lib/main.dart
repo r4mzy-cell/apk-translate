@@ -11,6 +11,9 @@ import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/services/permissions/permission_service.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
 import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
+import 'package:translate_id/src/services/translation/translation_engine.dart';
+import 'package:translate_id/src/services/voice/voice_engine.dart';
+import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
 import 'package:get_it/get_it.dart';
 
 /// Background service entry point — runs in separate isolate
@@ -77,11 +80,36 @@ void main() async {
     rethrow;
   }
 
+  // Build container first so we can wire resolvers before runApp
   final container = ProviderContainer(
     overrides: [
       appDatabaseProvider.overrideWith((ref) => getIt<AppDatabase>()),
     ],
   );
+
+  // Ensure engines init + wire model resolvers to Riverpod modelManagerProvider
+  try {
+    await container.read(enginesInitializedProvider.future);
+  } catch (_) {
+    // Non-fatal; resolvers still wired below
+  }
+
+  // Wire engines to Riverpod model manager (correct instance with DB + state)
+  final translationEngine = getIt<TranslationEngine>();
+  final voiceEngine = getIt<VoiceEngine>();
+  translationEngine.setModelsResolver(() => container.read(modelManagerProvider).value ?? []);
+  voiceEngine.setModelsResolver(() => container.read(modelManagerProvider).value ?? []);
+
+  // Auto-scan for sideloaded models (first run / after install)
+  try {
+    final modelManager = container.read(modelManagerProvider.notifier);
+    final found = await modelManager.scanLocalModels();
+    if (found.isNotEmpty) {
+      AppLogger.info('Auto-scan found models: $found');
+    }
+  } catch (e, stack) {
+    AppLogger.error('Auto-scan failed', e, stack);
+  }
 
   runApp(UncontrolledProviderScope(
     container: container,

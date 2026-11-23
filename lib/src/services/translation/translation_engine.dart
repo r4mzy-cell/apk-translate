@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:translate_id/src/models/model_info.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/shared/utils/app_logger.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
@@ -38,8 +39,15 @@ class TranslationEngine {
   
   bool _initialized = false;
   String _translatorId = 'translator_default';
+  List<ModelInfo> Function()? _modelsResolver;
 
   TranslationEngine(this._modelManager);
+
+  void setModelsResolver(List<ModelInfo> Function() resolver) {
+    _modelsResolver = resolver;
+  }
+
+  List<ModelInfo> get _models => _modelsResolver?.call() ?? _modelManager.currentModels ?? [];
 
   /// Initialize ONNX Runtime library
   Future<void> initialize() async {
@@ -53,8 +61,9 @@ class TranslationEngine {
         AppLogger.warning('ONNX Runtime library not loaded');
       }
     } catch (e) {
-      AppLogger.error('Failed to initialize TranslationEngine', e);
-      rethrow;
+      // Non-fatal: the runtime loads lazily on first initTranslator call.
+      AppLogger.warning('TranslationEngine status check failed: $e');
+      _initialized = true;
     }
   }
 
@@ -63,7 +72,7 @@ class TranslationEngine {
     if (!_initialized) await initialize();
     
     final modelId = sourceLang == 'en' ? 'ctranslate-en-id' : 'ctranslate-id-en';
-    final model = _modelManager.currentModels?.firstWhere(
+    final model = _models.firstWhere(
       (m) => m.id == modelId,
       orElse: () => throw Exception('Translation model not found: $modelId'),
     );
@@ -158,17 +167,16 @@ class TranslationEngine {
 
   /// Native translation via platform channel
   Future<String> _translateNative(String text, String sourceLang, String targetLang) async {
-    try {
-      final result = await _channel.invokeMethod('translate', {
-        'id': _translatorId,
-        'text': text,
-        'beamSize': 4,
-      });
-      return result as String? ?? text;
-    } catch (e) {
-      AppLogger.error('Native translation failed', e);
-      return text;
+    final result = await _channel.invokeMethod('translate', {
+      'id': _translatorId,
+      'text': text,
+      'beamSize': 4,
+    });
+    final translated = result as String?;
+    if (translated == null || translated.trim().isEmpty) {
+      throw Exception('Terjemahan kosong dari model. Coba lagi atau ganti model.');
     }
+    return translated;
   }
 
   /// Detect language of text (simple heuristic for EN/ID)

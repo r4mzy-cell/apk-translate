@@ -8,7 +8,8 @@ import 'package:translate_id/src/features/settings/presentation/settings_page.da
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
-import 'package:translate_id/src/core/di/service_locator.dart';
+import 'package:translate_id/src/features/settings/providers/update_providers.dart';
+import 'package:translate_id/src/services/update/update_service.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -32,23 +33,67 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Initialize engines + auto-scan local models on app startup
-    ref.read(enginesInitializedProvider.future).then((_) async {
+    // Engines + model scan are wired in main.dart before runApp.
+    // Re-trigger scan here so a fresh sideload is detected when app resumes.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      debugPrint('All engines initialized');
-      // Auto-scan for sideloaded models (first run or after install)
       try {
-        final modelManager = getIt<ModelManager>();
-        final found = await modelManager.scanLocalModels();
-        if (found.isNotEmpty && mounted) {
-          debugPrint('Auto-scan found models: $found');
-        }
+        final found = await ref.read(modelManagerProvider.notifier).scanLocalModels();
+        if (found.isNotEmpty) debugPrint('Auto-scan found models: $found');
       } catch (e) {
         debugPrint('Auto-scan failed: $e');
       }
-    }).catchError((e) {
-      debugPrint('Engine initialization failed: $e');
     });
+
+    // Auto-check for app updates (once per session, delay to not block UI)
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await Future.delayed(const Duration(seconds: 3));
+      if (!mounted) return;
+      
+      // Check if we already checked this session
+      final prefs = await ref.read(updateProgressProvider.notifier).checkForUpdate();
+      final update = ref.read(updateProgressProvider);
+      
+      if (update.status == UpdateStatus.updateAvailable && update.info != null && mounted) {
+        await _showUpdateDialog(update.info!);
+      }
+    });
+  }
+
+  Future<void> _showUpdateDialog(UpdateInfo info) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Pembaruan Tersedia'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Versi ${info.version} (${info.formattedSize}) sudah tersedia.'),
+            const Gap(12),
+            if (info.releaseNotes.isNotEmpty)
+              SizedBox(
+                height: 200,
+                child: SingleChildScrollView(
+                  child: Text(info.releaseNotes, style: Theme.of(ctx).textTheme.bodySmall),
+                ),
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Nanti')),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Unduh & Pasang Sekarang'),
+          ),
+        ],
+      ),
+    );
+    
+    if (ok == true && mounted) {
+      await ref.read(updateProgressProvider.notifier).downloadAndInstall(info);
+    }
   }
 
   @override

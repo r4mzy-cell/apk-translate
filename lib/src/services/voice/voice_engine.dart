@@ -109,6 +109,7 @@ class VoiceEngine {
   String _ttsId = 'tts_default';
   bool _vadInitialized = false;
   bool _langIdInitialized = false;
+  List<ModelInfo> Function()? _modelsResolver;
 
   // Stream controllers for partial STT results
   final _sttPartialController = StreamController<SttResult>.broadcast();
@@ -118,6 +119,12 @@ class VoiceEngine {
   Stream<SttResult> get sttFinalStream => _sttFinalController.stream;
 
   VoiceEngine(this._modelManager);
+
+  void setModelsResolver(List<ModelInfo> Function() resolver) {
+    _modelsResolver = resolver;
+  }
+
+  List<ModelInfo> get _models => _modelsResolver?.call() ?? _modelManager.currentModels ?? [];
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -324,10 +331,7 @@ class VoiceEngine {
     if (!_initialized) await initialize();
     if (_vadInitialized) return true;
     
-    final model = _modelManager.currentModels?.firstWhere(
-      (m) => m.id == 'sherpa-vad-langid',
-      orElse: () => throw Exception('VAD model not found'),
-    );
+    final model = _getVadModel();
     
     if (model == null || !model.isDownloaded || model.localPath == null) {
       AppLogger.error('VAD model not downloaded');
@@ -392,10 +396,7 @@ class VoiceEngine {
     if (!_initialized) await initialize();
     if (_langIdInitialized) return true;
     
-    final model = _modelManager.currentModels?.firstWhere(
-      (m) => m.id == 'sherpa-vad-langid',
-      orElse: () => throw Exception('LangID model not found'),
-    );
+    final model = _getVadModel();
     
     if (model == null || !model.isDownloaded || model.localPath == null) {
       AppLogger.error('LangID model not downloaded');
@@ -476,20 +477,32 @@ class VoiceEngine {
   // ============ Helpers ============
 
   ModelInfo? _getSttModel(String language) {
-    final models = _modelManager.currentModels;
-    if (models == null) return null;
     try {
-      return models.firstWhere((m) => m.type == ModelType.stt && m.language == language);
+      return _models.firstWhere((m) => m.type == ModelType.stt && m.language == language);
     } catch (_) {
       return null;
     }
   }
 
   ModelInfo? _getTtsModel(String language) {
-    final models = _modelManager.currentModels;
-    if (models == null) return null;
     try {
-      return models.firstWhere((m) => m.type == ModelType.tts && m.language == language);
+      return _models.firstWhere((m) => m.type == ModelType.tts && m.language == language);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  ModelInfo? _getVadModel() {
+    try {
+      return _models.firstWhere((m) => m.type == ModelType.vad);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  ModelInfo? _getLangIdModel() {
+    try {
+      return _models.firstWhere((m) => m.type == ModelType.langId);
     } catch (_) {
       return null;
     }

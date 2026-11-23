@@ -38,6 +38,8 @@ dependencies:
   google_mlkit_text_recognition: ^1.0.3
   google_mlkit_commons: ^1.0.3
   image_picker: ^1.2.0
+  # Audio recording for voice input (STT)
+  record: ^5.1.2
 
   # Network (Model Download)
   dio: ^5.4.3+1
@@ -56,6 +58,7 @@ dependencies:
   package_info_plus: ^10.2.2
   file_picker: ^13.4.0
   shared_preferences: ^2.5.2
+  open_filex: ^4.7.0
 
   # Background Services (for screen translate)
   flutter_background_service: ^5.0.5
