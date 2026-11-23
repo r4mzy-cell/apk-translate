@@ -21,7 +21,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         // open_filex FileProvider authority placeholder
-        manifestPlaceholders["applicationId"] = applicationId
+        manifestPlaceholders["applicationId"] = applicationId.toString()
     }
 
     // Release keystore — create once: 
@@ -60,7 +60,7 @@ android {
     // Native libraries land here
     sourceSets {
         getByName("main") {
-            jniLibs.srcDirs("src/main/jniLibs")
+            jniLibs.srcDir("src/main/jniLibs")
         }
     }
 
