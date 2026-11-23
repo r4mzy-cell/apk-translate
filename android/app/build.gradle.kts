@@ -57,13 +57,6 @@ android {
         }
     }
 
-    // Native libraries land here
-    sourceSets {
-        getByName("main") {
-            jniLibs.srcDirs = setOf("src/main/jniLibs")
-        }
-    }
-
     lint {
         checkReleaseBuilds = false
         abortOnError = false
