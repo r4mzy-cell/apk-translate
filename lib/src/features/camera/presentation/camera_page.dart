@@ -9,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/services/ocr/ocr_engine.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
+import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
+import 'package:translate_id/src/shared/enums/formality_mode.dart';
 
 class CameraPage extends ConsumerStatefulWidget {
   const CameraPage({super.key});
@@ -26,6 +28,8 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
   bool _showOverlay = true;
   List<TextBlock> _detectedBlocks = [];
   String _translatedText = '';
+  String _targetLang = 'id';
+  FormalityMode _formality = FormalityMode.formal;
 
   @override
   void initState() {
@@ -56,8 +60,14 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
       _cameras = await availableCameras();
       if (_cameras.isEmpty) return;
 
-      _selectedCameraIndex = _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.back);
-      if (_selectedCameraIndex == -1) _selectedCameraIndex = 0;
+      // Preserve current selection; default to back if unset
+      final hasCurrent = _selectedCameraIndex >= 0 && _selectedCameraIndex < _cameras.length;
+      final currentCam = hasCurrent ? _cameras[_selectedCameraIndex] : null;
+      final preferBack = currentCam == null || currentCam.lensDirection != CameraLensDirection.front;
+      final targetIndex = preferBack
+          ? _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.back)
+          : _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.front);
+      _selectedCameraIndex = targetIndex == -1 ? 0 : targetIndex;
 
       _controller = CameraController(
         _cameras[_selectedCameraIndex],
@@ -160,20 +170,39 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
       final ocrEngine = ref.read(ocrEngineProvider);
       final result = await ocrEngine.recognizeFromFile(photo.path, language: 'auto');
 
-      if (result != null && result.text.isNotEmpty) {
-        // Translate the detected text
+      if (result != null && result.blocks.isNotEmpty) {
+        // Translate each block individually (Google Lens style)
         final engine = ref.read(translationEngineProvider);
-        final translation = await engine.translate(
-          text: result.text,
-          sourceLang: result.blocks.firstOrNull?.language ?? 'auto',
-          targetLang: 'id',
-        );
+        final targetLang = _targetLang;
+        final formality = _formality;
+        final translatedBlocks = <_TranslatedBlock>[];
+        
+        for (final block in result.blocks) {
+          final sourceLang = block.language.isEmpty ? 'auto' : block.language;
+          try {
+            final translation = await engine.translate(
+              text: block.text,
+              sourceLang: sourceLang,
+              targetLang: targetLang,
+              formality: formality,
+            );
+            translatedBlocks.add(_TranslatedBlock(
+              rect: block.boundingBox,
+              originalText: block.text,
+              translatedText: translation.text,
+            ));
+          } catch (e) {
+            debugPrint('Block translate error: $e');
+            translatedBlocks.add(_TranslatedBlock(
+              rect: block.boundingBox,
+              originalText: block.text,
+              translatedText: block.text, // fallback
+            ));
+          }
+        }
 
         if (mounted) {
-          setState(() {
-            _translatedText = translation.text;
-            _showResultBottomSheet(result.text, translation.text);
-          });
+          await _showLensOverlay(photo.path, result.imageSize, translatedBlocks);
         }
       } else {
         if (mounted) {
@@ -214,6 +243,20 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
           Navigator.pop(context);
           // Save to phrasebook
         },
+      ),
+    );
+  }
+
+  Future<void> _showLensOverlay(String imagePath, ui.Size imageSize, List<_TranslatedBlock> blocks) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _LensOverlayView(
+          imagePath: imagePath,
+          imageSize: imageSize,
+          blocks: blocks,
+        ),
+        fullscreenDialog: true,
       ),
     );
   }
@@ -324,10 +367,7 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
           if (_showOverlay && _detectedBlocks.isNotEmpty)
             Positioned.fill(
               child: CustomPaint(
-                painter: _OcrOverlayPainter(
-                  blocks: _detectedBlocks,
-                  previewSize: _controller?.value.previewSize,
-                ),
+                painter: _OcrOverlayPainter(blocks: _detectedBlocks),
               ),
             ),
 
@@ -399,9 +439,8 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
 
 class _OcrOverlayPainter extends CustomPainter {
   final List<TextBlock> blocks;
-  final ui.Size? previewSize;
 
-  _OcrOverlayPainter({required this.blocks, this.previewSize});
+  _OcrOverlayPainter({required this.blocks});
 
   @override
   void paint(Canvas canvas, ui.Size size) {
@@ -420,17 +459,14 @@ class _OcrOverlayPainter extends CustomPainter {
     );
 
     for (final block in blocks) {
-      ui.Rect scaledRect = block.boundingBox;
-      if (previewSize != null) {
-        final scaleX = size.width / previewSize!.width;
-        final scaleY = size.height / previewSize!.height;
-        scaledRect = ui.Rect.fromLTRB(
-          block.boundingBox.left * scaleX,
-          block.boundingBox.top * scaleY,
-          block.boundingBox.right * scaleX,
-          block.boundingBox.bottom * scaleY,
-        );
-      }
+      // boundingBox is normalized 0-1 (from ML Kit via native bridge)
+      // Scale directly to canvas size
+      final ui.Rect scaledRect = ui.Rect.fromLTRB(
+        block.boundingBox.left * size.width,
+        block.boundingBox.top * size.height,
+        block.boundingBox.right * size.width,
+        block.boundingBox.bottom * size.height,
+      );
 
       // Draw bounding box
       canvas.drawRect(scaledRect, paint);
@@ -629,6 +665,134 @@ class _ResultSheet extends StatelessWidget {
               const Gap(12),
               Expanded(child: FilledButton.icon(icon: const Icon(Icons.star_border), label: const Text('Simpan'), onPressed: onSave)),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TranslatedBlock {
+  final ui.Rect rect;
+  final String originalText;
+  final String translatedText;
+
+  _TranslatedBlock({
+    required this.rect,
+    required this.originalText,
+    required this.translatedText,
+  });
+}
+
+class _LensOverlayView extends StatefulWidget {
+  final String imagePath;
+  final ui.Size imageSize;
+  final List<_TranslatedBlock> blocks;
+
+  const _LensOverlayView({
+    super.key,
+    required this.imagePath,
+    required this.imageSize,
+    required this.blocks,
+  });
+
+  @override
+  State<_LensOverlayView> createState() => _LensOverlayViewState();
+}
+
+class _LensOverlayViewState extends State<_LensOverlayView> {
+  bool _showOriginal = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Center(
+              child: Image.file(
+                File(widget.imagePath),
+                fit: BoxFit.contain,
+              ),
+            ),
+            if (!_showOriginal)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final imgW = constraints.biggest.width;
+                  final imgH = constraints.biggest.height;
+                  final scale = widget.imageSize.width > 0
+                      ? imgW / widget.imageSize.width
+                      : 1.0;
+                  return Stack(
+                    children: widget.blocks.map((b) {
+                      final left = b.rect.left * scale;
+                      final top = b.rect.top * scale;
+                      final w = (b.rect.right - b.rect.left) * scale;
+                      final h = (b.rect.bottom - b.rect.top) * scale;
+                      final translated = b.translatedText;
+                      final displayText = translated.length > 40 ? '${translated.substring(0, 40)}...' : translated;
+                      return Positioned(
+                        left: left,
+                        top: top,
+                        width: w,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.85),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            displayText,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              )
+            else
+              ...widget.blocks.map((b) => Positioned(
+                left: 0,
+                top: 0,
+                right: 0,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      b.originalText,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'lens_toggle_original',
+            onPressed: () => setState(() => _showOriginal = !_showOriginal),
+            child: Icon(_showOriginal ? Icons.translate : Icons.text_fields),
+          ),
+          const Gap(8),
+          FloatingActionButton.small(
+            heroTag: 'lens_close',
+            onPressed: () => Navigator.pop(context),
+            child: const Icon(Icons.close),
           ),
         ],
       ),

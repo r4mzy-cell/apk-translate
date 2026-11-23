@@ -17,6 +17,8 @@ import 'package:translate_id/src/features/settings/providers/settings_providers.
 import 'package:translate_id/src/services/database/app_database.dart';
 import 'package:translate_id/src/features/history/presentation/history_page.dart';
 import 'package:translate_id/src/features/camera/presentation/camera_page.dart';
+import 'package:translate_id/src/services/model/model_manager.dart';
+import 'package:translate_id/src/core/di/service_locator.dart';
 
 class TranslationPage extends ConsumerStatefulWidget {
   const TranslationPage({super.key});
@@ -457,6 +459,9 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
               ),
             ),
 
+            // Model status banner
+            _ModelStatusBanner(sourceLang: _sourceLang, targetLang: _targetLang),
+
             // Input area
             Expanded(
               flex: 2,
@@ -535,5 +540,47 @@ class _TranslationPageState extends ConsumerState<TranslationPage> with TickerPr
     if (currentCount == _debounceCounter && mounted) {
       await _translateText(text);
     }
+  }
+}
+
+class _ModelStatusBanner extends ConsumerWidget {
+  final String sourceLang;
+  final String targetLang;
+
+  const _ModelStatusBanner({required this.sourceLang, required this.targetLang});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final models = ref.watch(modelManagerProvider).value ?? [];
+    final modelId = sourceLang == 'en' ? 'ctranslate-en-id' : 'ctranslate-id-en';
+    final model = models.firstWhere(
+      (m) => m.id == modelId,
+      orElse: () => throw Exception('Translation model not found: $modelId'),
+    );
+    final isReady = model.isDownloaded && model.localPath != null;
+
+    if (isReady) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.orange.shade200),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700, size: 20),
+          const Gap(8),
+          Expanded(
+            child: Text(
+              'Model terjemahan belum tersedia. Buka Pengaturan > Model untuk mengunduh atau sideload.',
+              style: TextStyle(fontSize: 12, color: Colors.orange.shade900),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

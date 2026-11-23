@@ -103,7 +103,10 @@ class TranslationEngine {
     // Ensure translator exists for this language pair
     final expectedId = 'translator_${sourceLang}_$targetLang';
     if (_translatorId != expectedId) {
-      await createTranslator(sourceLang, targetLang);
+      final ok = await createTranslator(sourceLang, targetLang);
+      if (!ok) {
+        throw Exception('Tidak dapat membuat translator untuk $sourceLang -> $targetLang. Model mungkin belum terunduh/diletakkan.');
+      }
     }
 
     // Apply formality preprocessing
@@ -115,7 +118,10 @@ class TranslationEngine {
       translated = await _translateNative(processedText, sourceLang, targetLang);
     } catch (e) {
       AppLogger.error('Translation failed', e);
-      translated = text; // fallback
+      rethrow;
+    }
+    if (translated.isEmpty) {
+      throw Exception('Terjemahan kosong dari model. Coba lagi atau ganti model.');
     }
 
     // Apply formality postprocess
