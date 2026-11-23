@@ -77,7 +77,7 @@ class OnnxTranslateWrapper(private val context: Context) {
 
             sessions[id] = Sessions(encoderSession, decoderSession, tokenizer, decoderStart)
             Log.i(TAG, "Loaded translator $id (decoder=${decoderFile.name}, start=$decoderStart)")
-            companion.setLoaded(true)
+            setLoaded(true)
             return true
         } catch (e: Exception) {
             Log.e(TAG, "Failed to load translator $id", e)
