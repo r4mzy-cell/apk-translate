@@ -614,7 +614,7 @@ class _ModelStatusBanner extends ConsumerWidget {
     final models = ref.watch(modelManagerProvider).value ?? [];
     final modelId = sourceLang == 'en' ? 'ctranslate-en-id' : 'ctranslate-id-en';
     final model = models.where((m) => m.id == modelId).firstOrNull;
-    final isReady = model?.isDownloaded == true && model.localPath != null;
+    final isReady = model?.isDownloaded == true && model?.localPath != null;
 
     if (isReady) return const SizedBox.shrink();
 

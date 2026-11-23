@@ -71,7 +71,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Versi ${info.version} (${info.formattedSize}) sudah tersedia.'),
-            const Gap(12),
+            Gap(12),
             if (info.releaseNotes.isNotEmpty)
               SizedBox(
                 height: 200,
