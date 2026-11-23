@@ -9,9 +9,6 @@ android {
     compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
-    // open_filex FileProvider authority placeholder
-    manifestPlaceholders["applicationId"] = "com.translateid"
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -23,6 +20,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // open_filex FileProvider authority placeholder
+        manifestPlaceholders["applicationId"] = "com.translateid"
     }
 
     // Release keystore — create once: 
@@ -61,7 +60,7 @@ android {
     // Native libraries land here
     sourceSets {
         getByName("main") {
-            jniLibs.srcDir("src/main/jniLibs")
+            jniLibs.srcDirs = setOf("src/main/jniLibs")
         }
     }
 
