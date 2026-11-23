@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
 import 'package:gap/gap.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:translate_id/src/core/theme/app_theme.dart';
 import 'package:translate_id/src/services/ocr/ocr_engine.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
 import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
