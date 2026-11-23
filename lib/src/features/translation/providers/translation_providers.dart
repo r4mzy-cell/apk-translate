@@ -4,6 +4,7 @@ import 'package:translate_id/src/services/voice/voice_engine.dart';
 import 'package:translate_id/src/services/ocr/ocr_engine.dart';
 import 'package:translate_id/src/services/model/model_manager.dart';
 import 'package:translate_id/src/core/di/service_locator.dart';
+import 'package:translate_id/src/shared/utils/app_logger.dart';
 
 /// Translation engine provider
 final translationEngineProvider = Provider<TranslationEngine>((ref) {
