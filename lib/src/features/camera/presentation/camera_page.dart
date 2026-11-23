@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
 import 'package:gap/gap.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:translate_id/src/services/ocr/ocr_engine.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
 import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
@@ -196,7 +196,7 @@ class _CameraPageState extends ConsumerState<CameraPage> with WidgetsBindingObse
 
     // Must stop the image stream before takePicture(), otherwise capture fails
     final controller = _controller!;
-    if (controller.value.isStreaming) await controller.stopImageStream();
+    await controller.stopImageStream(); // safe to call even if not streaming
     setState(() => _isProcessing = true);
     try {
       final XFile photo = await controller.takePicture();
