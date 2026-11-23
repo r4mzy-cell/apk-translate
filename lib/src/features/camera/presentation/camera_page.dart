@@ -716,66 +716,42 @@ class _LensOverlayViewState extends State<_LensOverlayView> {
                 fit: BoxFit.contain,
               ),
             ),
-            if (!_showOriginal)
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final imgW = constraints.biggest.width;
-                  final imgH = constraints.biggest.height;
-                  final scale = widget.imageSize.width > 0
-                      ? imgW / widget.imageSize.width
-                      : 1.0;
-                  return Stack(
-                    children: widget.blocks.map((b) {
-                      final left = b.rect.left * scale;
-                      final top = b.rect.top * scale;
-                      final w = (b.rect.right - b.rect.left) * scale;
-                      final h = (b.rect.bottom - b.rect.top) * scale;
-                      final translated = b.translatedText;
-                      final displayText = translated.length > 40 ? '${translated.substring(0, 40)}...' : translated;
-                      return Positioned(
-                        left: left,
-                        top: top,
-                        width: w,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.85),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            displayText,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final imgW = constraints.biggest.width;
+                final scale = widget.imageSize.width > 0
+                    ? imgW / widget.imageSize.width
+                    : 1.0;
+                final overlays = widget.blocks.map((b) {
+                  final left = b.rect.left * scale;
+                  final top = b.rect.top * scale;
+                  final w = (b.rect.right - b.rect.left) * scale;
+                  final text = _showOriginal ? b.originalText : b.translatedText;
+                  final displayText = text.length > 40 ? '${text.substring(0, 40)}...' : text;
+                  return Positioned(
+                    left: left,
+                    top: top,
+                    width: w,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.85),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        displayText,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
                         ),
-                      );
-                    }).toList(),
-                  );
-                },
-              )
-            else
-              ...widget.blocks.map((b) => Positioned(
-                left: 0,
-                top: 0,
-                right: 0,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      b.originalText,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                ),
-              ),
+                  );
+                }).toList();
+                return Stack(children: overlays);
+              },
+            ),
           ],
         ),
       ),
