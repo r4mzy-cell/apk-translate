@@ -511,7 +511,7 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun translatorStatus(result: MethodChannel.Result) {
-        result.success(mapOf("loaded" to translate.isLoaded()))
+        result.success(mapOf<String, Any>("loaded" to translate.isLoaded()))
     }
 
     // ============ ML Kit OCR ============
