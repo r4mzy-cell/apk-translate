@@ -39,7 +39,7 @@ dependencies:
   google_mlkit_commons: ^1.0.3
   image_picker: ^1.2.0
   # Audio recording for voice input (STT)
-  record: ^5.1.2
+  record: ^7.0.0
 
   # Network (Model Download)
   dio: ^5.4.3+1

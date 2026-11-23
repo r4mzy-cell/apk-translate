@@ -9,6 +9,9 @@ android {
     compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
+    // open_filex FileProvider authority placeholder
+    manifestPlaceholders["applicationId"] = "com.translateid"
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

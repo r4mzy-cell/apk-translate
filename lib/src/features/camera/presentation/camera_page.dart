@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
 import 'package:gap/gap.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:translate_id/src/features/translation/providers/translation_providers.dart';
 import 'package:translate_id/src/features/settings/providers/settings_providers.dart';
 import 'package:translate_id/src/shared/enums/formality_mode.dart';
